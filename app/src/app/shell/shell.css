@@ -123,8 +123,9 @@
 .app-header__search:hover { border-color: var(--g-border-default); color: var(--g-text-muted); }
 .app-header__search kbd { margin-left: auto; padding: 2px 6px; border: 1px solid var(--g-border-default); border-radius: 4px; color: var(--g-text-faint); font: inherit; }
 .app-header__actions { display: flex; align-items: center; gap: 7px; }
-.app-header__icon { position: relative; display: grid; width: 38px; height: 38px; border-radius: 7px; color: var(--g-text-muted); place-items: center; }
+.app-header__icon { position: relative; display: grid; width: 38px; height: 38px; padding: 0; border: 0; border-radius: 7px; appearance: none; background: transparent; color: var(--g-text-muted); place-items: center; box-shadow: none; }
 .app-header__icon:hover { background: var(--g-surface-1); color: var(--g-text-primary); }
+.app-header__icon:focus:not(:focus-visible) { outline: none; box-shadow: none; }
 .app-header__badge { position: absolute; top: 2px; right: 1px; display: grid; min-width: 16px; height: 16px; padding: 0 4px; border: 2px solid var(--g-canvas); border-radius: var(--g-radius-pill); background: var(--g-accent); color: var(--g-canvas-deep); font-size: 8px; font-weight: 800; line-height: 1; place-items: center; }
 
 .app-profile { position: relative; margin-left: 4px; }

@@ -7,6 +7,7 @@ import "./features/auth/auth.css";
 import "./app/shell/shell.css";
 import "./features/newsfeed/newsfeed.css";
 import "./features/messages/messages.css";
+import "./features/notifications/notifications.css";
 import { App } from "./App";
 import { RealtimeBridge } from "./features/messages/RealtimeBridge";
 

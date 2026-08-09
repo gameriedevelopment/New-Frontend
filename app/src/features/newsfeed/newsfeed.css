@@ -46,6 +46,8 @@
 .rich-post-editor__toolbar > button.is-active { background: var(--g-accent-soft); color: var(--g-accent); }
 .rich-post-editor__toolbar > span { width: 1px; height: 18px; margin: 0 4px; flex: 0 0 auto; background: var(--g-border-subtle); }
 .rich-post-editor__surface { min-height: 112px; max-height: 260px; padding: 13px 13px 28px; overflow-y: auto; color: var(--g-text-primary); font: 500 12px/1.7 var(--g-font-body); outline: none; }
+.rich-post-editor__surface:focus-visible,
+.comment-composer textarea:focus-visible { outline: none; box-shadow: none; }
 .rich-post-editor[data-compact="true"] .rich-post-editor__surface { min-height: 72px; max-height: 170px; }
 .rich-post-editor__surface > :first-child { margin-top: 0; }
 .rich-post-editor__surface > :last-child { margin-bottom: 0; }
@@ -317,6 +319,7 @@
 .comment-composer > img, .comment-item__line > img { width: 34px; height: 34px; border: 1px solid var(--g-border-default); border-radius: 50%; background: var(--g-surface-2); object-fit: cover; }
 .comment-composer > div { min-width: 0; padding: 10px 11px 8px; border: 1px solid var(--g-border-default); border-radius: 8px; background: var(--g-canvas-deep); }
 .comment-composer > div > .rich-post-editor { border-color: var(--g-border-subtle); }
+.comment-composer .rich-post-editor:focus-within { border-color: var(--g-border-subtle); box-shadow: none; }
 .comment-composer:focus-within > div { border-color: var(--g-border-strong); box-shadow: 0 0 0 2px var(--g-accent-faint); }
 .comment-composer textarea { width: 100%; min-height: 54px; max-height: 150px; padding: 0; border: 0; resize: vertical; background: transparent; color: var(--g-text-primary); font: 500 12px/1.65 var(--g-font-body); outline: none; }
 .comment-composer textarea::placeholder { color: var(--g-text-faint); }

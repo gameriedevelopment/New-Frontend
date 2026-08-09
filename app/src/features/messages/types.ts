@@ -11,10 +11,18 @@ export interface MessageUser {
 }
 
 export interface MessageTeam {
-  id?: string;
+  id: string;
   name?: string;
   logo?: string | null;
-  members?: Array<{ userId?: string; user?: MessageUser; role?: string; title?: string }>;
+  level?: string;
+  members?: MessageTeamMember[];
+}
+
+export interface MessageTeamMember {
+  userId?: string;
+  user?: MessageUser;
+  role?: string;
+  title?: string;
 }
 
 export interface ChatMessage {
@@ -55,3 +63,28 @@ export interface MessagesPage {
 }
 
 export interface ApiEnvelope<T> { data: T; message?: string; statusCode?: number }
+
+export interface RecipientUser extends MessageUser {
+  username: string;
+}
+
+export interface RecipientTeam extends MessageTeam {
+  name: string;
+}
+
+export interface RecipientSearchPage<T> {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  users?: T[];
+  teams?: T[];
+}
+
+export interface CreateConversationPayload {
+  participantIds: string[];
+  type: ConversationKind;
+  name?: string;
+  avatar?: string;
+  teamId?: string;
+}

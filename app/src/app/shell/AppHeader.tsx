@@ -1,10 +1,11 @@
-import { Bell, ChevronDown, LogOut, MessageSquare, Search, Settings, Shield } from "lucide-react";
+import { ChevronDown, LogOut, MessageSquare, Search, Settings, Shield } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "../../features/auth/api";
 import { useAuthStore } from "../../features/auth/authStore";
 import { SafeImage } from "../../components/ui";
 import { useTotalUnread } from "../../features/messages/hooks";
+import { NotificationBell } from "../../features/notifications/components/NotificationBell";
 
 function initials(username?: string, email?: string) {
   const source = username || email?.split("@")[0] || "G";
@@ -53,7 +54,7 @@ export function AppHeader() {
       <div className="app-header__actions">
         {isAdmin && <Link className="app-header__icon" to="/admin" aria-label="Admin"><Shield size={18} /></Link>}
         <Link className="app-header__icon" to="/messages" aria-label={unread ? `Messages, ${unread} unread` : "Messages"}><MessageSquare size={18} />{unread > 0 ? <span className="app-header__badge">{unread > 99 ? "99+" : unread}</span> : null}</Link>
-        <Link className="app-header__icon" to="/notifications" aria-label="Notifications"><Bell size={18} /></Link>
+        <NotificationBell />
         <div className="app-profile" ref={profileRef}>
           <button className="app-profile__trigger" type="button" onClick={() => setIsProfileOpen((open) => !open)} aria-expanded={isProfileOpen}>
             {user?.profileImage ? <SafeImage className="app-avatar app-avatar--image" src={user.profileImage} alt="" /> : <span className="app-avatar">{initials(user?.username, user?.email)}</span>}

@@ -1,7 +1,7 @@
 import { api, API_URL } from "../../lib/api";
 import Cookies from "js-cookie";
 import { io, type Socket } from "socket.io-client";
-import type { ApiEnvelope, ChatMessage, ConversationsPage, MessageConversation, MessagesPage } from "./types";
+import type { ApiEnvelope, ChatMessage, ConversationsPage, CreateConversationPayload, MessageConversation, MessagesPage, RecipientSearchPage, RecipientTeam, RecipientUser } from "./types";
 
 export async function getConversations(page = 1, type: "user" | "team" = "user"): Promise<ConversationsPage> {
   const { data } = await api.get<ApiEnvelope<ConversationsPage>>("/messaging/conversations", { params: { page, limit: 20, type } });
@@ -20,6 +20,41 @@ export async function searchConversations(search: string): Promise<MessageConver
 
 export async function sendMessage(conversationId: string, content: string, isAnnouncement = false): Promise<ChatMessage> {
   const { data } = await api.post<ApiEnvelope<ChatMessage>>(`/messaging/${conversationId}/messages`, { content, isAnnouncement });
+  return data.data;
+}
+
+export async function editMessage(messageId: string, content: string): Promise<ChatMessage> {
+  const { data } = await api.patch<ApiEnvelope<ChatMessage>>(`/messaging/messages/${messageId}`, { content });
+  return data.data;
+}
+
+export async function deleteMessage(messageId: string): Promise<{ success: boolean }> {
+  const { data } = await api.delete<ApiEnvelope<{ success: boolean }>>(`/messaging/messages/${messageId}`);
+  return data.data;
+}
+
+export async function createConversation(payload: CreateConversationPayload): Promise<MessageConversation> {
+  const { data } = await api.post<ApiEnvelope<MessageConversation>>("/messaging/conversations", payload);
+  return data.data;
+}
+
+export async function searchUsers(search: string): Promise<RecipientUser[]> {
+  const { data } = await api.get<ApiEnvelope<RecipientSearchPage<RecipientUser>>>("/users/search/all", { params: { search, page: 1, limit: 20 } });
+  return data.data.users ?? [];
+}
+
+export async function searchTeams(search: string): Promise<RecipientTeam[]> {
+  const { data } = await api.get<ApiEnvelope<RecipientSearchPage<RecipientTeam>>>("/teams/search/all", { params: { search, page: 1, limit: 20 } });
+  return data.data.teams ?? [];
+}
+
+export async function getUserTeams(userId: string): Promise<RecipientTeam[]> {
+  const { data } = await api.get<ApiEnvelope<RecipientTeam[]>>(`/teams/user/${userId}`);
+  return data.data;
+}
+
+export async function getTeamDetails(teamId: string): Promise<RecipientTeam> {
+  const { data } = await api.get<ApiEnvelope<RecipientTeam>>(`/teams/${teamId}`);
   return data.data;
 }
 

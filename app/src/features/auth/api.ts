@@ -134,6 +134,14 @@ export async function confirmEmailChange(token: string): Promise<{ email: string
   return data.data;
 }
 
+export async function requestEmailChange(newEmail: string, currentPassword: string): Promise<void> {
+  await api.post("/auth/change-email", { newEmail, currentPassword, origin: "app" });
+}
+
+export async function changePassword(currentPassword: string, newPassword: string, confirmPassword: string): Promise<void> {
+  await api.post("/auth/change-password", { currentPassword, newPassword, confirmPassword });
+}
+
 export function beginSocialAuth(provider: SocialProvider): void {
   if (provider === "apple") return;
   window.location.assign(`${api.defaults.baseURL}/auth/${provider}`);

@@ -16,6 +16,9 @@ import { PageLoader } from "./components/ui";
 const NewsFeedPage = lazy(() => import("./features/newsfeed/NewsFeedPage").then((module) => ({ default: module.NewsFeedPage })));
 const SinglePostPage = lazy(() => import("./features/newsfeed/SinglePostPage").then((module) => ({ default: module.SinglePostPage })));
 const MessagesPage = lazy(() => import("./features/messages/MessagesPage").then((module) => ({ default: module.MessagesPage })));
+const NotificationsPage = lazy(() => import("./features/notifications/NotificationsPage").then((module) => ({ default: module.NotificationsPage })));
+const ProfilePage = lazy(() => import("./features/profile/ProfilePage").then((module) => ({ default: module.ProfilePage })));
+const SettingsPage = lazy(() => import("./features/settings/SettingsPage").then((module) => ({ default: module.SettingsPage })));
 
 function DeferredPage({ children }: { children: ReactNode }) {
   return <Suspense fallback={<PageLoader label="Loading content" />}>{children}</Suspense>;
@@ -48,10 +51,10 @@ export function App() {
           <Route path="/calendar" element={<FeatureFoundationPage />} />
           <Route path="/wallet" element={<FeatureFoundationPage />} />
           <Route path="/search" element={<FeatureFoundationPage />} />
-          <Route path="/notifications" element={<FeatureFoundationPage />} />
-          <Route path="/settings" element={<FeatureFoundationPage />} />
+          <Route path="/notifications" element={<DeferredPage><NotificationsPage /></DeferredPage>} />
+          <Route path="/settings" element={<DeferredPage><SettingsPage /></DeferredPage>} />
           <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]}><FeatureFoundationPage /></ProtectedRoute>} />
-          <Route path="/profile/:username" element={<FeatureFoundationPage />} />
+          <Route path="/profile/:username" element={<DeferredPage><ProfilePage /></DeferredPage>} />
         </Route>
         <Route path="*" element={<Navigate to="/feed" replace />} />
       </Routes>
