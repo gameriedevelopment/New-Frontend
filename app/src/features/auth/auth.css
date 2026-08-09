@@ -550,6 +550,10 @@
   font-size: 12px;
 }
 
+.auth-confirmation .auth-turnstile {
+  margin-block: 16px 14px;
+}
+
 .auth-back-link {
   display: inline-flex;
   margin-top: 30px;
