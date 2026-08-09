@@ -1,0 +1,101 @@
+:root {
+  color-scheme: dark;
+
+  /* Primitive brand ramp — retains Gamarie's lavender identity. */
+  --g-color-lavender-100: #eee6ff;
+  --g-color-lavender-200: #dfd0ff;
+  --g-color-lavender-300: #d1b9ff;
+  --g-color-lavender-400: #c6a3ff;
+  --g-color-lavender-500: #aa82e8;
+  --g-color-lavender-600: #8967bd;
+  --g-color-lavender-700: #674f8a;
+
+  /* Blue-black neutrals replace the flat charcoal legacy canvas. */
+  --g-color-void-950: #08090d;
+  --g-color-void-900: #0c0e14;
+  --g-color-void-850: #10131a;
+  --g-color-void-800: #141821;
+  --g-color-void-700: #1b202b;
+  --g-color-void-600: #252b39;
+
+  --g-color-white: #ffffff;
+  --g-color-mist-100: #f5f3f8;
+  --g-color-mist-200: #ded9e5;
+  --g-color-mist-300: #b9b3c2;
+  --g-color-mist-400: #8e8998;
+  --g-color-mist-500: #686473;
+
+  --g-color-cyan-400: #73dcf2;
+  --g-color-green-400: #77d7a1;
+  --g-color-amber-400: #edbd70;
+  --g-color-red-400: #f18a96;
+
+  /* Semantic color layer. */
+  --g-canvas: var(--g-color-void-900);
+  --g-canvas-deep: var(--g-color-void-950);
+  --g-surface-1: var(--g-color-void-850);
+  --g-surface-2: var(--g-color-void-800);
+  --g-surface-3: var(--g-color-void-700);
+  --g-surface-interactive: #181c26;
+  --g-border-subtle: rgb(238 230 255 / 0.075);
+  --g-border-default: rgb(238 230 255 / 0.13);
+  --g-border-strong: rgb(198 163 255 / 0.28);
+  --g-text-primary: var(--g-color-mist-100);
+  --g-text-secondary: var(--g-color-mist-300);
+  --g-text-muted: var(--g-color-mist-400);
+  --g-text-faint: var(--g-color-mist-500);
+  --g-accent: var(--g-color-lavender-400);
+  --g-accent-hover: var(--g-color-lavender-300);
+  --g-accent-strong: var(--g-color-lavender-200);
+  --g-accent-soft: rgb(198 163 255 / 0.1);
+  --g-accent-faint: rgb(198 163 255 / 0.055);
+  --g-success: var(--g-color-green-400);
+  --g-warning: var(--g-color-amber-400);
+  --g-danger: var(--g-color-red-400);
+  --g-info: var(--g-color-cyan-400);
+
+  --g-font-body: "Manrope Variable", "Manrope", sans-serif;
+  --g-font-display: "Instrument Sans Variable", "Instrument Sans", sans-serif;
+
+  --g-text-xs: 0.6875rem;
+  --g-text-sm: 0.8125rem;
+  --g-text-md: 0.9375rem;
+  --g-text-lg: 1.0625rem;
+  --g-text-xl: 1.25rem;
+  --g-text-2xl: 1.625rem;
+  --g-text-3xl: clamp(2.15rem, 4vw, 3.75rem);
+  --g-text-hero: clamp(3.25rem, 7vw, 7.5rem);
+
+  --g-space-1: 0.25rem;
+  --g-space-2: 0.5rem;
+  --g-space-3: 0.75rem;
+  --g-space-4: 1rem;
+  --g-space-5: 1.25rem;
+  --g-space-6: 1.5rem;
+  --g-space-8: 2rem;
+  --g-space-10: 2.5rem;
+  --g-space-12: 3rem;
+  --g-space-16: 4rem;
+  --g-space-20: 5rem;
+  --g-space-24: 6rem;
+
+  --g-radius-xs: 4px;
+  --g-radius-sm: 7px;
+  --g-radius-md: 10px;
+  --g-radius-lg: 16px;
+  --g-radius-pill: 999px;
+
+  --g-shadow-float: 0 24px 70px rgb(0 0 0 / 0.36);
+  --g-shadow-dialog: 0 34px 100px rgb(0 0 0 / 0.52);
+  --g-focus-ring: 0 0 0 3px rgb(198 163 255 / 0.24);
+
+  --g-duration-fast: 120ms;
+  --g-duration-base: 180ms;
+  --g-duration-slow: 320ms;
+  --g-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --g-ease-emphasized: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --g-page-gutter: clamp(1rem, 4vw, 4.5rem);
+  --g-content-max: 80rem;
+  --g-reading-max: 44rem;
+}
