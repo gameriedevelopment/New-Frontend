@@ -6,21 +6,48 @@
   "scripts": {
     "dev": "vite --port 5173",
     "build": "tsc && vite build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
     "@fontsource-variable/instrument-sans": "^5.3.0",
     "@fontsource-variable/manrope": "^5.3.0",
     "@hookform/resolvers": "^3.3.4",
+    "@tanstack/react-query": "^5.101.4",
+    "@tiptap/extension-code-block-lowlight": "^2.27.2",
+    "@tiptap/extension-link": "^2.27.2",
+    "@tiptap/extension-table": "^2.27.2",
+    "@tiptap/extension-table-cell": "^2.27.2",
+    "@tiptap/extension-table-header": "^2.27.2",
+    "@tiptap/extension-table-row": "^2.27.2",
+    "@tiptap/extension-task-item": "^2.27.2",
+    "@tiptap/extension-task-list": "^2.27.2",
+    "@tiptap/extension-underline": "^2.27.2",
+    "@tiptap/react": "^2.27.2",
+    "@tiptap/starter-kit": "^2.27.2",
+    "@types/markdown-it": "^14.1.2",
     "axios": "^1.6.7",
+    "dompurify": "^3.4.13",
+    "highlight.js": "^11.11.1",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
+    "lowlight": "^3.3.0",
     "lucide-react": "^0.344.0",
+    "markdown-it": "^14.3.0",
+    "markdown-it-emoji": "^3.1.0",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-sub": "^2.0.0",
+    "markdown-it-sup": "^2.0.0",
+    "markdown-it-task-lists": "^2.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.50.1",
     "react-phone-number-input": "^3.4.17",
     "react-router-dom": "^7.18.2",
+    "socket.io-client": "^4.8.3",
+    "tiptap-markdown": "^0.8.10",
     "zod": "^3.22.4",
     "zustand": "^4.5.1"
   },
@@ -30,6 +57,7 @@
     "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",
     "typescript": "^5.2.2",
-    "vite": "^5.1.4"
+    "vite": "^5.1.4",
+    "vitest": "^2.1.9"
   }
 }

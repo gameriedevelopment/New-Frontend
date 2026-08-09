@@ -858,12 +858,11 @@
   .auth-stage {
     width: min(100% - 36px, 520px);
     grid-template-columns: 1fr;
-    gap: 76px;
+    gap: 0;
   }
 
   .auth-panel { order: 1; }
-  .auth-story { order: 2; text-align: center; }
-  .auth-story__copy > p { margin-inline: auto; }
+  .auth-story { display: none; }
 }
 
 @media (max-width: 1100px) and (min-width: 901px) {
@@ -885,7 +884,7 @@
   .auth-stage {
     width: 100%;
     padding: 44px 16px 56px;
-    gap: 68px;
+    gap: 0;
   }
 
   .auth-panel { padding: 30px 20px; }
@@ -893,15 +892,6 @@
   .auth-platforms > div { grid-template-columns: repeat(2, 1fr); }
   .auth-form__row { grid-template-columns: 1fr; }
   .auth-social__options { grid-template-columns: repeat(2, 1fr); }
-  .auth-story h1 { font-size: clamp(3rem, 16vw, 4.25rem); }
-  .auth-story__copy > p { padding-inline: 8px; font-size: 14px; }
-  .auth-story::after,
-  .auth-stage--register .auth-story::after {
-    top: 58%;
-    right: 4%;
-    width: 76px;
-    height: 236px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

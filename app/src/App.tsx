@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { lazy, Suspense, type ReactNode } from "react";
 import { PasswordRecoveryPage } from "./features/auth/PasswordRecoveryPage";
 import { ConfirmEmailChangePage } from "./features/auth/ConfirmEmailChangePage";
 import { ConfirmEmailPage } from "./features/auth/ConfirmEmailPage";
@@ -10,6 +11,15 @@ import { AuthCallbackPage } from "./features/auth/AuthCallbackPage";
 import { ProtectedRoute } from "./features/auth/components/ProtectedRoute";
 import { AppShell } from "./app/shell/AppShell";
 import { FeatureFoundationPage } from "./app/shell/FeatureFoundationPage";
+import { PageLoader } from "./components/ui";
+
+const NewsFeedPage = lazy(() => import("./features/newsfeed/NewsFeedPage").then((module) => ({ default: module.NewsFeedPage })));
+const SinglePostPage = lazy(() => import("./features/newsfeed/SinglePostPage").then((module) => ({ default: module.SinglePostPage })));
+const MessagesPage = lazy(() => import("./features/messages/MessagesPage").then((module) => ({ default: module.MessagesPage })));
+
+function DeferredPage({ children }: { children: ReactNode }) {
+  return <Suspense fallback={<PageLoader label="Loading content" />}>{children}</Suspense>;
+}
 
 export function App() {
   return (
@@ -26,12 +36,13 @@ export function App() {
         <Route path="/confirm-email-change/:token" element={<ConfirmEmailChangePage />} />
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route element={<ProtectedRoute><AppShell /></ProtectedRoute>}>
-          <Route path="/feed" element={<FeatureFoundationPage />} />
+          <Route path="/feed" element={<DeferredPage><NewsFeedPage /></DeferredPage>} />
+          <Route path="/post/:postId" element={<DeferredPage><SinglePostPage /></DeferredPage>} />
           <Route path="/users" element={<FeatureFoundationPage />} />
           <Route path="/games" element={<FeatureFoundationPage />} />
           <Route path="/teams" element={<FeatureFoundationPage />} />
           <Route path="/hubs" element={<FeatureFoundationPage />} />
-          <Route path="/messages" element={<FeatureFoundationPage />} />
+          <Route path="/messages" element={<DeferredPage><MessagesPage /></DeferredPage>} />
           <Route path="/tournaments" element={<FeatureFoundationPage />} />
           <Route path="/leaderboard" element={<FeatureFoundationPage />} />
           <Route path="/calendar" element={<FeatureFoundationPage />} />
