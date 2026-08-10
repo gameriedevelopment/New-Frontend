@@ -97,7 +97,7 @@ export function MessageThread({ conversation, error, fetchingOlder, hasOlder, lo
   return <section className="message-thread" aria-label={`Conversation with ${identity.name}`}>
     <header>
       <button className="message-thread__back" type="button" onClick={onBack} aria-label="Back to conversations"><ArrowLeft size={18} /></button>
-      <span className="message-thread__avatar">{identity.image ? <SafeImage src={identity.image} alt="" fallback={conversation.type === "user" ? "/avatar-fallback.svg" : "/media-fallback.svg"} /> : identity.name.slice(0, 2).toUpperCase()}</span>
+      <span className="message-thread__avatar">{identity.image ? <SafeImage src={identity.image} alt="" fallback={conversation.type === "user" ? "/user-profile-fallback.jpg" : "/media-fallback.svg"} /> : identity.name.slice(0, 2).toUpperCase()}</span>
       <div><h2>{identity.name}</h2><p>{conversation.type === "user" ? identity.teammate?.gamerTitle || (identity.online ? "Online" : "Direct conversation") : conversation.type === "team-inbox" ? "Team inbox" : `${conversation.team?.members?.length ?? conversation.participants.length} members`}</p></div>
       <span className="message-thread__status" data-status={status}><i />{status === "online" ? "Connected" : status === "connecting" ? "Reconnecting" : "Offline"}</span>
     </header>

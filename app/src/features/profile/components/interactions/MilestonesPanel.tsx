@@ -1,0 +1,27 @@
+import { Edit3, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Button } from "../../../../components/ui";
+import { getApiErrorMessage } from "../../../../lib/errors";
+import { useUpdatePlayerProfile } from "../../hooks";
+import type { PlayerProfile } from "../../types";
+import { ProfileDialog } from "./ProfileDialog";
+
+type Milestone = NonNullable<PlayerProfile["milestones"]>[number];
+const types = ["achievement", "event", "career", "status", "other"] as const;
+
+export function MilestonesPanel({ own, profile }: { own: boolean; profile: PlayerProfile }) {
+  const update = useUpdatePlayerProfile(profile.id);
+  const [editing, setEditing] = useState<number | "new" | null>(null);
+  const [confirming, setConfirming] = useState<number | null>(null);
+  const empty: Milestone = { title: "", description: "", date: new Date().toISOString().slice(0, 10), type: "career" };
+  const source = editing === "new" || editing === null ? empty : profile.milestones?.[editing] ?? empty;
+  const [draft, setDraft] = useState<Milestone>(empty);
+  const normalized = (items: NonNullable<PlayerProfile["milestones"]>) => items.map((item) => ({ title: item.title || "Milestone", description: item.description || "", date: String(item.date || item.createdAt || new Date().toISOString()).slice(0, 10), type: types.includes(item.type as typeof types[number]) ? item.type : "other", ...(item.icon ? { icon: item.icon } : {}) }));
+  const begin = (index: number | "new") => { const current = index === "new" ? empty : profile.milestones?.[index] ?? empty; setDraft({ ...current, date: String(current.date || current.createdAt || new Date().toISOString()).slice(0, 10), type: types.includes(current.type as typeof types[number]) ? current.type : "other" }); setEditing(index); };
+  const save = async () => { const items = normalized(profile.milestones ?? []); const value = { title: draft.title?.trim() || "Milestone", description: draft.description?.trim() || "", date: draft.date!, type: draft.type || "other" }; if (editing === "new") items.push(value); else if (typeof editing === "number") items[editing] = value; await update.mutateAsync({ milestones: items }); setEditing(null); };
+  const remove = async (index: number) => { await update.mutateAsync({ milestones: normalized(profile.milestones ?? []).filter((_item, itemIndex) => itemIndex !== index) }); setConfirming(null); };
+  return <section className="profile-milestones"><header><div><p>Career record</p><h2>Milestones</h2></div>{own ? <button type="button" onClick={() => begin("new")}><Plus size={14} />Add milestone</button> : null}</header>{profile.milestones?.length ? <div className="profile-milestones__timeline">{profile.milestones.map((item, index) => <article key={item.id || index}><time>{new Date(String(item.date || item.createdAt || Date.now())).toLocaleDateString(undefined, { month: "short", year: "numeric" })}</time><div><span>{item.type || "Career"}</span><h3>{item.title || "Milestone"}</h3><p>{item.description}</p>{own ? <footer><button type="button" onClick={() => begin(index)}><Edit3 size={13} />Edit</button><button type="button" data-confirm={confirming === index} onClick={() => confirming === index ? void remove(index) : setConfirming(index)}>{confirming === index ? "Confirm remove" : <><Trash2 size={13} />Remove</>}</button></footer> : null}</div></article>)}</div> : <p className="profile-panel-empty">{own ? "Build a credible career record with meaningful team, competition, and personal milestones." : "This player has not published career milestones yet."}</p>}
+    {update.isError && editing === null ? <p className="profile-inline-action-error" role="alert">{getApiErrorMessage(update.error, "The milestone could not be updated.")}</p> : null}
+    {editing !== null ? <ProfileDialog title={editing === "new" ? "Add career milestone" : "Edit career milestone"} onClose={() => !update.isPending && setEditing(null)}><form className="profile-interaction-form" onSubmit={(event) => { event.preventDefault(); void save(); }}><label><span>Type</span><select value={draft.type} onChange={(event) => setDraft((current) => ({ ...current, type: event.target.value }))}>{types.map((type) => <option key={type} value={type}>{type[0].toUpperCase() + type.slice(1)}</option>)}</select></label><label><span>Title</span><input value={draft.title || ""} maxLength={100} onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))} placeholder="Joined a competitive roster" /></label><label><span>Date</span><input type="date" value={String(draft.date || "").slice(0, 10)} onChange={(event) => setDraft((current) => ({ ...current, date: event.target.value }))} /></label><label><span>Description</span><textarea rows={4} maxLength={500} value={draft.description || ""} onChange={(event) => setDraft((current) => ({ ...current, description: event.target.value }))} placeholder="What changed, and why does it matter?" /></label>{update.isError ? <p className="profile-inline-action-error" role="alert">{getApiErrorMessage(update.error, "The milestone could not be saved.")}</p> : null}<footer><Button variant="quiet" onClick={() => setEditing(null)}>Cancel</Button><Button type="submit" disabled={update.isPending || !draft.title?.trim() || !draft.description?.trim() || !draft.date}>{update.isPending ? "Saving…" : "Save milestone"}</Button></footer></form></ProfileDialog> : null}
+  </section>;
+}

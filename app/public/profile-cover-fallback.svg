@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 520" role="img" aria-label="Default Gamerie profile cover">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#151321"/><stop offset=".55" stop-color="#0f1018"/><stop offset="1" stop-color="#090a0f"/></linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop stop-color="#a790ef" stop-opacity=".2"/><stop offset="1" stop-color="#a790ef" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1440" height="520" fill="url(#bg)"/>
+  <ellipse cx="1050" cy="80" rx="460" ry="330" fill="url(#glow)"/>
+  <g fill="none" stroke="#b7a1ff" stroke-opacity=".095" stroke-width="3">
+    <path d="M1012 126c-94 0-165 58-181 148l-24 132c-5 29 30 48 52 28l94-83h118l94 83c22 20 57 1 52-28l-24-132c-16-90-87-148-181-148Z"/>
+    <circle cx="944" cy="267" r="31"/><path d="M944 248v38M925 267h38"/>
+    <circle cx="1093" cy="253" r="10" fill="#b7a1ff"/><circle cx="1125" cy="285" r="10" fill="#b7a1ff"/>
+    <circle cx="1060" cy="285" r="10" fill="#b7a1ff"/><circle cx="1093" cy="317" r="10" fill="#b7a1ff"/>
+  </g>
+  <path d="M0 420C330 355 596 460 920 403c207-36 349-31 520 13v104H0Z" fill="#07080c" fill-opacity=".34"/>
+</svg>

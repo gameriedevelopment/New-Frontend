@@ -8,16 +8,10 @@ import { useCreatePost } from "../hooks";
 import { firstContentUrl } from "../richContent";
 import { LinkPreviewCard } from "./LinkPreviewCard";
 import { RichPostEditor } from "./RichPostEditor";
+import { getProfileCompletion } from "../../profile/profileCompletion";
 
 const MAX_MEDIA = 4;
 const MAX_CONTENT = 2000;
-
-function profileScore(user: ReturnType<typeof useAuthStore.getState>["user"]) {
-  if (!user) return 0;
-  const text = (value: unknown) => typeof value === "string" && value.trim().length > 0;
-  const list = (value: unknown) => Array.isArray(value) && value.length > 0;
-  return (user.profileImage ? 20 : 0) + (text(user.bio) ? 15 : 0) + (text(user.gamerTitle) ? 10 : 0) + (list(user.gamesPlayed) ? 20 : 0) + (list(user.skills) ? 10 : 0) + (list(user.platforms) ? 10 : 0) + (list(user.socialMedia) ? 10 : 0) + (user.backgroundImage ? 5 : 0);
-}
 
 export function FeedComposer() {
   const user = useAuthStore((state) => state.user);
@@ -29,7 +23,7 @@ export function FeedComposer() {
   const [mediaError, setMediaError] = useState<string | null>(null);
   const [dismissedUrl, setDismissedUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const score = profileScore(user);
+  const score = getProfileCompletion(user).score;
   const canPost = score >= 50;
   const detectedUrl = firstContentUrl(content);
   const overLimit = content.length > MAX_CONTENT;

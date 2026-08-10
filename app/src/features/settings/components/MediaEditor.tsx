@@ -1,4 +1,4 @@
-import { Camera, Image as ImageIcon, Upload } from "lucide-react";
+import { Camera, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { SafeImage } from "../../../components/ui";
 import { getApiErrorMessage } from "../../../lib/errors";
@@ -20,7 +20,7 @@ export function MediaEditor({ profile }: { profile: PlayerProfile }) {
   };
   return <section className="settings-form">
     <div className="settings-section-heading"><p>Profile media</p><h2>Avatar and cover</h2><span>Use clear, high-quality images that remain legible across feeds and compact player cards.</span></div>
-    <div className="settings-media-cover"><div>{preview.backgroundImage || profile.backgroundImage ? <SafeImage src={preview.backgroundImage || profile.backgroundImage} fallback="/media-fallback.svg" alt="Cover preview" /> : <span><ImageIcon size={22} />Cover image</span>}</div><label><Upload size={15} /><span>{upload.isPending && upload.variables?.type === "backgroundImage" ? "Uploading…" : "Change cover"}</span><input type="file" accept="image/*" disabled={upload.isPending} onChange={(event) => choose("backgroundImage", event.target.files?.[0])} /></label></div>
+    <div className="settings-media-cover"><div><SafeImage src={preview.backgroundImage || profile.backgroundImage} fallback="/profile-cover-fallback.jpg" alt="Cover preview" /></div><label><Upload size={15} /><span>{upload.isPending && upload.variables?.type === "backgroundImage" ? "Uploading…" : "Change cover"}</span><input type="file" accept="image/*" disabled={upload.isPending} onChange={(event) => choose("backgroundImage", event.target.files?.[0])} /></label></div>
     <div className="settings-media-avatar"><SafeImage src={preview.profileImage || profile.profileImage} alt="Profile preview" /><div><h3>Profile image</h3><p>Square image, up to 5 MB. Gamerie will crop it to a circle where needed.</p><label><Camera size={15} /><span>{upload.isPending && upload.variables?.type === "profileImage" ? "Uploading…" : "Choose image"}</span><input type="file" accept="image/*" disabled={upload.isPending} onChange={(event) => choose("profileImage", event.target.files?.[0])} /></label></div></div>
     {validationError || upload.isError ? <p className="settings-error" role="alert">{validationError || getApiErrorMessage(upload.error, "That image could not be uploaded. Use an image under 5 MB and try again.")}</p> : null}
     {upload.isSuccess ? <p className="settings-success" role="status">Profile media updated.</p> : null}

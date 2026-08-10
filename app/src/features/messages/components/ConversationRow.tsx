@@ -32,7 +32,7 @@ export function ConversationRow({ conversation, onSelect, selected }: { conversa
   const lastMessage = typeof conversation.lastMessage === "string" ? conversation.lastMessage : conversation.lastMessage?.content ?? "No messages yet";
 
   return <button className="conversation-row" data-selected={selected || undefined} data-unread={unread > 0 || undefined} type="button" onClick={onSelect} aria-current={selected ? "true" : undefined}>
-    <span className="conversation-row__avatar">{identity.image ? <SafeImage src={identity.image} alt="" fallback={conversation.type === "user" ? "/avatar-fallback.svg" : "/media-fallback.svg"} /> : <span>{identity.name.slice(0, 2).toUpperCase()}</span>}{identity.online ? <i aria-label="Online" /> : null}</span>
+    <span className="conversation-row__avatar">{identity.image ? <SafeImage src={identity.image} alt="" fallback={conversation.type === "user" ? "/user-profile-fallback.jpg" : "/media-fallback.svg"} /> : <span>{identity.name.slice(0, 2).toUpperCase()}</span>}{identity.online ? <i aria-label="Online" /> : null}</span>
     <span className="conversation-row__body"><span><strong>{identity.name}</strong><time dateTime={conversation.lastMessageTime}>{relativeTime(conversation.lastMessageTime)}</time></span><span><small>{lastMessage}</small>{unread ? <b aria-label={`${unread} unread messages`}>{unread > 99 ? "99+" : unread}</b> : null}</span></span>
   </button>;
 }

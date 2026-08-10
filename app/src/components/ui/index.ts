@@ -6,3 +6,5 @@ export { StatePanel } from "./StatePanel";
 export type { StatePanelProps } from "./StatePanel";
 export { SafeImage } from "./SafeImage";
 export type { SafeImageProps } from "./SafeImage";
+export { SearchSelect } from "./SearchSelect";
+export type { SearchSelectOption } from "./SearchSelect";

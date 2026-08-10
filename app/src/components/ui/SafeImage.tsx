@@ -5,7 +5,7 @@ export interface SafeImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>
   src?: string | null;
 }
 
-export function SafeImage({ src, fallback = "/avatar-fallback.svg", onError, ...props }: SafeImageProps) {
+export function SafeImage({ src, fallback = "/user-profile-fallback.jpg", onError, ...props }: SafeImageProps) {
   const [imageSource, setImageSource] = useState(src || fallback);
 
   useEffect(() => setImageSource(src || fallback), [fallback, src]);

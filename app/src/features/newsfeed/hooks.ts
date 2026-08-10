@@ -23,7 +23,10 @@ export function useCreatePost(userId?: string) {
       if (!userId) throw new Error("Your session could not be resolved.");
       return createPost(userId, payload);
     },
-    onSuccess: () => client.invalidateQueries({ queryKey: feedKey }),
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: feedKey });
+      client.invalidateQueries({ queryKey: ["wall-posts", userId] });
+    },
   });
 }
 
