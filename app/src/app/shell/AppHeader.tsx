@@ -37,6 +37,20 @@ export function AppHeader() {
     };
   }, [isProfileOpen]);
 
+  useEffect(() => {
+    const openSearch = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const editing = target?.matches("input, textarea, select, [contenteditable='true']");
+      if (event.key !== "/" || editing || event.metaKey || event.ctrlKey || event.altKey) return;
+      event.preventDefault();
+      const input = document.querySelector<HTMLInputElement>("[data-global-search]");
+      if (input) input.focus();
+      else navigate("/search");
+    };
+    document.addEventListener("keydown", openSearch);
+    return () => document.removeEventListener("keydown", openSearch);
+  }, [navigate]);
+
   const logout = async () => {
     try {
       setLogoutError(null);
@@ -53,7 +67,7 @@ export function AppHeader() {
       <Link className="app-header__search" to="/search"><Search size={16} /><span>Search Gamerie</span><kbd>/</kbd></Link>
       <div className="app-header__actions">
         {isAdmin && <Link className="app-header__icon" to="/admin" aria-label="Admin"><Shield size={18} /></Link>}
-        <Link className="app-header__icon" to="/messages" aria-label={unread ? `Messages, ${unread} unread` : "Messages"}><MessageSquare size={18} />{unread > 0 ? <span className="app-header__badge">{unread > 99 ? "99+" : unread}</span> : null}</Link>
+        <Link className="app-header__icon app-header__messages" to="/messages" aria-label={unread ? `Messages, ${unread} unread` : "Messages"}><MessageSquare size={18} />{unread > 0 ? <span className="app-header__badge">{unread > 99 ? "99+" : unread}</span> : null}</Link>
         <NotificationBell />
         <div className="app-profile" ref={profileRef}>
           <button className="app-profile__trigger" type="button" onClick={() => setIsProfileOpen((open) => !open)} aria-expanded={isProfileOpen}>

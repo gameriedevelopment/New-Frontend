@@ -21,6 +21,7 @@ export interface FeedPost {
   userId?: string;
   teamId?: string;
   hubId?: string;
+  isAnnouncement?: boolean;
   media?: string[];
   mediaUrl?: string | null;
   mediaType?: "image" | "video" | string | null;
@@ -92,9 +93,19 @@ export interface CreatePostPayload {
   content: string;
   media?: File[];
   tags?: string[];
+  isAnnouncement?: boolean;
 }
 
 export interface HubPostContext {
   id?: string;
   ownerId?: string;
+  name?: string;
+  members?: Array<{ userId?: string; role?: string; status?: string; user?: { id?: string } }>;
+}
+
+export interface TeamPostContext {
+  id?: string;
+  ownerId?: string;
+  name?: string;
+  members?: Array<{ userId?: string; role?: string; status?: string; user?: { id?: string } }>;
 }

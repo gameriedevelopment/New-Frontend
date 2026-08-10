@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Repeat2, Share2 } from "lucide-react";
+import { Heart, Megaphone, MessageCircle, Repeat2, Share2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { SafeImage } from "../../../components/ui";
@@ -111,6 +111,7 @@ export function FeedPostCard({ canDeleteOverride = false, post, single = false }
       {single ? <span className="feed-post__time">{timeAgo(post.createdAt)}</span> : <Link className="feed-post__time" to={postHref} aria-label="Open post conversation">{timeAgo(post.createdAt)}</Link>}
       <PostActionMenu post={post} single={single} canDeleteOverride={canDeleteOverride} />
     </header>
+    {post.isAnnouncement ? <div className="feed-post__announcement"><Megaphone size={14} />Announcement</div> : null}
     {post.repostOf ? <div className="feed-post__repost"><span><Repeat2 size={14} />Reposted</span>{post.content ? <PostContent content={post.content} single={single} /> : null}<RepostEmbed post={post.repostOf} /></div> : post.content ? <><PostContent content={post.content} single={single} /><LinkPreviewCard content={post.content} /></> : null}
     {!post.repostOf && media.length ? <PostMediaGallery media={media} mediaType={post.mediaType} /> : null}
     <footer className="feed-post__actions" data-count={canRepost ? 4 : 3}>

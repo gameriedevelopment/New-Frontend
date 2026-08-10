@@ -1,5 +1,5 @@
 import { api } from "../../lib/api";
-import type { CreatePostPayload, FeedComment, FeedFilter, FeedPage, FeedPost, HubPostContext, LinkPreview, PostOwnerType, TrendingTopic } from "./types";
+import type { CreatePostPayload, FeedComment, FeedFilter, FeedPage, FeedPost, HubPostContext, LinkPreview, PostOwnerType, TeamPostContext, TrendingTopic } from "./types";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -35,6 +35,11 @@ export async function getSinglePost(postId: string, teamId?: string, hubId?: str
 export async function getHubPostContext(hubId: string): Promise<HubPostContext> {
   const { data } = await api.get(`/hubs/${hubId}`);
   return (record(data)?.data ?? data) as HubPostContext;
+}
+
+export async function getTeamPostContext(teamId: string): Promise<TeamPostContext> {
+  const { data } = await api.get(`/teams/${teamId}`);
+  return (record(data)?.data ?? data) as TeamPostContext;
 }
 
 export async function getPostComments(postId: string, type: PostOwnerType): Promise<FeedComment[]> {
@@ -80,6 +85,17 @@ export async function createPost(userId: string, payload: CreatePostPayload): Pr
   return (record(data)?.data ?? data) as FeedPost;
 }
 
+export async function createCommunityPost(kind: "team" | "hub", userId: string, communityId: string, payload: CreatePostPayload): Promise<FeedPost> {
+  const formData = new FormData();
+  formData.append("content", payload.content);
+  formData.append("isAnnouncement", String(Boolean(payload.isAnnouncement)));
+  payload.media?.forEach((file) => formData.append("media", file));
+  const { data } = await api.post(`/newsfeed/${userId}/${kind}/${communityId}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return (record(data)?.data ?? data) as FeedPost;
+}
+
 export async function togglePostLike(postId: string, type: PostOwnerType): Promise<FeedPost> {
   const { data } = await api.post(`/newsfeed/${postId}/like/${type}`);
   return (record(data)?.data ?? data) as FeedPost;
@@ -101,7 +117,7 @@ export async function toggleRepost(postId: string, comment: string): Promise<{ r
 
 export interface ReportPayload {
   contentId: string;
-  contentType: "post" | "comment";
+  contentType: "post" | "team-post" | "hub-post" | "comment";
   contentAuthorId: string;
   reporterId: string;
   type: "spam" | "harassment" | "inappropriate" | "other";

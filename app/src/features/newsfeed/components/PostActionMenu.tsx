@@ -31,7 +31,7 @@ export function PostActionMenu({ canDeleteOverride = false, post, single }: { ca
   const report = useCreateReport();
   const owner = Boolean(user?.id && user.id === authorId(post));
   const canDelete = owner || canDeleteOverride;
-  const reportable = !post.teamId && !post.hubId;
+  const reportable = true;
 
   useEffect(() => {
     if (!open) return;
@@ -57,7 +57,8 @@ export function PostActionMenu({ canDeleteOverride = false, post, single }: { ca
   const submitReport = async () => {
     if (reason.trim().length < 10) return;
     try {
-      await report.mutateAsync({ contentId: post.id, contentType: "post", contentAuthorId: authorId(post), reporterId: user.id, type: reportType, reason: reason.trim() });
+      const contentType = post.hubId ? "hub-post" : post.teamId ? "team-post" : "post";
+      await report.mutateAsync({ contentId: post.id, contentType, contentAuthorId: authorId(post), reporterId: user.id, type: reportType, reason: reason.trim() });
       setMode(null); setReason(""); setReportType("spam"); setStatus("Report submitted");
       window.setTimeout(() => setStatus(null), 2600);
     } catch { /* Contextual error below. */ }

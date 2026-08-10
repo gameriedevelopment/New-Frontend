@@ -1,15 +1,16 @@
-import { CalendarDays, Compass, Gamepad2, Home, Medal, MessagesSquare, Shield, Trophy, Users, UsersRound, Wallet } from "lucide-react";
+import { CalendarDays, Compass, Gamepad2, Home, Medal, MessagesSquare, RadioTower, Shield, Swords, Trophy, Wallet } from "lucide-react";
 
 export const primaryNavigation = [
   { label: "Feed", href: "/feed", icon: Home },
   { label: "Discover", href: "/users", icon: Compass },
   { label: "Games", href: "/games", icon: Gamepad2 },
   { label: "Teams", href: "/teams", icon: Shield },
-  { label: "Hubs", href: "/hubs", icon: UsersRound },
+  { label: "Hubs", href: "/hubs", icon: RadioTower },
 ];
 
 export const secondaryNavigation = [
   { label: "Messages", href: "/messages", icon: MessagesSquare },
+  { label: "Challenges", href: "/challenges", icon: Swords },
   { label: "Tournaments", href: "/tournaments", icon: Trophy },
   { label: "Leaderboard", href: "/leaderboard", icon: Medal },
   { label: "Calendar", href: "/calendar", icon: CalendarDays },
@@ -17,8 +18,14 @@ export const secondaryNavigation = [
 ];
 
 export const mobileNavigation = [
-  { label: "Feed", href: "/feed", icon: Home },
-  { label: "Gamers", href: "/users", icon: Users },
+  { label: "Home", href: "/feed", icon: Home },
+  { label: "Discover", href: "/users", icon: Compass },
   { label: "Teams", href: "/teams", icon: Shield },
+  { label: "Messages", href: "/messages", icon: MessagesSquare },
+];
+
+export const mobileMoreNavigation = [
   { label: "Games", href: "/games", icon: Gamepad2 },
+  { label: "Hubs", href: "/hubs", icon: RadioTower },
+  ...secondaryNavigation.filter((item) => item.href !== "/messages"),
 ];

@@ -20,6 +20,10 @@ export function RealtimeBridge() {
     };
     const refreshNotifications = (payload?: { message?: string }) => {
       client.invalidateQueries({ queryKey: ["notifications", user.id] });
+      client.invalidateQueries({ queryKey: ["teams", "invites", "mine"] });
+      client.invalidateQueries({ queryKey: ["hubs", "invites", "mine"] });
+      client.invalidateQueries({ queryKey: ["team-operations"] });
+      client.invalidateQueries({ queryKey: ["hub-operations"] });
       if (payload?.message) setAnnouncement(payload.message);
     };
     ["message.created", "message.sent", "message.edited", "message.deleted", "conversation.read"].forEach((event) => socket.on(event, refresh));

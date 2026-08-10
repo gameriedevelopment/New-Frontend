@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient, type InfiniteData } from "@tanstack/react-query";
-import { addComment, createPost, createReport, deleteComment, deletePost, editComment, editPost, getFeedPosts, getHubPostContext, getLinkPreview, getPostComments, getSinglePost, getTrendingTopics, toggleCommentLike, togglePostLike, toggleRepost, type ReportPayload } from "./api";
+import { addComment, createCommunityPost, createPost, createReport, deleteComment, deletePost, editComment, editPost, getFeedPosts, getHubPostContext, getLinkPreview, getPostComments, getSinglePost, getTeamPostContext, getTrendingTopics, toggleCommentLike, togglePostLike, toggleRepost, type ReportPayload } from "./api";
 import type { CreatePostPayload, FeedComment, FeedFilter, FeedPage, FeedPost, PostOwnerType } from "./types";
 import { patchPostCaches, restorePostCaches, snapshotPostCaches } from "./cache";
 
@@ -26,6 +26,22 @@ export function useCreatePost(userId?: string) {
     onSuccess: () => {
       client.invalidateQueries({ queryKey: feedKey });
       client.invalidateQueries({ queryKey: ["wall-posts", userId] });
+    },
+  });
+}
+
+export function useCreateCommunityPost(kind: "team" | "hub", communityId: string, userId?: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CreatePostPayload) => {
+      if (!userId) throw new Error("Your session could not be resolved.");
+      return createCommunityPost(kind, userId, communityId, payload);
+    },
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: [`${kind}-posts`, communityId] });
+      client.invalidateQueries({ queryKey: feedKey });
+      client.invalidateQueries({ queryKey: [kind, "detail"] });
+      client.invalidateQueries({ queryKey: ["trending-topics"] });
     },
   });
 }
@@ -90,6 +106,10 @@ export function useSinglePost(postId?: string, teamId?: string, hubId?: string) 
 
 export function useHubPostContext(hubId?: string) {
   return useQuery({ queryKey: ["hub", hubId], queryFn: () => getHubPostContext(hubId!), enabled: Boolean(hubId), staleTime: 5 * 60 * 1000 });
+}
+
+export function useTeamPostContext(teamId?: string) {
+  return useQuery({ queryKey: ["team", teamId], queryFn: () => getTeamPostContext(teamId!), enabled: Boolean(teamId), staleTime: 5 * 60 * 1000 });
 }
 
 export function usePostComments(postId?: string, type: PostOwnerType = "user") {

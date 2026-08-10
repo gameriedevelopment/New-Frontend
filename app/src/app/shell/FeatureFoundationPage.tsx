@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 
 const pageNames: Record<string, string> = {
-  "/feed": "Feed", "/users": "Discover players", "/games": "Games", "/teams": "Teams", "/hubs": "Hubs", "/messages": "Messages", "/tournaments": "Tournaments", "/leaderboard": "Leaderboard", "/calendar": "Calendar", "/wallet": "Wallet", "/search": "Search", "/notifications": "Notifications", "/settings": "Settings", "/admin": "Admin",
+  "/feed": "Feed", "/users": "Discover players", "/games": "Games", "/teams": "Teams", "/hubs": "Hubs", "/messages": "Messages", "/challenges": "Challenges", "/tournaments": "Tournaments", "/leaderboard": "Leaderboard", "/calendar": "Calendar", "/wallet": "Wallet", "/search": "Search", "/notifications": "Notifications", "/settings": "Settings", "/admin": "Admin",
 };
 
 export function FeatureFoundationPage() {

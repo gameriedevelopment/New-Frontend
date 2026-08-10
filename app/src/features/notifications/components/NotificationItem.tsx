@@ -6,6 +6,7 @@ export function notificationTarget(notification: GamerieNotification) {
   if (notification.link?.startsWith("/")) return notification.link;
   const data = notification.data ?? {};
   if (typeof data.postId === "string") return `/post/${data.postId}`;
+  if (typeof data.challengeId === "string") return `/challenges/${data.challengeId}`;
   if (typeof data.actorUsername === "string") return `/profile/${data.actorUsername}`;
   return "/notifications";
 }
