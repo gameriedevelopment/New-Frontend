@@ -1,8 +1,9 @@
 import { RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
 import { StatePanel } from "../../components/Feedback";
+import { DistributionChart, LineChart } from "../../components/DataChart";
 import { getErrorMessage } from "../../lib/errors";
-import { useDashboardMetrics } from "./hooks";
+import { useDashboardAnalytics, useDashboardMetrics } from "./hooks";
 import type { DashboardMetric } from "./types";
 import "./dashboard.css";
 
@@ -35,6 +36,7 @@ function MetricCard({ label, metric }: { label: string; metric: DashboardMetric 
 
 export function DashboardPage() {
   const metrics = useDashboardMetrics();
+  const analytics = useDashboardAnalytics();
 
   return (
     <main className="admin-dashboard">
@@ -79,6 +81,57 @@ export function DashboardPage() {
         </section>
       )}
 
+      <section className="admin-dashboard__analytics" aria-labelledby="analytics-heading">
+        <header>
+          <span className="admin-eyebrow">Network health</span>
+          <h2 id="analytics-heading">Growth and player access.</h2>
+          <p>Account growth and the platform mix players have declared this year.</p>
+        </header>
+        <div>
+          <article>
+            <header>
+              <div>
+                <strong>Player growth</strong>
+                <span>Cumulative, new, and active accounts</span>
+              </div>
+              <small>Year to date</small>
+            </header>
+            {analytics.growth.isLoading ? (
+              <i className="admin-analytics-skeleton" />
+            ) : analytics.growth.isError ? (
+              <p>Growth data is unavailable.</p>
+            ) : (
+              <LineChart
+                data={analytics.growth.data ?? []}
+                series={[
+                  { key: "users", label: "Total players", color: "#c5a2fe" },
+                  { key: "newUsers", label: "New", color: "#8b75aa" },
+                  { key: "activeUsers", label: "Active", color: "#65c99a" },
+                ]}
+              />
+            )}
+          </article>
+          <article>
+            <header>
+              <div>
+                <strong>Player platforms</strong>
+                <span>Share of declared platform selections</span>
+              </div>
+              <small>Current</small>
+            </header>
+            {analytics.platforms.isLoading ? (
+              <i className="admin-analytics-skeleton" />
+            ) : analytics.platforms.isError ? (
+              <p>Platform data is unavailable.</p>
+            ) : analytics.platforms.data?.length ? (
+              <DistributionChart data={analytics.platforms.data} />
+            ) : (
+              <p>No platform preferences have been recorded yet.</p>
+            )}
+          </article>
+        </div>
+      </section>
+
       <section className="admin-dashboard__workspaces" aria-labelledby="operations-heading">
         <header>
           <span className="admin-eyebrow">Operations</span>
@@ -94,6 +147,10 @@ export function DashboardPage() {
             <strong>Moderation</strong>
             <span>Reports, flagged content, and audit history</span>
           </Link>
+          <Link to="/analytics">
+            <strong>Analytics</strong>
+            <span>Publishing, interaction, audience, and content-health signals</span>
+          </Link>
           <Link to="/games">
             <strong>Games</strong>
             <span>Catalogue and integration context</span>
@@ -105,6 +162,14 @@ export function DashboardPage() {
           <Link to="/finance">
             <strong>Finance &amp; growth</strong>
             <span>Ledger, commissions, purchases, and referral programmes</span>
+          </Link>
+          <Link to="/audit">
+            <strong>Audit history</strong>
+            <span>Administrator actions, reasons, and state changes</span>
+          </Link>
+          <Link to="/communications">
+            <strong>Communications</strong>
+            <span>Official announcements and controlled audience operations</span>
           </Link>
         </div>
       </section>

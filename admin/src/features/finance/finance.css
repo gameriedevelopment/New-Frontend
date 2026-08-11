@@ -71,17 +71,60 @@
   color: var(--ao-text-muted);
   font-size: 0.63rem;
 }
-.finance-trend div {
-  display: flex;
-  height: 35px;
-  align-items: end;
-  gap: 3px;
+.finance-analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1rem;
+  gap: 1rem;
 }
-.finance-trend i {
-  min-height: 2px;
-  flex: 1;
-  border-radius: 2px 2px 0 0;
-  background: var(--ao-accent);
+.finance-analytics {
+  min-width: 0;
+  margin-top: 1rem;
+  padding: 1.2rem;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-md);
+  background: var(--ao-surface-1);
+}
+.finance-analytics-grid .finance-analytics {
+  margin-top: 0;
+}
+.finance-analytics__empty {
+  min-height: 210px;
+  display: grid;
+  place-items: center;
+  color: var(--ao-text-muted);
+  font-size: 0.7rem;
+}
+.finance-analytics > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+.finance-analytics > header div {
+  display: grid;
+  gap: 0.35rem;
+}
+.finance-analytics > header strong {
+  font-size: 0.82rem;
+}
+.finance-analytics > header small {
+  color: var(--ao-text-muted);
+  font-size: 0.66rem;
+}
+.finance-analytics__skeleton {
+  display: block;
+  height: 210px;
+  margin-top: 1rem;
+  border-radius: var(--ao-radius-md);
+  background: linear-gradient(
+    100deg,
+    var(--ao-surface-2) 25%,
+    var(--ao-surface-interactive) 45%,
+    var(--ao-surface-2) 65%
+  );
+  background-size: 240% 100%;
+  animation: admin-shimmer 1.5s ease infinite;
 }
 .finance-purchases {
   grid-column: 1/-1;
@@ -356,6 +399,9 @@
   .finance-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .finance-analytics-grid {
+    grid-template-columns: 1fr;
+  }
   .finance-summary article:nth-child(2) {
     border-right: 0;
   }
@@ -394,9 +440,6 @@
     min-height: 106px;
     border-right: 0;
     border-bottom: 1px solid var(--ao-border-subtle);
-  }
-  .finance-trend div {
-    max-width: 220px;
   }
   .finance-row {
     padding-block: 1rem;

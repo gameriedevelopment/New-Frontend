@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import { getApiErrorMessage } from "../../lib/errors";
+import { publicLinks } from "../../config/links";
 import { registerAccount } from "./api";
 import { SocialAuthOptions } from "./components/SocialAuthOptions";
 import { Turnstile } from "./components/Turnstile";
@@ -149,7 +150,7 @@ export function RegisterPage() {
   return (
     <main className="auth-entry">
       <header className="auth-topbar">
-        <a className="auth-brand" href="http://localhost:5173" aria-label="Gamerie website">
+        <a className="auth-brand" href={publicLinks.website} aria-label="Gamerie website">
           <img src="/gamerie-logo.svg" alt="" />
           <span>Gamerie</span>
         </a>
@@ -280,9 +281,8 @@ export function RegisterPage() {
                     <Check size={12} />
                   </span>
                   <span className="auth-check__copy">
-                    I agree to Gamerie's{" "}
-                    <a href={import.meta.env.VITE_TERMS_OF_SERVICE || "/terms"}>Terms</a> and{" "}
-                    <a href={import.meta.env.VITE_PRIVACY_POLICY || "/privacy"}>Privacy Policy</a>.
+                    I agree to Gamerie's <a href={publicLinks.terms}>Terms</a> and{" "}
+                    <a href={publicLinks.privacy}>Privacy Policy</a>.
                   </span>
                 </label>
                 {errors.termsAccepted && (

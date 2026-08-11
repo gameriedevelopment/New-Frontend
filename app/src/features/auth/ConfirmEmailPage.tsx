@@ -2,6 +2,7 @@ import { AlertCircle, ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getApiErrorMessage } from "../../lib/errors";
+import { publicLinks } from "../../config/links";
 import { confirmEmail, fetchSmsVerificationEnabled } from "./api";
 
 type ConfirmationState =
@@ -43,7 +44,7 @@ export function ConfirmEmailPage() {
   return (
     <main className="auth-entry">
       <header className="auth-topbar">
-        <a className="auth-brand" href="http://localhost:5173" aria-label="Gamerie website">
+        <a className="auth-brand" href={publicLinks.website} aria-label="Gamerie website">
           <img src="/gamerie-logo.svg" alt="" />
           <span>Gamerie</span>
         </a>

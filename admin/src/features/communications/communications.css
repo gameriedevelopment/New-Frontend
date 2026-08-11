@@ -1,0 +1,249 @@
+.communications-page {
+  width: min(100%, var(--ao-content-max));
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4.5rem) var(--ao-page-gutter) 5rem;
+}
+.communications-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.communications-panel,
+.announcement-history {
+  min-width: 0;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-lg);
+  background: var(--ao-surface-1);
+}
+.communications-panel {
+  padding: 1.25rem;
+}
+.communications-panel > header,
+.announcement-history > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.communications-panel > header div,
+.announcement-history > header div {
+  display: grid;
+  gap: 0.45rem;
+}
+.communications-panel h2,
+.announcement-history h2 {
+  font: 600 1.15rem/1.15 var(--ao-font-display);
+  letter-spacing: -0.035em;
+}
+.communications-panel > header small,
+.announcement-history > header small {
+  color: var(--ao-text-muted);
+  font-size: 0.64rem;
+}
+.communications-form,
+.brevo-runbook {
+  display: grid;
+  gap: 1rem;
+}
+.communications-form {
+  margin-top: 1.4rem;
+}
+.communications-form label,
+.brevo-runbook label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--ao-text-secondary);
+  font-size: 0.69rem;
+  font-weight: 700;
+}
+.communications-form input,
+.communications-form textarea,
+.brevo-runbook input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.8rem;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-sm);
+  outline: 0;
+  background: var(--ao-canvas);
+  color: var(--ao-text);
+  font: 500 0.76rem/1.55 var(--ao-font-body);
+  box-shadow: none;
+}
+.communications-form textarea {
+  min-height: 138px;
+  resize: vertical;
+}
+.communications-form input:focus-visible,
+.communications-form textarea:focus-visible,
+.brevo-runbook input:focus-visible {
+  border-color: var(--ao-accent);
+}
+.communications-form label > small {
+  justify-self: end;
+  color: var(--ao-text-muted);
+  font-size: 0.6rem;
+}
+.communications-form footer,
+.brevo-runbook footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ao-border-subtle);
+}
+.communications-form footer span,
+.brevo-runbook > p,
+.communications-empty p {
+  color: var(--ao-text-muted);
+  font-size: 0.68rem;
+  line-height: 1.65;
+}
+.brevo-runbook > p {
+  margin-top: 0.35rem;
+}
+.brevo-review {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--ao-border-subtle);
+  border-radius: var(--ao-radius-md);
+  background: var(--ao-canvas);
+}
+.brevo-review > strong {
+  font-size: 0.76rem;
+}
+.brevo-review dl {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0;
+}
+.brevo-review dl div {
+  display: grid;
+  gap: 0.3rem;
+  padding-right: 0.7rem;
+  border-right: 1px solid var(--ao-border-subtle);
+}
+.brevo-review dl div:last-child {
+  border: 0;
+  padding-left: 0.7rem;
+}
+.brevo-review dt {
+  color: var(--ao-text-muted);
+  font-size: 0.6rem;
+}
+.brevo-review dd {
+  margin: 0;
+  font: 600 1.2rem/1 var(--ao-font-display);
+}
+.communications-error {
+  color: #ffc1c7;
+  font-size: 0.69rem;
+  line-height: 1.5;
+}
+.brevo-receipt {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.85rem;
+  border: 1px solid rgb(92 213 157 / 0.2);
+  border-radius: var(--ao-radius-sm);
+  background: rgb(92 213 157 / 0.055);
+}
+.brevo-receipt strong {
+  color: #8de5bc;
+  font-size: 0.72rem;
+}
+.brevo-receipt span,
+.brevo-receipt small {
+  color: var(--ao-text-secondary);
+  font-size: 0.65rem;
+  overflow-wrap: anywhere;
+}
+.announcement-history {
+  margin-top: 1rem;
+  overflow: hidden;
+}
+.announcement-history > header {
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--ao-border-subtle);
+}
+.announcement-list {
+  display: grid;
+}
+.announcement-list article {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--ao-border-subtle);
+}
+.announcement-list article header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.announcement-list article strong {
+  font-size: 0.72rem;
+}
+.announcement-list article time {
+  color: var(--ao-text-muted);
+  font-size: 0.62rem;
+}
+.announcement-list article p {
+  max-width: 76ch;
+  color: var(--ao-text-secondary);
+  font-size: 0.75rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+.announcement-list > button {
+  justify-self: center;
+  margin: 1rem;
+}
+.communications-empty {
+  display: grid;
+  justify-items: center;
+  gap: 0.45rem;
+  padding: 3.5rem 1.25rem;
+  text-align: center;
+}
+.communications-empty strong {
+  font: 600 1rem/1.2 var(--ao-font-display);
+}
+.announcement-skeleton {
+  height: 190px;
+  background: linear-gradient(
+    100deg,
+    var(--ao-surface-1) 25%,
+    var(--ao-surface-2) 45%,
+    var(--ao-surface-1) 65%
+  );
+  background-size: 240% 100%;
+  animation: admin-shimmer 1.5s ease infinite;
+}
+@media (max-width: 820px) {
+  .communications-page {
+    padding-top: 1.5rem;
+  }
+  .communications-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .communications-panel,
+  .announcement-history {
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+  .communications-form footer,
+  .brevo-runbook footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .communications-form footer button,
+  .brevo-runbook footer button {
+    width: 100%;
+  }
+}

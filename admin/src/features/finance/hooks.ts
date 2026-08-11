@@ -4,6 +4,7 @@ import {
   deleteReferralCode,
   getFinanceSummary,
   getFinanceTransactions,
+  getWalletFlow,
   getReferralCodes,
   getReferralSignups,
   updateReferralStatus,
@@ -14,6 +15,13 @@ export function useFinanceSummary(enabled = true) {
   return useQuery({
     queryKey: ["admin", "finance", "summary"],
     queryFn: getFinanceSummary,
+    enabled,
+  });
+}
+export function useWalletFlow(enabled = true) {
+  return useQuery({
+    queryKey: ["admin", "finance", "wallet-flow"],
+    queryFn: getWalletFlow,
     enabled,
   });
 }

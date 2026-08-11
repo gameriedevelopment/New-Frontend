@@ -26,6 +26,10 @@
 }
 .admin-sidebar nav {
   display: grid;
+  min-height: 0;
+  flex: 1;
+  padding-bottom: 1rem;
+  overflow-y: auto;
   gap: 0.35rem;
   margin-top: 2.5rem;
 }
@@ -116,6 +120,9 @@
     z-index: 15;
   }
   .admin-mobile-header {
+    position: sticky;
+    top: 0;
+    z-index: 12;
     min-height: 64px;
     display: flex;
     align-items: center;

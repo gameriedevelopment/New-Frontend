@@ -10,6 +10,13 @@ export interface FinanceSummary {
   monthlyCommissions: { month: string; amount: string }[];
 }
 
+export interface WalletFlowPoint {
+  name: string;
+  revenue: number;
+  expenses: number;
+  profit: number;
+}
+
 export interface LedgerRecord {
   id: string;
   scope: "personal" | "team";

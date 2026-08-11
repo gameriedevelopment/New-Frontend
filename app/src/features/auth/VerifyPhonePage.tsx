@@ -4,6 +4,7 @@ import PhoneInput, { isValidPhoneNumber, type Value } from "react-phone-number-i
 import "react-phone-number-input/style.css";
 import { useNavigate } from "react-router-dom";
 import { getApiErrorMessage } from "../../lib/errors";
+import { publicLinks } from "../../config/links";
 import {
   checkPhoneCode,
   fetchSmsVerificationEnabled,
@@ -116,7 +117,7 @@ export function VerifyPhonePage() {
   return (
     <main className="auth-entry">
       <header className="auth-topbar">
-        <a className="auth-brand" href="http://localhost:5173" aria-label="Gamerie website">
+        <a className="auth-brand" href={publicLinks.website} aria-label="Gamerie website">
           <img src="/gamerie-logo.svg" alt="" />
           <span>Gamerie</span>
         </a>

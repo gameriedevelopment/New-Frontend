@@ -68,9 +68,9 @@
 .app-sidebar__brand img,
 .app-header__mobile-brand img {
   display: block;
-  width: 13px;
-  height: 40px;
-  flex: 0 0 13px;
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
   object-fit: contain;
 }
 .app-sidebar__navigation {

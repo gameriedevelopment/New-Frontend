@@ -35,9 +35,16 @@ export function WalletActivityChart({
       </header>
       {visible.length ? (
         <>
-          <div className="wallet-chart__plot" aria-hidden="true">
+          <div className="wallet-chart__plot">
             {visible.map((point) => (
-              <div className="wallet-chart__group" key={point.label}>
+              <div
+                className="wallet-chart__group"
+                key={point.label}
+                tabIndex={0}
+                aria-label={`${point.label}: ${point.values
+                  .map((item) => `${item.label} ${item.value.toLocaleString()}`)
+                  .join(", ")}`}
+              >
                 <div>
                   {point.values.map((item) => (
                     <i
@@ -48,6 +55,16 @@ export function WalletActivityChart({
                   ))}
                 </div>
                 <span>{point.label}</span>
+                <div className="wallet-chart__tooltip" role="tooltip">
+                  <strong>{point.label}</strong>
+                  {point.values.map((item) => (
+                    <span key={item.label}>
+                      <i data-tone={item.tone} />
+                      {item.label}
+                      <b>{item.value.toLocaleString()}</b>
+                    </span>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

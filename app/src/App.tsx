@@ -13,6 +13,7 @@ import { AppShell } from "./app/shell/AppShell";
 import { FeatureFoundationPage } from "./app/shell/FeatureFoundationPage";
 import { AdminHandoffPage } from "./app/shell/AdminHandoffPage";
 import { PageLoader } from "./components/ui";
+import { AnalyticsRouteTracker } from "./features/privacy/CookieConsent";
 
 const NewsFeedPage = lazy(() =>
   import("./features/newsfeed/NewsFeedPage").then((module) => ({ default: module.NewsFeedPage })),
@@ -102,6 +103,7 @@ function DeferredPage({ children }: { children: ReactNode }) {
 export function App() {
   return (
     <BrowserRouter>
+      <AnalyticsRouteTracker />
       <Routes>
         <Route path="/" element={<Navigate to="/feed" replace />} />
         <Route path="/login" element={<SignInPage />} />

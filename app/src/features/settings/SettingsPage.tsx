@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { Button, SafeImage, Skeleton, SkeletonText, StatePanel } from "../../components/ui";
 import { useAuthStore } from "../auth/authStore";
 import { usePlayerProfile } from "../profile/hooks";
+import { CookiePreferencesCard } from "../privacy/CookieConsent";
 import { MediaEditor } from "./components/MediaEditor";
 import { PrivacyEditor } from "./components/PrivacyEditor";
 import { ProfileEditor } from "./components/ProfileEditor";
@@ -183,15 +184,18 @@ export function SettingsPage() {
                 }
               />
             ) : (
-              <PrivacyEditor
-                key={JSON.stringify(settings.data)}
-                settings={{
-                  ...privacyDefaults,
-                  ...settings.data,
-                  privacy: { ...privacyDefaults.privacy, ...settings.data?.privacy },
-                }}
-                userId={user!.id}
-              />
+              <>
+                <PrivacyEditor
+                  key={JSON.stringify(settings.data)}
+                  settings={{
+                    ...privacyDefaults,
+                    ...settings.data,
+                    privacy: { ...privacyDefaults.privacy, ...settings.data?.privacy },
+                  }}
+                  userId={user!.id}
+                />
+                <CookiePreferencesCard />
+              </>
             )
           ) : null}
           {section === "security" ? <SecurityEditor /> : null}

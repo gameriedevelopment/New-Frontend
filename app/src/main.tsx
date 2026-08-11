@@ -10,6 +10,8 @@ import "./features/messages/messages.css";
 import "./features/notifications/notifications.css";
 import { App } from "./App";
 import { RealtimeBridge } from "./features/messages/RealtimeBridge";
+import { CookieConsent } from "./features/privacy/CookieConsent";
+import { initializeAnalytics } from "./features/privacy/analytics";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,11 +24,14 @@ const root = document.getElementById("root");
 
 if (!root) throw new Error("App root element was not found");
 
+initializeAnalytics();
+
 createRoot(root).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <RealtimeBridge />
       <App />
+      <CookieConsent />
     </QueryClientProvider>
   </StrictMode>,
 );

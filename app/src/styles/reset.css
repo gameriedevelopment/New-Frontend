@@ -35,6 +35,23 @@ select {
   cursor: pointer;
 }
 
+/*
+ * Keep native controls at a reliable touch size. Mobile Safari otherwise
+ * compresses several selects whose feature styles use compact type sizes.
+ */
+select:not([multiple]) {
+  min-height: 44px !important;
+  line-height: normal;
+}
+
+@supports (-webkit-touch-callout: none) {
+  select:not([multiple]) {
+    min-height: 46px !important;
+    font-size: 16px !important;
+    line-height: normal;
+  }
+}
+
 button:disabled,
 input:disabled,
 select:disabled,

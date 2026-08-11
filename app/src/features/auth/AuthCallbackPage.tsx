@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import { getApiErrorMessage } from "../../lib/errors";
+import { publicLinks } from "../../config/links";
 import { fetchUserProfile, updateSocialProfile } from "./api";
 import { useAuthStore } from "./authStore";
 
@@ -99,7 +100,7 @@ export function AuthCallbackPage() {
   return (
     <main className="auth-entry">
       <header className="auth-topbar">
-        <a className="auth-brand" href="http://localhost:5173" aria-label="Gamerie website">
+        <a className="auth-brand" href={publicLinks.website} aria-label="Gamerie website">
           <img src="/gamerie-logo.svg" alt="" />
           <span>Gamerie</span>
         </a>

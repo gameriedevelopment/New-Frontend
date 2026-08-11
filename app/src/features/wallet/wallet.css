@@ -250,6 +250,7 @@
   background-size: 100% 25%;
 }
 .wallet-chart__group {
+  position: relative;
   display: grid;
   height: 100%;
   min-width: 34px;
@@ -258,7 +259,76 @@
   grid-template-rows: minmax(0, 1fr) auto;
   gap: 9px;
 }
-.wallet-chart__group > div {
+.wallet-chart__group:focus-visible {
+  outline: 0;
+  box-shadow: none;
+}
+.wallet-chart__tooltip {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 4;
+  width: max-content;
+  min-width: 132px;
+  max-width: 190px;
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--g-border-default);
+  border-radius: 8px;
+  background: var(--g-canvas-deep);
+  box-shadow: 0 14px 34px rgb(0 0 0 / 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 6px);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+.wallet-chart__group:first-child .wallet-chart__tooltip {
+  left: 0;
+  transform: translate(0, 6px);
+}
+.wallet-chart__group:last-child .wallet-chart__tooltip {
+  right: 0;
+  left: auto;
+  transform: translate(0, 6px);
+}
+.wallet-chart__group:hover .wallet-chart__tooltip,
+.wallet-chart__group:focus .wallet-chart__tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.wallet-chart__group:first-child:hover .wallet-chart__tooltip,
+.wallet-chart__group:first-child:focus .wallet-chart__tooltip,
+.wallet-chart__group:last-child:hover .wallet-chart__tooltip,
+.wallet-chart__group:last-child:focus .wallet-chart__tooltip {
+  transform: translate(0, 0);
+}
+.wallet-chart__tooltip > strong {
+  color: var(--g-text-primary);
+  font-size: 10px;
+}
+.wallet-chart__tooltip > span {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 6px;
+  color: var(--g-text-secondary);
+  font-size: 9px;
+  text-align: left;
+}
+.wallet-chart__tooltip > span > i {
+  width: 6px;
+  height: 6px !important;
+  min-height: 6px;
+  border-radius: 50%;
+}
+.wallet-chart__tooltip b {
+  color: var(--g-text-primary);
+  font-weight: 680;
+}
+.wallet-chart__group > div:first-child {
   display: flex;
   height: 100%;
   align-items: end;
@@ -279,7 +349,7 @@
 .wallet-chart__legend i[data-tone="warning"] {
   background: var(--g-warning);
 }
-.wallet-chart__group span {
+.wallet-chart__group > span {
   overflow: hidden;
   color: var(--g-text-faint);
   font-size: 9px;

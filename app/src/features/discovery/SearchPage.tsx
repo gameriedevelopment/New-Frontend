@@ -1,5 +1,5 @@
 import { ArrowUpRight, Gamepad2, Search, Shield, Trophy, Users } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button, SafeImage, SkeletonAvatar, SkeletonText, StatePanel } from "../../components/ui";
 import { getApiErrorMessage } from "../../lib/errors";
@@ -157,16 +157,37 @@ export function SearchPage() {
   const debounced = useDebouncedValue(input, 320);
   const kind = initialKind;
   const externalTerm = params.get("q") || params.get("tag") || "";
+  const lastSyncedUrlTerm = useRef(externalTerm);
+  const pendingExternalTerm = useRef<string | null>(null);
+
   useEffect(() => {
-    if (externalTerm !== input && externalTerm !== debounced) setInput(externalTerm);
-  }, [debounced, externalTerm, input]);
+    if (externalTerm === lastSyncedUrlTerm.current) return;
+    lastSyncedUrlTerm.current = externalTerm;
+    pendingExternalTerm.current = externalTerm;
+    setInput(externalTerm);
+  }, [externalTerm]);
+
   useEffect(() => {
-    const next = new URLSearchParams(params);
-    debounced ? next.set("q", debounced) : next.delete("q");
-    next.delete("tag");
-    if (next.toString() !== params.toString()) setParams(next, { replace: true });
-  }, [debounced, params, setParams]);
-  const term = params.get("q") || params.get("tag") || "";
+    const normalizedTerm = debounced.trim();
+    if (pendingExternalTerm.current !== null) {
+      if (normalizedTerm !== pendingExternalTerm.current) return;
+      pendingExternalTerm.current = null;
+    }
+    if (normalizedTerm === externalTerm) return;
+
+    lastSyncedUrlTerm.current = normalizedTerm;
+    setParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        normalizedTerm ? next.set("q", normalizedTerm) : next.delete("q");
+        next.delete("tag");
+        return next;
+      },
+      { replace: true },
+    );
+  }, [debounced, externalTerm, setParams]);
+
+  const term = externalTerm;
   const query = useUnifiedSearch(kind, term);
   const results = query.data?.pages.flatMap((page) => page.data) ?? [];
   const selectTab = (tab: SearchKind) => {

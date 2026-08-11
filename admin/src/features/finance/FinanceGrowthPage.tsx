@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AdminAvatar } from "../../components/AdminAvatar";
+import { BarChart, LineChart } from "../../components/DataChart";
 import { getErrorMessage } from "../../lib/errors";
 import {
   useCreateReferralCode,
@@ -10,6 +11,7 @@ import {
   useReferralCodes,
   useReferralSignups,
   useUpdateReferralStatus,
+  useWalletFlow,
 } from "./hooks";
 import type { LedgerRecord, ReferralCodeRecord, ReferralInput } from "./types";
 import "./finance.css";
@@ -32,6 +34,7 @@ export function FinanceGrowthPage() {
   } | null>(null);
   const [signupCode, setSignupCode] = useState<ReferralCodeRecord | null>(null);
   const summary = useFinanceSummary(view === "finance");
+  const walletFlow = useWalletFlow(view === "finance");
   const ledger = useFinanceTransactions(
     {
       page,
@@ -100,7 +103,7 @@ export function FinanceGrowthPage() {
         </button>
       </div>
 
-      {view === "finance" ? <FinanceSummary query={summary} /> : null}
+      {view === "finance" ? <FinanceSummary query={summary} walletFlow={walletFlow} /> : null}
 
       <section className="finance-toolbar" aria-label={`${view} filters`}>
         <input
@@ -211,11 +214,13 @@ export function FinanceGrowthPage() {
   );
 }
 
-function FinanceSummary({ query }: { query: ReturnType<typeof useFinanceSummary> }) {
-  const max = Math.max(
-    ...(query.data?.monthlyCommissions.map((item) => Number(item.amount)) ?? [0]),
-    1,
-  );
+function FinanceSummary({
+  query,
+  walletFlow,
+}: {
+  query: ReturnType<typeof useFinanceSummary>;
+  walletFlow: ReturnType<typeof useWalletFlow>;
+}) {
   if (query.isError)
     return (
       <FinanceState
@@ -225,61 +230,112 @@ function FinanceSummary({ query }: { query: ReturnType<typeof useFinanceSummary>
       />
     );
   return (
-    <section className="finance-summary" aria-label="Financial summary" aria-busy={query.isLoading}>
-      <article>
-        <span>Total commission</span>
-        <strong>
-          {query.isLoading
-            ? "—"
-            : `${compactNumber.format(Number(query.data?.totalCommissionsGlk ?? 0))} GLK`}
-        </strong>
-        <small>Personal and team transfers</small>
-      </article>
-      <article>
-        <span>Personal ledger</span>
-        <strong>
-          {query.isLoading ? "—" : compactNumber.format(query.data?.personalTransactionCount ?? 0)}
-        </strong>
-        <small>
-          {compactNumber.format(Number(query.data?.userCommissionsGlk ?? 0))} GLK commission
-        </small>
-      </article>
-      <article>
-        <span>Team ledger</span>
-        <strong>
-          {query.isLoading ? "—" : compactNumber.format(query.data?.teamTransactionCount ?? 0)}
-        </strong>
-        <small>
-          {compactNumber.format(Number(query.data?.teamCommissionsGlk ?? 0))} GLK commission
-        </small>
-      </article>
-      <article className="finance-trend">
-        <span>12-month commission</span>
-        <div>
-          {(query.data?.monthlyCommissions ?? []).map((item) => (
-            <i
-              key={item.month}
-              style={{ height: `${Math.max((Number(item.amount) / max) * 100, 3)}%` }}
-              title={`${item.month}: ${item.amount} GLK`}
-            />
-          ))}
-        </div>
-        <small>GLK, month by month</small>
-      </article>
-      {query.data?.purchases.length ? (
-        <div className="finance-purchases">
+    <>
+      <section
+        className="finance-summary"
+        aria-label="Financial summary"
+        aria-busy={query.isLoading}
+      >
+        <article>
+          <span>Total commission</span>
+          <strong>
+            {query.isLoading
+              ? "—"
+              : `${compactNumber.format(Number(query.data?.totalCommissionsGlk ?? 0))} GLK`}
+          </strong>
+          <small>Personal and team transfers</small>
+        </article>
+        <article>
+          <span>Personal ledger</span>
+          <strong>
+            {query.isLoading
+              ? "—"
+              : compactNumber.format(query.data?.personalTransactionCount ?? 0)}
+          </strong>
+          <small>
+            {compactNumber.format(Number(query.data?.userCommissionsGlk ?? 0))} GLK commission
+          </small>
+        </article>
+        <article>
+          <span>Team ledger</span>
+          <strong>
+            {query.isLoading ? "—" : compactNumber.format(query.data?.teamTransactionCount ?? 0)}
+          </strong>
+          <small>
+            {compactNumber.format(Number(query.data?.teamCommissionsGlk ?? 0))} GLK commission
+          </small>
+        </article>
+        <article>
           <span>Completed purchases</span>
-          {query.data.purchases.map((purchase) => (
-            <strong key={purchase.currency}>
-              {compactNumber.format(Number(purchase.fiatAmount))} {purchase.currency.toUpperCase()}{" "}
-              <small>
-                → {compactNumber.format(Number(purchase.glkAmount))} GLK · {purchase.count} payments
-              </small>
-            </strong>
-          ))}
-        </div>
-      ) : null}
-    </section>
+          <strong>
+            {query.isLoading
+              ? "—"
+              : compactNumber.format(
+                  query.data?.purchases.reduce((sum, item) => sum + item.count, 0) ?? 0,
+                )}
+          </strong>
+          <small>Across recorded currencies</small>
+        </article>
+        {query.data?.purchases.length ? (
+          <div className="finance-purchases">
+            <span>Completed purchases</span>
+            {query.data.purchases.map((purchase) => (
+              <strong key={purchase.currency}>
+                {compactNumber.format(Number(purchase.fiatAmount))}{" "}
+                {purchase.currency.toUpperCase()}{" "}
+                <small>
+                  → {compactNumber.format(Number(purchase.glkAmount))} GLK · {purchase.count}{" "}
+                  payments
+                </small>
+              </strong>
+            ))}
+          </div>
+        ) : null}
+      </section>
+      <section className="finance-analytics-grid" aria-label="Financial trends">
+        <article className="finance-analytics">
+          <header>
+            <div>
+              <span className="admin-eyebrow">Commission history</span>
+              <strong>GLK earned through transfers.</strong>
+            </div>
+            <small>Trailing 12 months</small>
+          </header>
+          {query.isLoading ? (
+            <i className="finance-analytics__skeleton" />
+          ) : (
+            <LineChart
+              data={query.data?.monthlyCommissions ?? []}
+              series={[{ key: "amount", label: "Commission", color: "#c5a2fe" }]}
+              valueSuffix=" GLK"
+            />
+          )}
+        </article>
+        <article className="finance-analytics">
+          <header>
+            <div>
+              <span className="admin-eyebrow">Wallet movement</span>
+              <strong>Completed incoming and outgoing GLK.</strong>
+            </div>
+            <small>Year to date</small>
+          </header>
+          {walletFlow.isLoading ? (
+            <i className="finance-analytics__skeleton" />
+          ) : walletFlow.isError ? (
+            <p className="finance-analytics__empty">Wallet movement is unavailable.</p>
+          ) : (
+            <BarChart
+              data={walletFlow.data ?? []}
+              series={[
+                { key: "revenue", label: "Incoming", color: "#65c99a" },
+                { key: "expenses", label: "Outgoing", color: "#c5a2fe" },
+              ]}
+              valueSuffix=" GLK"
+            />
+          )}
+        </article>
+      </section>
+    </>
   );
 }
 

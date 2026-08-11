@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import { getApiErrorMessage } from "../../lib/errors";
+import { publicLinks } from "../../config/links";
 import { signIn } from "./api";
 import { SocialAuthOptions } from "./components/SocialAuthOptions";
 
@@ -53,7 +54,7 @@ export function SignInPage() {
   return (
     <main className="auth-entry">
       <header className="auth-topbar">
-        <a className="auth-brand" href="http://localhost:5173" aria-label="Gamerie website">
+        <a className="auth-brand" href={publicLinks.website} aria-label="Gamerie website">
           <img src="/gamerie-logo.svg" alt="" />
           <span>Gamerie</span>
         </a>
@@ -169,8 +170,8 @@ export function SignInPage() {
 
           <footer className="auth-panel__footer">
             <p>
-              By continuing, you agree to Gamerie's <a href="/terms">Terms</a> and{" "}
-              <a href="/privacy">Privacy Policy</a>.
+              By continuing, you agree to Gamerie's <a href={publicLinks.terms}>Terms</a> and{" "}
+              <a href={publicLinks.privacy}>Privacy Policy</a>.
             </p>
           </footer>
         </section>

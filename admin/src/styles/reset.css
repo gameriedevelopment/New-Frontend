@@ -16,8 +16,18 @@ body {
   font-family: var(--ao-font-body);
   -webkit-font-smoothing: antialiased;
 }
+#root {
+  min-height: 100vh;
+}
+body,
+#root {
+  max-width: 100%;
+  overflow-x: clip;
+}
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
 }
 button {
@@ -34,8 +44,21 @@ p {
 }
 button,
 a,
-input {
+input,
+select,
+textarea {
   -webkit-tap-highlight-color: transparent;
+}
+select:not([multiple]) {
+  min-height: 44px !important;
+  line-height: normal;
+}
+@supports (-webkit-touch-callout: none) {
+  select:not([multiple]) {
+    min-height: 46px !important;
+    font-size: 16px !important;
+    line-height: normal;
+  }
 }
 :focus-visible {
   outline: none;

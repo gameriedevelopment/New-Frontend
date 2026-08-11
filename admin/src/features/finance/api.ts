@@ -8,10 +8,16 @@ import type {
   ReferralInput,
   ReferralQuery,
   ReferralSignupRecord,
+  WalletFlowPoint,
 } from "./types";
 
 export async function getFinanceSummary() {
   const { data } = await api.get<ApiEnvelope<FinanceSummary>>("/admin/finance/summary");
+  return data.data;
+}
+
+export async function getWalletFlow() {
+  const { data } = await api.get<ApiEnvelope<WalletFlowPoint[]>>("/admin/revenue-data");
   return data.data;
 }
 

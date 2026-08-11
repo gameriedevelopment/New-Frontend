@@ -89,6 +89,71 @@
   gap: 1.35rem;
   margin-top: clamp(2.5rem, 5vw, 4.5rem);
 }
+.admin-dashboard__analytics {
+  display: grid;
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
+  gap: 1.35rem;
+}
+.admin-dashboard__analytics > header {
+  display: grid;
+  gap: 0.6rem;
+}
+.admin-dashboard__analytics h2 {
+  font: 600 clamp(1.45rem, 2.6vw, 2rem)/1.08 var(--ao-font-display);
+  letter-spacing: -0.045em;
+}
+.admin-dashboard__analytics > header p {
+  color: var(--ao-text-secondary);
+  font-size: 0.84rem;
+}
+.admin-dashboard__analytics > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(250px, 0.7fr);
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-lg);
+  overflow: hidden;
+  background: var(--ao-surface-1);
+}
+.admin-dashboard__analytics article {
+  min-width: 0;
+  min-height: 300px;
+  padding: 1.2rem;
+}
+.admin-dashboard__analytics article + article {
+  border-left: 1px solid var(--ao-border-subtle);
+}
+.admin-dashboard__analytics article > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.admin-dashboard__analytics article > header div {
+  display: grid;
+  gap: 0.3rem;
+}
+.admin-dashboard__analytics article > header strong {
+  font-size: 0.82rem;
+}
+.admin-dashboard__analytics article > header span,
+.admin-dashboard__analytics article > header small,
+.admin-dashboard__analytics article > p {
+  color: var(--ao-text-muted);
+  font-size: 0.66rem;
+}
+.admin-analytics-skeleton {
+  display: block;
+  height: 210px;
+  border-radius: var(--ao-radius-md);
+  background: linear-gradient(
+    100deg,
+    var(--ao-surface-2) 25%,
+    var(--ao-surface-interactive) 45%,
+    var(--ao-surface-2) 65%
+  );
+  background-size: 240% 100%;
+  animation: admin-shimmer 1.5s ease infinite;
+}
 .admin-dashboard__workspaces > header {
   display: grid;
   gap: 0.6rem;
@@ -161,6 +226,13 @@
   }
   .admin-metric:nth-child(-n + 2) {
     border-bottom: 1px solid var(--ao-border-subtle);
+  }
+  .admin-dashboard__analytics > div {
+    grid-template-columns: 1fr;
+  }
+  .admin-dashboard__analytics article + article {
+    border-top: 1px solid var(--ao-border-subtle);
+    border-left: 0;
   }
 }
 @media (max-width: 600px) {

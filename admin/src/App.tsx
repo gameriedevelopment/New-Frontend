@@ -12,6 +12,9 @@ import { ModerationPage } from "./features/moderation/ModerationPage";
 import { GamesPage } from "./features/games/GamesPage";
 import { CompetitionPage } from "./features/competition/CompetitionPage";
 import { FinanceGrowthPage } from "./features/finance/FinanceGrowthPage";
+import { AuditPage } from "./features/audit/AuditPage";
+import { CommunicationsPage } from "./features/communications/CommunicationsPage";
+import { AnalyticsPage } from "./features/analytics/AnalyticsPage";
 
 export function App() {
   return (
@@ -27,6 +30,9 @@ export function App() {
           <Route path="games" element={<GamesPage />} />
           <Route path="competition" element={<CompetitionPage />} />
           <Route path="finance" element={<FinanceGrowthPage />} />
+          <Route path="audit" element={<AuditPage />} />
+          <Route path="communications" element={<CommunicationsPage />} />
+          <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="moderation" element={<ModerationPage />} />
           <Route path="administrators" element={<AdminsPage />} />
         </Route>
