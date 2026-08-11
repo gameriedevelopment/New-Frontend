@@ -6,7 +6,7 @@ import {
   Globe2,
   Search,
   Shield,
-  Sparkles,
+  Target,
   Trophy,
   Users,
 } from "lucide-react";
@@ -207,8 +207,6 @@ export function GameDetailPage() {
   const series = useGridSeries(gridKey, section === "competitive");
   const playerRows = players.data?.pages.flatMap((page) => page.data) ?? [];
   const teamRows = teams.data?.pages.flatMap((page) => page.data) ?? [];
-  const playerTotal = players.data?.pages[0]?.total ?? stats.data?.usersCount ?? 0;
-  const teamTotal = teams.data?.pages[0]?.total ?? stats.data?.teamsCount ?? 0;
   const officialWebsite = cleanExternalUrl(game.data?.officialWebsite);
   const socialLinks = useMemo(
     () => (game.data?.socialMedia ?? []).filter((item) => cleanExternalUrl(item.url)),
@@ -286,7 +284,7 @@ export function GameDetailPage() {
           <strong>{title.gameModes?.length ?? 0}</strong>
         </div>
         <div>
-          <Sparkles size={17} />
+          <Target size={17} />
           <span>Core skills</span>
           <strong>{title.requiredSkills?.length ?? 0}</strong>
         </div>
@@ -300,11 +298,6 @@ export function GameDetailPage() {
             onClick={() => selectSection(item.id)}
           >
             {item.label}
-            {item.id === "players" ? (
-              <span>{stats.data?.usersCount ?? 0}</span>
-            ) : item.id === "teams" ? (
-              <span>{stats.data?.teamsCount ?? 0}</span>
-            ) : null}
           </button>
         ))}
       </nav>
@@ -361,18 +354,7 @@ export function GameDetailPage() {
       ) : null}
 
       {section === "players" ? (
-        <section className="game-community">
-          <header>
-            <div>
-              <p>Player rankings</p>
-              <h2>Players active in {title.name}</h2>
-              <span>Rank, form, and earned achievements in one calm competitive view.</span>
-            </div>
-            <strong>
-              {playerTotal.toLocaleString()}
-              <small>players</small>
-            </strong>
-          </header>
+        <section className="game-community game-community--directory">
           <label className="game-community__search">
             <Search size={16} />
             <span className="sr-only">Search active players</span>
@@ -425,20 +407,7 @@ export function GameDetailPage() {
       ) : null}
 
       {section === "teams" ? (
-        <section className="game-community">
-          <header>
-            <div>
-              <p>Team rankings</p>
-              <h2>Teams competing in {title.name}</h2>
-              <span>
-                Find active rosters and compare competitive form without leaving the game space.
-              </span>
-            </div>
-            <strong>
-              {teamTotal.toLocaleString()}
-              <small>teams</small>
-            </strong>
-          </header>
+        <section className="game-community game-community--directory">
           <div className="game-community__filters">
             <label className="game-community__search">
               <Search size={16} />

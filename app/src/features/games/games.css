@@ -535,11 +535,6 @@
   background: var(--g-accent);
   content: "";
 }
-.game-detail__tabs button span {
-  color: var(--g-text-faint);
-  font-size: 9px;
-}
-
 .game-overview {
   display: grid;
   padding: clamp(34px, 6vw, 70px) 0;
@@ -600,6 +595,9 @@
 
 .game-community {
   padding: clamp(34px, 5vw, 58px) 0 20px;
+}
+.game-community--directory {
+  padding-top: 24px;
 }
 .game-community > header {
   display: flex;
