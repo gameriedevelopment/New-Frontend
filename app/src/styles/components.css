@@ -205,6 +205,13 @@
   margin-top: 24px;
 }
 
+@media (max-width: 640px) {
+  .g-state-panel {
+    margin-inline: 8px;
+    padding-inline: clamp(20px, 6vw, 28px);
+  }
+}
+
 @keyframes g-loader-orbit {
   to {
     transform: rotate(360deg);

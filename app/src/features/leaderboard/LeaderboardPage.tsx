@@ -62,7 +62,6 @@ export function LeaderboardPage() {
   const query = useLeaderboard(filters);
   const gamesQuery = useGames({ search: debouncedGameSearch || undefined });
   const entities = query.data?.pages.flatMap((page) => page.data) ?? [];
-  const total = query.data?.pages[0]?.total ?? 0;
   const top = entities.slice(0, 3);
   const rows = entities.slice(3);
   const gameOptions = useMemo(() => {
@@ -156,14 +155,6 @@ export function LeaderboardPage() {
           </button>
         ) : null}
       </section>
-      {!query.isLoading && !query.isError ? (
-        <div className="leaderboard-result-line" role="status" aria-live="polite">
-          <span>
-            {total.toLocaleString()} ranked {entityTypeLabel(type)}
-          </span>
-          <small>{leaderboardMetrics.find((item) => item.value === metric)?.label}</small>
-        </div>
-      ) : null}
       {query.isLoading ? (
         <LeaderboardSkeleton />
       ) : query.isError ? (

@@ -169,7 +169,6 @@ export function SearchPage() {
   const term = params.get("q") || params.get("tag") || "";
   const query = useUnifiedSearch(kind, term);
   const results = query.data?.pages.flatMap((page) => page.data) ?? [];
-  const total = query.data?.pages[0]?.total ?? 0;
   const selectTab = (tab: SearchKind) => {
     const next = new URLSearchParams(params);
     next.set("tab", tab);
@@ -222,7 +221,6 @@ export function SearchPage() {
             onClick={() => selectTab(tab.id)}
           >
             {tab.label}
-            {kind === tab.id && term ? <span>{total.toLocaleString()}</span> : null}
           </button>
         ))}
       </nav>
@@ -250,12 +248,6 @@ export function SearchPage() {
         />
       ) : results.length ? (
         <>
-          <div className="search-result-meta">
-            <span>
-              {total.toLocaleString()} {total === 1 ? "result" : "results"}
-            </span>
-            <small>Best matches first</small>
-          </div>
           <div className="search-results">
             {results.map((item) => (
               <SearchResult key={item.id} item={item} kind={kind} />

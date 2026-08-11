@@ -75,7 +75,6 @@ export function PlayersPage() {
   );
   const query = usePlayers(filters);
   const players = query.data?.pages.flatMap((page) => page.data) ?? [];
-  const total = query.data?.pages[0]?.total ?? 0;
   const gameOptions = games.data?.pages.flatMap((page) => page.data) ?? [];
   const activeFilters = [filters.gameLevel, filters.platform, filters.game, filters.region].filter(
     Boolean,
@@ -189,18 +188,6 @@ export function PlayersPage() {
           ) : null}
         </div>
       </section>
-      {!query.isLoading && !query.isError ? (
-        <div className="discovery-result-meta" role="status" aria-live="polite">
-          <span>
-            {total.toLocaleString()} {total === 1 ? "player" : "players"}
-          </span>
-          <small>
-            {activeFilters
-              ? `${activeFilters} active ${activeFilters === 1 ? "filter" : "filters"}`
-              : "Browse the player network"}
-          </small>
-        </div>
-      ) : null}
       {query.isLoading ? (
         <PlayerGridSkeleton />
       ) : query.isError ? (

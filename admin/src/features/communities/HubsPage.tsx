@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { DirectoryView } from "../../components/DirectoryView";
+import { DetailDrawer, DetailList } from "../../components/DetailDrawer";
 import { ModerationDialog } from "../../components/ModerationDialog";
 import { getErrorMessage } from "../../lib/errors";
 import { useAdminHubs, useSetAdminHubBan } from "./hooks";
@@ -11,6 +12,7 @@ export function HubsPage() {
   const [type, setType] = useState<AdminHubRecord["type"] | "">("");
   const [page, setPage] = useState(1);
   const [target, setTarget] = useState<AdminHubRecord | null>(null);
+  const [selected, setSelected] = useState<AdminHubRecord | null>(null);
   const query = useAdminHubs({
     page,
     limit: 20,
@@ -62,7 +64,19 @@ export function HubsPage() {
         onRetry={() => void query.refetch()}
       >
         {query.data?.data.map((record) => (
-          <article className="admin-directory-row" key={record.id}>
+          <article
+            className="admin-directory-row"
+            key={record.id}
+            role="button"
+            tabIndex={0}
+            onClick={() => setSelected(record)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                setSelected(record);
+              }
+            }}
+          >
             <div className="admin-directory-identity">
               <span className="admin-directory-avatar admin-directory-avatar--rounded">
                 {record.name.slice(0, 2).toUpperCase()}
@@ -98,7 +112,8 @@ export function HubsPage() {
             </span>
             <button
               className="admin-row-action"
-              onClick={() => {
+              onClick={(event) => {
+                event.stopPropagation();
                 moderation.reset();
                 setTarget(record);
               }}
@@ -108,6 +123,45 @@ export function HubsPage() {
           </article>
         ))}
       </DirectoryView>
+      <DetailDrawer
+        open={Boolean(selected)}
+        eyebrow="Hub record"
+        title={selected?.name ?? "Hub details"}
+        subtitle={selected?.description ?? undefined}
+        onClose={() => setSelected(null)}
+        actions={
+          selected ? (
+            <button
+              className="admin-row-action"
+              onClick={() => {
+                moderation.reset();
+                setTarget(selected);
+              }}
+            >
+              {selected.isBanned ? "Restore hub" : "Restrict hub"}
+            </button>
+          ) : null
+        }
+      >
+        {selected ? (
+          <DetailList
+            items={[
+              { label: "State", value: selected.isBanned ? "Restricted" : "Active" },
+              { label: "Type", value: selected.type },
+              { label: "Visibility", value: selected.visibility },
+              { label: "Join policy", value: selected.joinPolicy },
+              { label: "Region", value: selected.region || selected.country },
+              { label: "Timezone", value: selected.timezone },
+              { label: "Members", value: selected.membersCount ?? 0 },
+              { label: "Teams", value: selected.teamsCount ?? 0 },
+              { label: "Followers", value: selected.followersCount ?? 0 },
+              { label: "Reports", value: selected.reportCount },
+              { label: "Owner ID", value: selected.ownerId },
+              { label: "Created", value: new Date(selected.createdAt).toLocaleDateString() },
+            ]}
+          />
+        ) : null}
+      </DetailDrawer>
       <ModerationDialog
         open={Boolean(target)}
         targetName={target?.name ?? "this hub"}
@@ -125,7 +179,12 @@ export function HubsPage() {
           if (!target) return;
           moderation.mutate(
             { id: target.id, ban: !target.isBanned, reason },
-            { onSuccess: () => setTarget(null) },
+            {
+              onSuccess: () => {
+                setTarget(null);
+                setSelected(null);
+              },
+            },
           );
         }}
       />

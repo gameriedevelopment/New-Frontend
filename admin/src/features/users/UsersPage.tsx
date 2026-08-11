@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { DirectoryView } from "../../components/DirectoryView";
+import { DetailDrawer, DetailList } from "../../components/DetailDrawer";
 import { ModerationDialog } from "../../components/ModerationDialog";
 import { getErrorMessage } from "../../lib/errors";
 import { useAdminAuth } from "../auth/AuthProvider";
@@ -13,6 +14,7 @@ export function UsersPage() {
   const [status, setStatus] = useState<AdminUserStatus | "">("");
   const [page, setPage] = useState(1);
   const [target, setTarget] = useState<AdminUserRecord | null>(null);
+  const [selected, setSelected] = useState<AdminUserRecord | null>(null);
   const query = useAdminUsers({
     page,
     limit: 20,
@@ -64,7 +66,19 @@ export function UsersPage() {
         onRetry={() => void query.refetch()}
       >
         {query.data?.data.map((record) => (
-          <article className="admin-directory-row" key={record.id}>
+          <article
+            className="admin-directory-row"
+            key={record.id}
+            role="button"
+            tabIndex={0}
+            onClick={() => setSelected(record)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                setSelected(record);
+              }
+            }}
+          >
             <div className="admin-directory-identity">
               <span className="admin-directory-avatar">
                 {record.username.slice(0, 2).toUpperCase()}
@@ -97,7 +111,8 @@ export function UsersPage() {
             <button
               className="admin-row-action"
               disabled={record.id === user?.id}
-              onClick={() => {
+              onClick={(event) => {
+                event.stopPropagation();
                 moderation.reset();
                 setTarget(record);
               }}
@@ -107,6 +122,47 @@ export function UsersPage() {
           </article>
         ))}
       </DirectoryView>
+      <DetailDrawer
+        open={Boolean(selected)}
+        eyebrow="Player account"
+        title={selected?.username ?? "Account details"}
+        subtitle={selected?.email}
+        onClose={() => setSelected(null)}
+        actions={
+          selected ? (
+            <button
+              className="admin-row-action"
+              disabled={selected.id === user?.id}
+              onClick={() => {
+                moderation.reset();
+                setTarget(selected);
+              }}
+            >
+              {selected.isBanned ? "Restore account" : "Restrict account"}
+            </button>
+          ) : null
+        }
+      >
+        {selected ? (
+          <DetailList
+            items={[
+              { label: "Account state", value: selected.isBanned ? "Restricted" : "Active" },
+              { label: "Role", value: selected.role },
+              { label: "Email verified", value: selected.emailVerified ? "Yes" : "No" },
+              { label: "Phone verified", value: selected.phoneVerified ? "Yes" : "No" },
+              { label: "Sign-in provider", value: selected.provider },
+              { label: "Region", value: selected.region },
+              { label: "Followers", value: selected.followersCount ?? 0 },
+              { label: "Reports", value: selected.reportCount },
+              {
+                label: "Last login",
+                value: selected.lastLogin ? new Date(selected.lastLogin).toLocaleString() : null,
+              },
+              { label: "Joined", value: new Date(selected.createdAt).toLocaleDateString() },
+            ]}
+          />
+        ) : null}
+      </DetailDrawer>
       <ModerationDialog
         open={Boolean(target)}
         targetName={target?.username ?? "this account"}
@@ -124,7 +180,12 @@ export function UsersPage() {
           if (!target) return;
           moderation.mutate(
             { id: target.id, ban: !target.isBanned, reason },
-            { onSuccess: () => setTarget(null) },
+            {
+              onSuccess: () => {
+                setTarget(null);
+                setSelected(null);
+              },
+            },
           );
         }}
       />

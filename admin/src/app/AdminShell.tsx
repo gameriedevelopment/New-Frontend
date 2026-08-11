@@ -36,6 +36,11 @@ export function AdminShell() {
           <NavLink to="/hubs" onClick={() => setOpen(false)}>
             <span>Hubs</span>
           </NavLink>
+          {user?.isSuperAdmin ? (
+            <NavLink to="/administrators" onClick={() => setOpen(false)}>
+              <span>Administrators</span>
+            </NavLink>
+          ) : null}
         </nav>
         <div className="admin-sidebar__account">
           <div>

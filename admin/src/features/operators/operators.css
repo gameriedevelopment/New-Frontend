@@ -1,0 +1,178 @@
+.admin-operators-page {
+  width: min(100%, 76rem);
+  margin: 0 auto;
+  padding: 2.5rem var(--ao-page-gutter) 5rem;
+}
+.admin-operators-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--ao-border);
+}
+.admin-operators-heading > div {
+  max-width: 42rem;
+  display: grid;
+  gap: 0.62rem;
+}
+.admin-operators-heading h1 {
+  font: 600 clamp(1.85rem, 4vw, 2.65rem)/1.02 var(--ao-font-display);
+  letter-spacing: -0.052em;
+}
+.admin-operators-heading p {
+  color: var(--ao-text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+.admin-operators-tabs {
+  display: flex;
+  gap: 1.3rem;
+  margin-top: 1.4rem;
+  border-bottom: 1px solid var(--ao-border-subtle);
+}
+.admin-operators-tabs button {
+  min-height: 44px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: var(--ao-text-muted);
+  font: 700 0.72rem var(--ao-font-body);
+}
+.admin-operators-tabs button[aria-selected="true"] {
+  border-color: var(--ao-accent);
+  color: var(--ao-text);
+}
+.admin-operators-search {
+  margin: 1rem 0;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-md);
+  background: var(--ao-surface-1);
+}
+.admin-operators-search input,
+.admin-dialog input {
+  width: 100%;
+  height: 48px;
+  padding: 0 0.9rem;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ao-text);
+  font: 500 0.76rem var(--ao-font-body);
+  box-shadow: none;
+}
+.admin-operator-list {
+  border-top: 1px solid var(--ao-border);
+}
+.admin-operator-row,
+.admin-invite-row {
+  width: 100%;
+  min-height: 76px;
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto minmax(150px, 0.5fr);
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 0.25rem;
+  border: 0;
+  border-bottom: 1px solid var(--ao-border-subtle);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+.admin-operator-row {
+  cursor: pointer;
+}
+.admin-operator-row:hover {
+  background: rgb(255 255 255 / 0.018);
+}
+.admin-operator-row > span:nth-child(2),
+.admin-invite-row > span:first-child {
+  min-width: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+.admin-operator-row strong,
+.admin-invite-row strong {
+  overflow: hidden;
+  font-size: 0.76rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-operator-row small,
+.admin-invite-row small {
+  color: var(--ao-text-muted);
+  font-size: 0.66rem;
+}
+.admin-invite-row {
+  grid-template-columns: minmax(200px, 1fr) auto minmax(140px, 0.4fr) auto;
+}
+.admin-invite-row > div {
+  display: flex;
+  gap: 0.4rem;
+}
+.admin-invite-row > div button {
+  min-height: 34px;
+  padding: 0 0.65rem;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-sm);
+  background: transparent;
+  color: var(--ao-text-secondary);
+  font: 700 0.65rem var(--ao-font-body);
+}
+.admin-operator-empty {
+  min-height: 220px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+.admin-operator-empty h2 {
+  font: 600 1rem var(--ao-font-display);
+}
+.admin-operator-empty p {
+  color: var(--ao-text-muted);
+  font-size: 0.72rem;
+}
+.admin-operator-loading {
+  height: 230px;
+  background: linear-gradient(100deg, transparent 18%, var(--ao-surface-2) 38%, transparent 58%);
+  background-size: 220% 100%;
+  animation: admin-shimmer 1.5s ease infinite;
+}
+.admin-invite-note {
+  color: var(--ao-text-secondary);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+.admin-invite-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  text-decoration: none;
+}
+@media (max-width: 760px) {
+  .admin-operators-page {
+    padding-top: 1.5rem;
+  }
+  .admin-operators-heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .admin-operators-heading > button {
+    width: 100%;
+  }
+  .admin-operator-row,
+  .admin-invite-row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+  .admin-operator-row > small:last-child,
+  .admin-invite-row > small {
+    grid-column: 2;
+  }
+  .admin-invite-row > div {
+    grid-column: 2 / -1;
+  }
+}

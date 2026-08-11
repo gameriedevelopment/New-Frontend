@@ -3531,7 +3531,7 @@
   }
   .community-identity__main {
     position: relative;
-    z-index: 2;
+    z-index: auto;
     display: flex;
     padding: 0 16px 17px;
     align-items: flex-start;
@@ -3578,6 +3578,9 @@
   .community-actions summary {
     width: 42px;
     height: 42px;
+  }
+  .community-actions details[open] {
+    z-index: 20;
   }
   .community-actions__status {
     grid-column: 1 / -1;

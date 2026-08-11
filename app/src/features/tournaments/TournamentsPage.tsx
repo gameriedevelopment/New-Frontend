@@ -79,7 +79,6 @@ export function TournamentsPage() {
   const facets = useTournamentFacets();
   const gamesQuery = useGames({ search: debouncedGameSearch || undefined });
   const tournaments = query.data?.pages.flatMap((page) => page.tournaments) ?? [];
-  const total = query.data?.pages[0]?.total ?? 0;
   const gameOptions = useMemo(
     () =>
       Array.from(
@@ -255,18 +254,6 @@ export function TournamentsPage() {
           ) : null}
         </div>
       </section>
-      {!query.isLoading && !query.isError ? (
-        <div className="tournament-result-line" role="status" aria-live="polite">
-          <span>
-            {total.toLocaleString()} {total === 1 ? "tournament" : "tournaments"}
-          </span>
-          <small>
-            {status === "active"
-              ? "Upcoming and in-progress competitions"
-              : statuses.find((item) => item.value === status)?.label}
-          </small>
-        </div>
-      ) : null}
       {query.isLoading ? (
         <TournamentSkeleton />
       ) : query.isError ? (

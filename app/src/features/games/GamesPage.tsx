@@ -56,7 +56,6 @@ export function GamesPage() {
   const query = useGames(filters);
   const facets = useGameFacets();
   const games = query.data?.pages.flatMap((page) => page.data) ?? [];
-  const total = query.data?.pages[0]?.total ?? 0;
   const stats = useGameStatsBatch(games.map((game) => game.id));
   const facetGames = facets.data?.data ?? games;
   const types = useMemo(
@@ -170,14 +169,6 @@ export function GamesPage() {
           ) : null}
         </div>
       </section>
-      {!query.isLoading && !query.isError ? (
-        <div className="games-result-line">
-          <span>
-            {total.toLocaleString()} {total === 1 ? "title" : "titles"}
-          </span>
-          <small>Community activity updates as results load</small>
-        </div>
-      ) : null}
       {query.isLoading ? (
         <GamesSkeleton />
       ) : query.isError ? (

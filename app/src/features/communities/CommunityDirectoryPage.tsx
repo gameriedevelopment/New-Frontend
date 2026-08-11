@@ -224,7 +224,6 @@ export function CommunityDirectoryPage({ kind }: { kind: "teams" | "hubs" }) {
   const query = useCommunityDirectory(kind, filters, view === "discover");
   const myHubs = useUserHubs(user?.id, kind === "hubs" && view === "mine");
   const items = query.data?.pages.flatMap((page) => page.items) ?? [];
-  const total = query.data?.pages[0]?.total ?? 0;
   const active = [filters.type, filters.level, filters.region, filters.game].filter(Boolean).length;
   const gameQuery = useGames({ search: gameSearch }, view === "discover");
   const gameOptions = useMemo(() => {
@@ -304,9 +303,6 @@ export function CommunityDirectoryPage({ kind }: { kind: "teams" | "hubs" }) {
               <p>Your communities</p>
               <h2 id="your-hubs-title">Hubs you belong to</h2>
             </div>
-            {!myHubs.isLoading && !myHubs.isError ? (
-              <span>{myHubs.data?.length ?? 0} total</span>
-            ) : null}
           </header>
           {myHubs.isLoading ? (
             <div className="community-owned__loading">
@@ -425,14 +421,6 @@ export function CommunityDirectoryPage({ kind }: { kind: "teams" | "hubs" }) {
               ) : null}
             </div>
           </section>
-          {!query.isLoading && !query.isError && total ? (
-            <div className="community-result">
-              <span>
-                {total.toLocaleString()} {total === 1 ? noun.slice(0, -1) : noun}
-              </span>
-              <small>Most recently active first</small>
-            </div>
-          ) : null}
           {query.isLoading ? (
             <DirectorySkeleton />
           ) : query.isError ? (

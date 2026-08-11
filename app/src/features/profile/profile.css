@@ -245,6 +245,9 @@
   background: var(--g-accent);
   content: "";
 }
+.profile-tab-content {
+  min-width: 0;
+}
 .profile-overview {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
@@ -1918,6 +1921,9 @@
   }
   .profile-tabs {
     margin-top: 16px;
+  }
+  .profile-tab-content {
+    padding-inline: 10px;
   }
   .profile-overview,
   .profile-card-grid {

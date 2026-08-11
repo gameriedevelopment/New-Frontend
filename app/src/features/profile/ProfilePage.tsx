@@ -82,7 +82,9 @@ export function ProfilePage() {
           </button>
         ))}
       </nav>
-      <ProfileContent own={own} profile={query.data} tab={tab} />
+      <div className="profile-tab-content">
+        <ProfileContent own={own} profile={query.data} tab={tab} />
+      </div>
     </main>
   );
 }

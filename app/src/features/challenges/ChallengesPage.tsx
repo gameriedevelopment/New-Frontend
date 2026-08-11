@@ -85,7 +85,6 @@ export function ChallengesPage() {
   const query = useMyChallenges(filters);
   const update = useUpdateChallenge();
   const challenges = query.data?.pages.flatMap((page) => page.data) ?? [];
-  const total = query.data?.pages[0]?.total ?? 0;
   const activeFilters = Number(direction !== "all") + Number(status !== "all");
   const change = useCallback(
     (key: string, value?: string) => {
@@ -221,20 +220,6 @@ export function ChallengesPage() {
           ) : null}
         </div>
       </section>
-      {!query.isLoading && !query.isError ? (
-        <div className="challenge-result-line" role="status" aria-live="polite">
-          <span>
-            {total.toLocaleString()} {total === 1 ? "challenge" : "challenges"}
-          </span>
-          <small>
-            {scope === "for-you"
-              ? "Your player invitations"
-              : scope === "team"
-                ? "Challenges for teams you own"
-                : "Completed, declined, and expired challenges"}
-          </small>
-        </div>
-      ) : null}
       {query.isLoading ? (
         <ChallengeListSkeleton />
       ) : query.isError ? (
