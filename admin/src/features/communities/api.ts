@@ -16,10 +16,14 @@ export async function getAdminHubs(query: AdminHubQuery = {}) {
   return data.data;
 }
 
-export async function setAdminTeamBan(teamId: string, ban: boolean) {
-  await api.patch(`/admin/teams/${teamId}/ban`, { ban });
+export async function setAdminTeamBan(teamId: string, ban: boolean, reason: string) {
+  await api.patch(`/admin/teams/${teamId}/ban`, { ban, reason });
 }
 
-export async function deleteAdminTeam(teamId: string) {
-  await api.delete(`/admin/teams/${teamId}`);
+export async function setAdminHubBan(hubId: string, ban: boolean, reason: string) {
+  await api.patch(`/admin/hubs/${hubId}/ban`, { ban, reason });
+}
+
+export async function deleteAdminTeam(teamId: string, reason: string) {
+  await api.delete(`/admin/teams/${teamId}`, { data: { reason } });
 }

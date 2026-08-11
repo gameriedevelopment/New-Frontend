@@ -1,4 +1,4 @@
-import { LayoutDashboard, LogOut, Menu, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { Brand } from "../components/Brand";
@@ -25,8 +25,16 @@ export function AdminShell() {
         <nav aria-label="Operations navigation">
           <span className="admin-nav-label">Workspace</span>
           <NavLink to="/" end onClick={() => setOpen(false)}>
-            <LayoutDashboard size={18} />
             <span>Overview</span>
+          </NavLink>
+          <NavLink to="/users" onClick={() => setOpen(false)}>
+            <span>Users</span>
+          </NavLink>
+          <NavLink to="/teams" onClick={() => setOpen(false)}>
+            <span>Teams</span>
+          </NavLink>
+          <NavLink to="/hubs" onClick={() => setOpen(false)}>
+            <span>Hubs</span>
           </NavLink>
         </nav>
         <div className="admin-sidebar__account">

@@ -21,7 +21,7 @@
   justify-content: space-between;
   padding: 0 0.35rem;
 }
-.admin-sidebar__close {
+.admin-sidebar .admin-sidebar__close {
   display: none;
 }
 .admin-sidebar nav {
@@ -104,7 +104,7 @@
   .admin-sidebar.is-open {
     transform: translateX(0);
   }
-  .admin-sidebar__close {
+  .admin-sidebar .admin-sidebar__close {
     display: inline-flex;
   }
   .admin-sidebar-backdrop {

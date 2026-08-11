@@ -9,10 +9,10 @@ export async function getAdminUsers(query: AdminUserQuery = {}) {
   return data.data;
 }
 
-export async function setAdminUserBan(userId: string, ban: boolean) {
-  await api.patch(`/admin/users/${userId}/ban`, { ban });
+export async function setAdminUserBan(userId: string, ban: boolean, reason: string) {
+  await api.patch(`/admin/users/${userId}/ban`, { ban, reason });
 }
 
-export async function deleteAdminUser(userId: string) {
-  await api.delete(`/admin/users/${userId}`);
+export async function deleteAdminUser(userId: string, reason: string) {
+  await api.delete(`/admin/users/${userId}`, { data: { reason } });
 }

@@ -31,7 +31,7 @@ export async function signInAdmin(email: string, password: string): Promise<Admi
 }
 
 export async function fetchAdminSession(): Promise<AdminUser> {
-  const { data } = await api.get<Envelope<AdminUser>>("/users/current-user/sync");
+  const { data } = await api.get<Envelope<AdminUser>>("/admin/session");
   if (!hasAdminRole(data.data)) throw new Error("This account does not have administrator access.");
   return data.data;
 }
