@@ -208,8 +208,54 @@ export interface TeamWalletSummary {
   teamId: string;
   address?: string;
   balances?: TeamWalletBalance[];
-  reservedBalances?: Record<
-    string,
-    { amount: number | string; expiresAt?: string }
-  >;
+  reservedBalances?: Record<string, { amount: number | string; expiresAt?: string }>;
+}
+export interface TeamWalletInsights {
+  flows: {
+    totalInflow: number;
+    totalOutflow: number;
+    totalReserved: number;
+    totalReleased: number;
+    netFlow: number;
+  };
+  sourceBreakdown: Array<{ name: string; value: number }>;
+  monthlyTrends: Array<{ month: string; inflow: number; outflow: number; reserved: number }>;
+  challengeMetrics: Array<{
+    challengeId: string;
+    reserved: number;
+    released: number;
+    status: string;
+  }>;
+}
+export type TeamWalletTransactionType =
+  "INCOMING" | "OUTGOING" | "TRANSFER" | "CHALLENGE_RESERVE" | "CHALLENGE_RELEASE";
+export type TeamWalletTransactionStatus = "PENDING" | "COMPLETED" | "FAILED";
+export interface TeamWalletTransaction {
+  id: string;
+  teamId: string;
+  type: TeamWalletTransactionType;
+  amount: number | string;
+  status: TeamWalletTransactionStatus;
+  initiatedBy?: string;
+  timestamp: string;
+  createdAt?: string;
+  metadata?: {
+    challengeId?: string;
+    description?: string;
+    commission?: number;
+    recipientTeamId?: string;
+    recipientUserId?: string;
+    senderTeamId?: string;
+    transferAmount?: number;
+  };
+}
+export interface TeamWalletTransactionFilters {
+  type?: TeamWalletTransactionType;
+  status?: TeamWalletTransactionStatus;
+}
+export interface TeamWalletTransactionPage {
+  data: TeamWalletTransaction[];
+  total: number;
+  totalPages: number;
+  page: number;
 }

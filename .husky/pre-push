@@ -1,0 +1,2 @@
+npm --prefix app run prepush
+npm --prefix admin run prepush

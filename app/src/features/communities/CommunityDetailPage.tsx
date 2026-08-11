@@ -10,13 +10,7 @@ import {
   Users,
 } from "lucide-react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import {
-  Button,
-  SafeImage,
-  Skeleton,
-  SkeletonText,
-  StatePanel,
-} from "../../components/ui";
+import { Button, SafeImage, Skeleton, SkeletonText, StatePanel } from "../../components/ui";
 import { getApiErrorMessage } from "../../lib/errors";
 import { FeedPostCard } from "../newsfeed/components/FeedPostCard";
 import { FeedComposer } from "../newsfeed/components/FeedComposer";
@@ -28,21 +22,10 @@ import { HubOperations } from "./components/HubOperations";
 import { TeamFollowers } from "./components/TeamFollowers";
 import { TeamOperations } from "./components/TeamOperations";
 import { useCommunityDetail, useCommunityPosts } from "./hooks";
-import type {
-  CommunityMember,
-  CompetitionItem,
-  HubSummary,
-  TeamSummary,
-} from "./types";
+import type { CommunityMember, CompetitionItem, HubSummary, TeamSummary } from "./types";
 import "./communities.css";
 
-type TeamTab =
-  | "overview"
-  | "roster"
-  | "competition"
-  | "followers"
-  | "posts"
-  | "manage";
+type TeamTab = "overview" | "roster" | "competition" | "followers" | "posts" | "manage";
 type HubTab = "overview" | "teams" | "members" | "posts" | "manage";
 const teamTabs: Array<{ value: TeamTab; label: string }> = [
   { value: "overview", label: "Overview" },
@@ -57,8 +40,7 @@ const hubTabs: Array<{ value: HubTab; label: string }> = [
   { value: "members", label: "Members" },
   { value: "posts", label: "Posts" },
 ];
-const amount = (direct?: number, relation?: unknown[]) =>
-  direct ?? relation?.length ?? 0;
+const amount = (direct?: number, relation?: unknown[]) => direct ?? relation?.length ?? 0;
 
 function DetailSkeleton() {
   return (
@@ -84,17 +66,8 @@ function Members({ members = [] }: { members?: CommunityMember[] }) {
             {member.user?.isOnline ? <i aria-label="Online" /> : null}
           </span>
           <div>
-            <strong>
-              {member.user?.displayName ||
-                member.user?.username ||
-                "Gamerie player"}
-            </strong>
-            <small>
-              {member.title ||
-                member.role ||
-                member.user?.gamerTitle ||
-                "Member"}
-            </small>
+            <strong>{member.user?.displayName || member.user?.username || "Gamerie player"}</strong>
+            <small>{member.title || member.role || member.user?.gamerTitle || "Member"}</small>
           </div>
         </Link>
       ))}
@@ -106,20 +79,12 @@ function Members({ members = [] }: { members?: CommunityMember[] }) {
     />
   );
 }
-function CompetitionList({
-  title,
-  items = [],
-}: {
-  title: string;
-  items?: CompetitionItem[];
-}) {
+function CompetitionList({ title, items = [] }: { title: string; items?: CompetitionItem[] }) {
   return (
     <section className="community-section">
       <header>
         <h2>{title}</h2>
-        <span>
-          {items.length ? `${items.length} recorded` : "No entries yet"}
-        </span>
+        <span>{items.length ? `${items.length} recorded` : "No entries yet"}</span>
       </header>
       {items.length ? (
         <div className="community-records">
@@ -127,20 +92,12 @@ function CompetitionList({
             <article key={item.id || index}>
               <Trophy size={15} />
               <div>
-                <strong>
-                  {item.title || item.name || "Competitive milestone"}
-                </strong>
-                <p>
-                  {item.description ||
-                    item.status ||
-                    "Recorded on the team profile."}
-                </p>
+                <strong>{item.title || item.name || "Competitive milestone"}</strong>
+                <p>{item.description || item.status || "Recorded on the team profile."}</p>
               </div>
               {item.date || item.createdAt ? (
                 <time>
-                  {new Date(
-                    item.date || item.createdAt || "",
-                  ).toLocaleDateString(undefined, {
+                  {new Date(item.date || item.createdAt || "").toLocaleDateString(undefined, {
                     month: "short",
                     year: "numeric",
                   })}
@@ -150,9 +107,7 @@ function CompetitionList({
           ))}
         </div>
       ) : (
-        <p className="community-section__empty">
-          Nothing has been recorded in this section yet.
-        </p>
+        <p className="community-section__empty">Nothing has been recorded in this section yet.</p>
       )}
     </section>
   );
@@ -171,8 +126,7 @@ function CommunityPosts({ kind, id }: { kind: "team" | "hub"; id: string }) {
   const owner = context?.ownerId === user?.id;
   const canPost = Boolean(owner || membership);
   const role = String(membership?.role || "").toLowerCase();
-  const canAnnounce =
-    kind === "team" ? owner : owner || ["admin", "manager"].includes(role);
+  const canAnnounce = kind === "team" ? owner : owner || ["admin", "manager"].includes(role);
   return (
     <div className="community-posts">
       {canPost ? (
@@ -207,17 +161,9 @@ function CommunityPosts({ kind, id }: { kind: "team" | "hub"; id: string }) {
       ) : query.data?.length ? (
         <div className="community-post-list">
           {[...query.data]
-            .sort(
-              (a, b) =>
-                Number(Boolean(b.isAnnouncement)) -
-                Number(Boolean(a.isAnnouncement)),
-            )
+            .sort((a, b) => Number(Boolean(b.isAnnouncement)) - Number(Boolean(a.isAnnouncement)))
             .map((post) => (
-              <FeedPostCard
-                key={post.id}
-                post={post}
-                canDeleteOverride={owner}
-              />
+              <FeedPostCard key={post.id} post={post} canDeleteOverride={owner} />
             ))}
         </div>
       ) : (
@@ -253,9 +199,7 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
             : []),
         ];
   const requested = params.get("tab");
-  const active = tabs.some((tab) => tab.value === requested)
-    ? requested!
-    : "overview";
+  const active = tabs.some((tab) => tab.value === requested) ? requested! : "overview";
   if (query.isLoading) return <DetailSkeleton />;
   if (query.isError || !query.data)
     return (
@@ -263,10 +207,7 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
         <StatePanel
           tone="error"
           title={`${kind === "team" ? "Team" : "Hub"} unavailable`}
-          description={getApiErrorMessage(
-            query.error,
-            "This community page could not be loaded.",
-          )}
+          description={getApiErrorMessage(query.error, "This community page could not be loaded.")}
           action={
             <Button variant="secondary" onClick={() => query.refetch()}>
               Try again
@@ -287,15 +228,11 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
       <main className="community-detail community-detail--restricted">
         <Link className="community-detail__back" to="/hubs">
           <ArrowLeft size={15} />
-          Back to hubs
+          <span>Back to hubs</span>
         </Link>
         <section className="community-restricted">
           <div className="community-restricted__visual">
-            <SafeImage
-              src={hub.backgroundImage}
-              fallback="/profile-cover-fallback.jpg"
-              alt=""
-            />
+            <SafeImage src={hub.backgroundImage} fallback="/profile-cover-fallback.jpg" alt="" />
           </div>
           <SafeImage
             className="community-restricted__logo"
@@ -318,15 +255,11 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
     <main className="community-detail">
       <Link className="community-detail__back" to={`/${kind}s`}>
         <ArrowLeft size={15} />
-        Back to {kind}s
+        <span>Back to {kind}s</span>
       </Link>
       <section className={`community-identity community-identity--${kind}`}>
         <div className="community-identity__cover">
-          <SafeImage
-            src={item.backgroundImage}
-            fallback="/profile-cover-fallback.jpg"
-            alt=""
-          />
+          <SafeImage src={item.backgroundImage} fallback="/profile-cover-fallback.jpg" alt="" />
         </div>
         <div className="community-identity__main">
           <SafeImage
@@ -341,20 +274,13 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
                 team.level || "Competitive team"
               ) : (
                 <>
-                  {hub.type === "organization" ? (
-                    <Building2 size={12} />
-                  ) : (
-                    <Globe2 size={12} />
-                  )}
+                  {hub.type === "organization" ? <Building2 size={12} /> : <Globe2 size={12} />}
                   {hub.type || "Community hub"}
                 </>
               )}
             </span>
             <h1>{item.name}</h1>
-            <p>
-              {item.description ||
-                `This ${kind} is building its identity on Gamerie.`}
-            </p>
+            <p>{item.description || `This ${kind} is building its identity on Gamerie.`}</p>
             <div className="community-identity__meta">
               {item.region || item.country ? (
                 <span>
@@ -369,11 +295,7 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
               )}
               {kind === "hub" ? (
                 <span>
-                  {hub.visibility === "private" ? (
-                    <LockKeyhole size={13} />
-                  ) : (
-                    <Globe2 size={13} />
-                  )}
+                  {hub.visibility === "private" ? <LockKeyhole size={13} /> : <Globe2 size={13} />}
                   {hub.visibility || "public"}
                 </span>
               ) : (
@@ -395,16 +317,12 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
           </div>
           {kind === "team" ? (
             <div>
-              <strong>
-                {Number(team.stats?.tournamentWins || 0).toLocaleString()}
-              </strong>
+              <strong>{Number(team.stats?.tournamentWins || 0).toLocaleString()}</strong>
               <span>Tournament wins</span>
             </div>
           ) : (
             <div>
-              <strong>
-                {amount(hub.teamsCount, hub.teams).toLocaleString()}
-              </strong>
+              <strong>{amount(hub.teamsCount, hub.teams).toLocaleString()}</strong>
               <span>Teams</span>
             </div>
           )}
@@ -428,9 +346,7 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
             aria-current={active === tab.value ? "page" : undefined}
             onClick={() => {
               const next = new URLSearchParams(params);
-              tab.value === "overview"
-                ? next.delete("tab")
-                : next.set("tab", tab.value);
+              tab.value === "overview" ? next.delete("tab") : next.set("tab", tab.value);
               setParams(next, { replace: true });
             }}
           >
@@ -462,20 +378,14 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
             </section>
             <aside className="community-section">
               <header>
-                <h2>
-                  {kind === "team" ? "Competitive record" : "Community access"}
-                </h2>
+                <h2>{kind === "team" ? "Competitive record" : "Community access"}</h2>
               </header>
               <dl className="community-detail-stats">
                 {kind === "team" ? (
                   <>
                     <div>
                       <dt>Matches</dt>
-                      <dd>
-                        {Number(
-                          team.stats?.matchesPlayed || 0,
-                        ).toLocaleString()}
-                      </dd>
+                      <dd>{Number(team.stats?.matchesPlayed || 0).toLocaleString()}</dd>
                     </div>
                     <div>
                       <dt>Wins</dt>
@@ -483,11 +393,7 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
                     </div>
                     <div>
                       <dt>Ranking</dt>
-                      <dd>
-                        {team.stats?.ranking
-                          ? `#${team.stats.ranking}`
-                          : "Unranked"}
-                      </dd>
+                      <dd>{team.stats?.ranking ? `#${team.stats.ranking}` : "Unranked"}</dd>
                     </div>
                   </>
                 ) : (
@@ -529,9 +435,7 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
             <CompetitionList title="Milestones" items={team.milestones} />
           </div>
         ) : null}
-        {kind === "team" && active === "followers" ? (
-          <TeamFollowers teamId={team.id} />
-        ) : null}
+        {kind === "team" && active === "followers" ? <TeamFollowers teamId={team.id} /> : null}
         {kind === "team" && active === "manage" && relationship?.canManage ? (
           <TeamOperations team={team} slug={slug} />
         ) : null}
@@ -551,16 +455,10 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
                     to={`/teams/${encodeURIComponent(entry.slug || entry.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"))}`}
                     key={entry.id}
                   >
-                    <SafeImage
-                      src={entry.logo}
-                      fallback="/avatar-fallback.svg"
-                      alt=""
-                    />
+                    <SafeImage src={entry.logo} fallback="/avatar-fallback.svg" alt="" />
                     <div>
                       <strong>{entry.name}</strong>
-                      <span>
-                        {entry.level || entry.region || "Gamerie team"}
-                      </span>
+                      <span>{entry.level || entry.region || "Gamerie team"}</span>
                     </div>
                     <Shield size={15} />
                   </Link>
@@ -589,9 +487,7 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
         {kind === "hub" && active === "manage" && relationship?.canManage ? (
           <HubOperations hub={hub} slug={slug} />
         ) : null}
-        {active === "posts" ? (
-          <CommunityPosts kind={kind} id={item.id} />
-        ) : null}
+        {active === "posts" ? <CommunityPosts kind={kind} id={item.id} /> : null}
       </div>
     </main>
   );

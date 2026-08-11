@@ -24,12 +24,7 @@ import { useAuthStore } from "../auth/authStore";
 import { InfiniteLoadTrigger } from "../discovery/components/InfiniteLoadTrigger";
 import { useGames } from "../games/hooks";
 import type { Game } from "../games/types";
-import {
-  useCommunityDirectory,
-  useCommunityInvites,
-  useRespondInvite,
-  useUserHubs,
-} from "./hooks";
+import { useCommunityDirectory, useCommunityInvites, useRespondInvite, useUserHubs } from "./hooks";
 import { COMMUNITY_REGIONS, TEAM_LEVELS } from "./options";
 import type { CommunityFilters, HubSummary, TeamSummary } from "./types";
 import "./communities.css";
@@ -41,17 +36,13 @@ const slugOf = (item: TeamSummary | HubSummary) =>
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
-const count = (direct?: number, relation?: unknown[]) =>
-  direct ?? relation?.length ?? 0;
+const count = (direct?: number, relation?: unknown[]) => direct ?? relation?.length ?? 0;
 
 function DirectorySkeleton() {
   return (
     <div className="community-grid" aria-label="Loading communities">
       {Array.from({ length: 6 }, (_, index) => (
-        <article
-          className="community-card community-card--loading"
-          key={index}
-        >
+        <article className="community-card community-card--loading" key={index}>
           <Skeleton height={112} />
           <div>
             <Skeleton height={56} width={56} />
@@ -70,15 +61,10 @@ function InviteSummary({ kind }: { kind: "teams" | "hubs" }) {
   const invite = query.data[0];
   const item = invite.team || invite.hub;
   return (
-    <aside
-      className="community-invite"
-      aria-label={`Pending ${kind} invitations`}
-    >
+    <aside className="community-invite" aria-label={`Pending ${kind} invitations`}>
       <div>
         <span>Pending invitation</span>
-        <strong>
-          {item?.name || `A ${kind === "teams" ? "team" : "hub"} invited you`}
-        </strong>
+        <strong>{item?.name || `A ${kind === "teams" ? "team" : "hub"} invited you`}</strong>
         {query.data.length > 1 ? (
           <small>+{query.data.length - 1} more waiting</small>
         ) : (
@@ -106,27 +92,14 @@ function InviteSummary({ kind }: { kind: "teams" | "hubs" }) {
   );
 }
 
-function Card({
-  kind,
-  item,
-}: {
-  kind: "teams" | "hubs";
-  item: TeamSummary | HubSummary;
-}) {
+function Card({ kind, item }: { kind: "teams" | "hubs"; item: TeamSummary | HubSummary }) {
   const isTeam = kind === "teams";
   const team = item as TeamSummary;
   const hub = item as HubSummary;
   return (
-    <Link
-      className="community-card"
-      to={`/${kind}/${encodeURIComponent(slugOf(item))}`}
-    >
+    <Link className="community-card" to={`/${kind}/${encodeURIComponent(slugOf(item))}`}>
       <div className="community-card__cover">
-        <SafeImage
-          src={item.backgroundImage}
-          fallback="/profile-cover-fallback.jpg"
-          alt=""
-        />
+        <SafeImage src={item.backgroundImage} fallback="/profile-cover-fallback.jpg" alt="" />
         {!isTeam ? <span>{hub.type || "Community hub"}</span> : null}
       </div>
       <div className="community-card__body">
@@ -195,20 +168,10 @@ function MyHubCard({ hub, userId }: { hub: HubSummary; userId: string }) {
   const membership = hub.members?.find(
     (member) => member.userId === userId || member.user?.id === userId,
   );
-  const role =
-    hub.ownerId === userId
-      ? "Owner"
-      : membership?.title || membership?.role || "Member";
+  const role = hub.ownerId === userId ? "Owner" : membership?.title || membership?.role || "Member";
   return (
-    <Link
-      className="community-owned-card"
-      to={`/hubs/${encodeURIComponent(slugOf(hub))}`}
-    >
-      <SafeImage
-        src={hub.logo}
-        fallback="/avatar-fallback.svg"
-        alt=""
-      />
+    <Link className="community-owned-card" to={`/hubs/${encodeURIComponent(slugOf(hub))}`}>
+      <SafeImage src={hub.logo} fallback="/avatar-fallback.svg" alt="" />
       <span>
         <strong>{hub.name}</strong>
         <small>
@@ -223,11 +186,7 @@ function MyHubCard({ hub, userId }: { hub: HubSummary; userId: string }) {
   );
 }
 
-export function CommunityDirectoryPage({
-  kind,
-}: {
-  kind: "teams" | "hubs";
-}) {
+export function CommunityDirectoryPage({ kind }: { kind: "teams" | "hubs" }) {
   const user = useAuthStore((state) => state.user);
   const [params, setParams] = useSearchParams();
   const [search, setSearch] = useState(params.get("q") || "");
@@ -266,18 +225,12 @@ export function CommunityDirectoryPage({
   const myHubs = useUserHubs(user?.id, kind === "hubs" && view === "mine");
   const items = query.data?.pages.flatMap((page) => page.items) ?? [];
   const total = query.data?.pages[0]?.total ?? 0;
-  const active = [
-    filters.type,
-    filters.level,
-    filters.region,
-    filters.game,
-  ].filter(Boolean).length;
+  const active = [filters.type, filters.level, filters.region, filters.game].filter(Boolean).length;
   const gameQuery = useGames({ search: gameSearch }, view === "discover");
   const gameOptions = useMemo(() => {
     const games = gameQuery.data?.pages.flatMap((page) => page.data) ?? [];
     const unique = games.filter(
-      (game, index, all) =>
-        all.findIndex((entry) => entry.name === game.name) === index,
+      (game, index, all) => all.findIndex((entry) => entry.name === game.name) === index,
     );
     if (filters.game && !unique.some((game) => game.name === filters.game)) {
       unique.unshift({ id: filters.game, name: filters.game } as Game);
@@ -384,11 +337,7 @@ export function CommunityDirectoryPage({
             <StatePanel
               title="No hubs yet"
               description="Create a hub or join a community and it will remain easy to find here."
-              action={
-                <Button onClick={() => changeHubView("discover")}>
-                  Discover hubs
-                </Button>
-              }
+              action={<Button onClick={() => changeHubView("discover")}>Discover hubs</Button>}
             />
           )}
         </section>
@@ -414,19 +363,13 @@ export function CommunityDirectoryPage({
                 {active ? <b>{active}</b> : null}
               </button>
             </div>
-            <div
-              className="community-filters"
-              id={`${kind}-directory-filters`}
-              hidden={!open}
-            >
+            <div className="community-filters" id={`${kind}-directory-filters`} hidden={!open}>
               {kind === "teams" ? (
                 <label>
                   <span>Level</span>
                   <select
                     value={filters.level || ""}
-                    onChange={(event) =>
-                      update("level", event.target.value || undefined)
-                    }
+                    onChange={(event) => update("level", event.target.value || undefined)}
                   >
                     <option value="">All levels</option>
                     {TEAM_LEVELS.map((level) => (
@@ -439,9 +382,7 @@ export function CommunityDirectoryPage({
                   <span>Type</span>
                   <select
                     value={filters.type || ""}
-                    onChange={(event) =>
-                      update("type", event.target.value || undefined)
-                    }
+                    onChange={(event) => update("type", event.target.value || undefined)}
                   >
                     <option value="">All hubs</option>
                     <option value="community">Community</option>
@@ -453,9 +394,7 @@ export function CommunityDirectoryPage({
                 <span>Region</span>
                 <select
                   value={filters.region || ""}
-                  onChange={(event) =>
-                    update("region", event.target.value || undefined)
-                  }
+                  onChange={(event) => update("region", event.target.value || undefined)}
                 >
                   <option value="">All regions</option>
                   {COMMUNITY_REGIONS.map((region) => (
@@ -472,8 +411,7 @@ export function CommunityDirectoryPage({
                 loadingMore={gameQuery.isFetchingNextPage}
                 hasMore={gameQuery.hasNextPage}
                 onLoadMore={() => {
-                  if (!gameQuery.isFetchingNextPage)
-                    void gameQuery.fetchNextPage();
+                  if (!gameQuery.isFetchingNextPage) void gameQuery.fetchNextPage();
                 }}
                 options={gameOptions}
                 placeholder="All games"

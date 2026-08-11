@@ -6,6 +6,7 @@ export interface PlayerFilters {
   platform?: string;
   game?: string;
   region?: string;
+  includeCurrentUser?: boolean;
 }
 
 export interface PlayerPage {

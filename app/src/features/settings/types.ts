@@ -16,4 +16,5 @@ export interface PlayerSettings {
   timezone?: string;
 }
 
-export type SettingsSection = "profile" | "personal" | "media" | "skills" | "social" | "privacy" | "security";
+export type SettingsSection =
+  "profile" | "personal" | "media" | "skills" | "social" | "privacy" | "security";

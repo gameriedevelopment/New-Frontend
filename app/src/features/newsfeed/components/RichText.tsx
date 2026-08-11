@@ -10,7 +10,23 @@ export function RichText({ className = "", content }: { className?: string; cont
     if (!anchor) return;
     event.stopPropagation();
     const url = new URL(anchor.href, window.location.origin);
-    if (url.origin === window.location.origin) { event.preventDefault(); navigate(`${url.pathname}${url.search}${url.hash}`); }
+    if (url.origin === window.location.origin) {
+      event.preventDefault();
+      navigate(`${url.pathname}${url.search}${url.hash}`);
+    }
   };
-  return <div className={`rich-content ${className}`.trim()} onClick={followLink} onError={(event) => { const image = event.target as HTMLImageElement; if (image.tagName === "IMG" && image.dataset.fallbackApplied !== "true") { image.dataset.fallbackApplied = "true"; image.src = "/media-fallback.svg"; } }} dangerouslySetInnerHTML={{ __html: html }} />;
+  return (
+    <div
+      className={`rich-content ${className}`.trim()}
+      onClick={followLink}
+      onError={(event) => {
+        const image = event.target as HTMLImageElement;
+        if (image.tagName === "IMG" && image.dataset.fallbackApplied !== "true") {
+          image.dataset.fallbackApplied = "true";
+          image.src = "/media-fallback.svg";
+        }
+      }}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
 }

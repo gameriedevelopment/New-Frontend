@@ -1,4 +1,15 @@
-import { Award, Bell, Heart, MessageCircle, ShieldCheck, Swords, UserPlus, Users, WalletCards } from "lucide-react";
+import {
+  Award,
+  Bell,
+  CalendarClock,
+  Heart,
+  MessageCircle,
+  ShieldCheck,
+  Swords,
+  UserPlus,
+  Users,
+  WalletCards,
+} from "lucide-react";
 import { SafeImage } from "../../../components/ui";
 import type { GamerieNotification } from "../types";
 
@@ -19,6 +30,7 @@ function NotificationIcon({ type }: { type: string }) {
   if (type.includes("challenge") || type === "match") return <Swords size={17} />;
   if (type === "achievement") return <Award size={17} />;
   if (type.includes("wallet")) return <WalletCards size={17} />;
+  if (type === "event-reminder") return <CalendarClock size={17} />;
   if (type === "recommendation") return <ShieldCheck size={17} />;
   return <Bell size={17} />;
 }
@@ -30,13 +42,46 @@ function relativeTime(value: string) {
   if (minutes < 60) return `${minutes}m ago`;
   if (minutes < 1440) return `${Math.floor(minutes / 60)}h ago`;
   if (minutes < 10_080) return `${Math.floor(minutes / 1440)}d ago`;
-  return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(new Date(value));
+  return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(
+    new Date(value),
+  );
 }
 
-export function NotificationItem({ compact = false, notification, onOpen }: { compact?: boolean; notification: GamerieNotification; onOpen: (notification: GamerieNotification) => void }) {
-  return <button className="notification-item" data-compact={compact || undefined} data-unread={!notification.isRead || undefined} type="button" onClick={() => onOpen(notification)}>
-    <span className="notification-item__visual">{notification.image ? <SafeImage src={notification.image} alt="" /> : <NotificationIcon type={notification.type} />}</span>
-    <span className="notification-item__body"><strong>{notification.title || "Gamerie update"}</strong><span>{notification.message}</span><time dateTime={notification.createdAt}>{relativeTime(notification.createdAt)}</time></span>
-    {!notification.isRead ? <><i aria-hidden="true" /><span className="sr-only">Unread</span></> : null}
-  </button>;
+export function NotificationItem({
+  compact = false,
+  notification,
+  onOpen,
+}: {
+  compact?: boolean;
+  notification: GamerieNotification;
+  onOpen: (notification: GamerieNotification) => void;
+}) {
+  return (
+    <button
+      className="notification-item"
+      data-compact={compact || undefined}
+      data-unread={!notification.isRead || undefined}
+      type="button"
+      onClick={() => onOpen(notification)}
+    >
+      <span className="notification-item__visual">
+        {notification.image ? (
+          <SafeImage src={notification.image} alt="" />
+        ) : (
+          <NotificationIcon type={notification.type} />
+        )}
+      </span>
+      <span className="notification-item__body">
+        <strong>{notification.title || "Gamerie update"}</strong>
+        <span>{notification.message}</span>
+        <time dateTime={notification.createdAt}>{relativeTime(notification.createdAt)}</time>
+      </span>
+      {!notification.isRead ? (
+        <>
+          <i aria-hidden="true" />
+          <span className="sr-only">Unread</span>
+        </>
+      ) : null}
+    </button>
+  );
 }

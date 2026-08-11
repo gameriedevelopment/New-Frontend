@@ -8,7 +8,10 @@ export function RealtimeBridge() {
   const user = useAuthStore((state) => state.user);
   const [announcement, setAnnouncement] = useState("");
   useEffect(() => {
-    if (!user?.id) { disconnectMessagingSocket(); return; }
+    if (!user?.id) {
+      disconnectMessagingSocket();
+      return;
+    }
     const socket = connectMessagingSocket();
     const refresh = (payload?: { conversationId?: string }) => {
       client.invalidateQueries({ queryKey: ["conversations"] });
@@ -26,9 +29,28 @@ export function RealtimeBridge() {
       client.invalidateQueries({ queryKey: ["hub-operations"] });
       if (payload?.message) setAnnouncement(payload.message);
     };
-    ["message.created", "message.sent", "message.edited", "message.deleted", "conversation.read"].forEach((event) => socket.on(event, refresh));
+    [
+      "message.created",
+      "message.sent",
+      "message.edited",
+      "message.deleted",
+      "conversation.read",
+    ].forEach((event) => socket.on(event, refresh));
     socket.on("notification.created", refreshNotifications);
-    return () => { ["message.created", "message.sent", "message.edited", "message.deleted", "conversation.read"].forEach((event) => socket.off(event, refresh)); socket.off("notification.created", refreshNotifications); };
+    return () => {
+      [
+        "message.created",
+        "message.sent",
+        "message.edited",
+        "message.deleted",
+        "conversation.read",
+      ].forEach((event) => socket.off(event, refresh));
+      socket.off("notification.created", refreshNotifications);
+    };
   }, [client, user?.id]);
-  return <div className="sr-only" aria-live="polite" aria-atomic="true">{announcement}</div>;
+  return (
+    <div className="sr-only" aria-live="polite" aria-atomic="true">
+      {announcement}
+    </div>
+  );
 }

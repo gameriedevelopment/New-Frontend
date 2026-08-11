@@ -19,6 +19,7 @@ export function AppHeader() {
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const isAdmin = String(user?.role ?? "").toLowerCase() === "admin";
+  const adminUrl = import.meta.env.VITE_ADMIN_URL || "http://localhost:5175";
   const unreadQuery = useTotalUnread();
   const unread = Number(unreadQuery.data ?? 0);
 
@@ -63,24 +64,69 @@ export function AppHeader() {
 
   return (
     <header className="app-header">
-      <Link className="app-header__mobile-brand" to="/feed" aria-label="Gamerie feed"><img src="/gamerie-logo.svg" alt="" /><span>Gamerie</span></Link>
-      <Link className="app-header__search" to="/search"><Search size={16} /><span>Search Gamerie</span><kbd>/</kbd></Link>
+      <Link className="app-header__mobile-brand" to="/feed" aria-label="Gamerie feed">
+        <img src="/gamerie-logo.svg" alt="" />
+        <span>Gamerie</span>
+      </Link>
+      <Link className="app-header__search" to="/search">
+        <Search size={16} />
+        <span>Search Gamerie</span>
+        <kbd>/</kbd>
+      </Link>
       <div className="app-header__actions">
-        {isAdmin && <Link className="app-header__icon" to="/admin" aria-label="Admin"><Shield size={18} /></Link>}
-        <Link className="app-header__icon app-header__messages" to="/messages" aria-label={unread ? `Messages, ${unread} unread` : "Messages"}><MessageSquare size={18} />{unread > 0 ? <span className="app-header__badge">{unread > 99 ? "99+" : unread}</span> : null}</Link>
+        {isAdmin && (
+          <a className="app-header__icon" href={adminUrl} aria-label="Open Gamerie Operations">
+            <Shield size={18} />
+          </a>
+        )}
+        <Link
+          className="app-header__icon app-header__messages"
+          to="/messages"
+          aria-label={unread ? `Messages, ${unread} unread` : "Messages"}
+        >
+          <MessageSquare size={18} />
+          {unread > 0 ? (
+            <span className="app-header__badge">{unread > 99 ? "99+" : unread}</span>
+          ) : null}
+        </Link>
         <NotificationBell />
         <div className="app-profile" ref={profileRef}>
-          <button className="app-profile__trigger" type="button" onClick={() => setIsProfileOpen((open) => !open)} aria-expanded={isProfileOpen}>
-            {user?.profileImage ? <SafeImage className="app-avatar app-avatar--image" src={user.profileImage} alt="" /> : <span className="app-avatar">{initials(user?.username, user?.email)}</span>}
-            <span className="app-profile__identity"><strong>{user?.username || "Player"}</strong><small>{user?.email}</small></span>
+          <button
+            className="app-profile__trigger"
+            type="button"
+            onClick={() => setIsProfileOpen((open) => !open)}
+            aria-expanded={isProfileOpen}
+          >
+            {user?.profileImage ? (
+              <SafeImage className="app-avatar app-avatar--image" src={user.profileImage} alt="" />
+            ) : (
+              <span className="app-avatar">{initials(user?.username, user?.email)}</span>
+            )}
+            <span className="app-profile__identity">
+              <strong>{user?.username || "Player"}</strong>
+              <small>{user?.email}</small>
+            </span>
             <ChevronDown size={14} />
           </button>
-          {isProfileOpen && <div className="app-profile__menu">
-            <Link to={`/profile/${user?.username ?? user?.id}`} onClick={() => setIsProfileOpen(false)}>View profile</Link>
-            <Link to="/settings" onClick={() => setIsProfileOpen(false)}><Settings size={15} />Settings</Link>
-            <button type="button" onClick={logout}><LogOut size={15} />Sign out</button>
-            {logoutError && <p role="alert">{logoutError}</p>}
-          </div>}
+          {isProfileOpen && (
+            <div className="app-profile__menu">
+              <Link
+                to={`/profile/${user?.username ?? user?.id}`}
+                onClick={() => setIsProfileOpen(false)}
+              >
+                View profile
+              </Link>
+              <Link to="/settings" onClick={() => setIsProfileOpen(false)}>
+                <Settings size={15} />
+                Settings
+              </Link>
+              <button type="button" onClick={logout}>
+                <LogOut size={15} />
+                Sign out
+              </button>
+              {logoutError && <p role="alert">{logoutError}</p>}
+            </div>
+          )}
         </div>
       </div>
     </header>

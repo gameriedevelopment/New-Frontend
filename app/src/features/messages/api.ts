@@ -1,50 +1,95 @@
 import { api, API_URL } from "../../lib/api";
 import Cookies from "js-cookie";
 import { io, type Socket } from "socket.io-client";
-import type { ApiEnvelope, ChatMessage, ConversationsPage, CreateConversationPayload, MessageConversation, MessagesPage, RecipientSearchPage, RecipientTeam, RecipientUser } from "./types";
+import type {
+  ApiEnvelope,
+  ChatMessage,
+  ConversationsPage,
+  CreateConversationPayload,
+  MessageConversation,
+  MessagesPage,
+  RecipientSearchPage,
+  RecipientTeam,
+  RecipientUser,
+} from "./types";
 
-export async function getConversations(page = 1, type: "user" | "team" = "user"): Promise<ConversationsPage> {
-  const { data } = await api.get<ApiEnvelope<ConversationsPage>>("/messaging/conversations", { params: { page, limit: 20, type } });
+export async function getConversations(
+  page = 1,
+  type: "user" | "team" = "user",
+): Promise<ConversationsPage> {
+  const { data } = await api.get<ApiEnvelope<ConversationsPage>>("/messaging/conversations", {
+    params: { page, limit: 20, type },
+  });
   return data.data;
 }
 
-export async function getMessages(conversationId: string, before?: string | null): Promise<MessagesPage> {
-  const { data } = await api.get<ApiEnvelope<MessagesPage>>(`/messaging/${conversationId}/messages`, { params: { before: before || undefined, limit: 50 } });
+export async function getMessages(
+  conversationId: string,
+  before?: string | null,
+): Promise<MessagesPage> {
+  const { data } = await api.get<ApiEnvelope<MessagesPage>>(
+    `/messaging/${conversationId}/messages`,
+    { params: { before: before || undefined, limit: 50 } },
+  );
   return data.data;
 }
 
 export async function searchConversations(search: string): Promise<MessageConversation[]> {
-  const { data } = await api.get<ApiEnvelope<MessageConversation[]>>("/messaging/search", { params: { search, limit: 20, offset: 0 } });
+  const { data } = await api.get<ApiEnvelope<MessageConversation[]>>("/messaging/search", {
+    params: { search, limit: 20, offset: 0 },
+  });
   return data.data;
 }
 
-export async function sendMessage(conversationId: string, content: string, isAnnouncement = false): Promise<ChatMessage> {
-  const { data } = await api.post<ApiEnvelope<ChatMessage>>(`/messaging/${conversationId}/messages`, { content, isAnnouncement });
+export async function sendMessage(
+  conversationId: string,
+  content: string,
+  isAnnouncement = false,
+): Promise<ChatMessage> {
+  const { data } = await api.post<ApiEnvelope<ChatMessage>>(
+    `/messaging/${conversationId}/messages`,
+    { content, isAnnouncement },
+  );
   return data.data;
 }
 
 export async function editMessage(messageId: string, content: string): Promise<ChatMessage> {
-  const { data } = await api.patch<ApiEnvelope<ChatMessage>>(`/messaging/messages/${messageId}`, { content });
+  const { data } = await api.patch<ApiEnvelope<ChatMessage>>(`/messaging/messages/${messageId}`, {
+    content,
+  });
   return data.data;
 }
 
 export async function deleteMessage(messageId: string): Promise<{ success: boolean }> {
-  const { data } = await api.delete<ApiEnvelope<{ success: boolean }>>(`/messaging/messages/${messageId}`);
+  const { data } = await api.delete<ApiEnvelope<{ success: boolean }>>(
+    `/messaging/messages/${messageId}`,
+  );
   return data.data;
 }
 
-export async function createConversation(payload: CreateConversationPayload): Promise<MessageConversation> {
-  const { data } = await api.post<ApiEnvelope<MessageConversation>>("/messaging/conversations", payload);
+export async function createConversation(
+  payload: CreateConversationPayload,
+): Promise<MessageConversation> {
+  const { data } = await api.post<ApiEnvelope<MessageConversation>>(
+    "/messaging/conversations",
+    payload,
+  );
   return data.data;
 }
 
 export async function searchUsers(search: string): Promise<RecipientUser[]> {
-  const { data } = await api.get<ApiEnvelope<RecipientSearchPage<RecipientUser>>>("/users/search/all", { params: { search, page: 1, limit: 20 } });
+  const { data } = await api.get<ApiEnvelope<RecipientSearchPage<RecipientUser>>>(
+    "/users/search/all",
+    { params: { search, page: 1, limit: 20 } },
+  );
   return data.data.users ?? [];
 }
 
 export async function searchTeams(search: string): Promise<RecipientTeam[]> {
-  const { data } = await api.get<ApiEnvelope<RecipientSearchPage<RecipientTeam>>>("/teams/search/all", { params: { search, page: 1, limit: 20 } });
+  const { data } = await api.get<ApiEnvelope<RecipientSearchPage<RecipientTeam>>>(
+    "/teams/search/all",
+    { params: { search, page: 1, limit: 20 } },
+  );
   return data.data.teams ?? [];
 }
 
@@ -77,7 +122,17 @@ let socket: Socket | null = null;
 export function getMessagingSocket() {
   const realtimeUrl = API_URL.replace(/\/api\/v1\/?$/, "");
   const token = Cookies.get("auth_token");
-  if (!socket) socket = io(`${realtimeUrl}/realtime`, { autoConnect: false, transports: ["websocket", "polling"], auth: { token }, withCredentials: true, reconnection: true, reconnectionAttempts: Infinity, reconnectionDelay: 500, reconnectionDelayMax: 5000 });
+  if (!socket)
+    socket = io(`${realtimeUrl}/realtime`, {
+      autoConnect: false,
+      transports: ["websocket", "polling"],
+      auth: { token },
+      withCredentials: true,
+      reconnection: true,
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 500,
+      reconnectionDelayMax: 5000,
+    });
   socket.auth = { token };
   return socket;
 }
@@ -88,4 +143,6 @@ export function connectMessagingSocket() {
   return active;
 }
 
-export function disconnectMessagingSocket() { socket?.disconnect(); }
+export function disconnectMessagingSocket() {
+  socket?.disconnect();
+}

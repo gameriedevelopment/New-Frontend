@@ -1,0 +1,26 @@
+:root {
+  color-scheme: dark;
+  --ao-canvas: #090b11;
+  --ao-canvas-deep: #07080c;
+  --ao-surface-1: #10131a;
+  --ao-surface-2: #141821;
+  --ao-surface-interactive: #181c26;
+  --ao-border-subtle: rgb(238 230 255 / 0.075);
+  --ao-border: rgb(238 230 255 / 0.13);
+  --ao-border-strong: rgb(183 161 255 / 0.3);
+  --ao-text: #f5f3f8;
+  --ao-text-secondary: #b9b3c2;
+  --ao-text-muted: #8e8998;
+  --ao-accent: #b7a1ff;
+  --ao-accent-hover: #cbbcff;
+  --ao-accent-soft: rgb(183 161 255 / 0.1);
+  --ao-danger: #f18a96;
+  --ao-font-body: "Manrope Variable", "Manrope", sans-serif;
+  --ao-font-display: "Instrument Sans Variable", "Instrument Sans", sans-serif;
+  --ao-radius-sm: 7px;
+  --ao-radius-md: 10px;
+  --ao-radius-lg: 16px;
+  --ao-page-gutter: clamp(1rem, 3.2vw, 3.5rem);
+  --ao-content-max: 90rem;
+  --ao-focus: 0 0 0 3px rgb(183 161 255 / 0.24);
+}

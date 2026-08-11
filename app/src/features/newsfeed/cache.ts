@@ -18,7 +18,11 @@ function isRecord(value: unknown): value is CacheRecord {
 }
 
 /** Patch a post wherever React Query may store it without disturbing its envelope. */
-export function patchPostCacheValue(value: unknown, postId: string, patcher: (post: FeedPost) => FeedPost): unknown {
+export function patchPostCacheValue(
+  value: unknown,
+  postId: string,
+  patcher: (post: FeedPost) => FeedPost,
+): unknown {
   if (Array.isArray(value)) return value.map((item) => patchPostCacheValue(item, postId, patcher));
   if (!isRecord(value)) return value;
 
@@ -38,7 +42,11 @@ export function snapshotPostCaches(client: QueryClient): PostCacheSnapshot {
   return postCacheRoots.flatMap((queryKey) => client.getQueriesData({ queryKey }));
 }
 
-export function patchPostCaches(client: QueryClient, postId: string, patcher: (post: FeedPost) => FeedPost) {
+export function patchPostCaches(
+  client: QueryClient,
+  postId: string,
+  patcher: (post: FeedPost) => FeedPost,
+) {
   postCacheRoots.forEach((queryKey) => {
     client.setQueriesData({ queryKey }, (current) => patchPostCacheValue(current, postId, patcher));
   });

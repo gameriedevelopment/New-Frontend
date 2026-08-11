@@ -1,0 +1,2 @@
+npm --prefix app exec lint-staged -- --cwd app
+npm --prefix admin exec lint-staged -- --cwd admin

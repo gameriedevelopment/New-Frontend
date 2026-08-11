@@ -1,7 +1,9 @@
 import { api } from "../../lib/api";
 import type { PlayerFilters, PlayerPage, SearchEntity, SearchKind, SearchPage } from "./types";
 
-interface ApiEnvelope<T> { data: T; }
+interface ApiEnvelope<T> {
+  data: T;
+}
 
 export async function getPlayers(filters: PlayerFilters, page = 1): Promise<PlayerPage> {
   const { data } = await api.get<ApiEnvelope<PlayerPage>>("/users", {
@@ -11,7 +13,7 @@ export async function getPlayers(filters: PlayerFilters, page = 1): Promise<Play
       platform: filters.platform || undefined,
       game: filters.game || undefined,
       region: filters.region || undefined,
-      canFetchCurrentUser: false,
+      canFetchCurrentUser: filters.includeCurrentUser ? true : false,
       page,
       limit: 12,
     },

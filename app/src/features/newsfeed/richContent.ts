@@ -30,12 +30,21 @@ const markdown: MarkdownIt = new MarkdownIt({
   linkify: true,
   typographer: true,
   highlight(code: string, language: string): string {
-    if (language && hljs.getLanguage(language)) return `<pre class="hljs"><code>${hljs.highlight(code, { language }).value}</code></pre>`;
+    if (language && hljs.getLanguage(language))
+      return `<pre class="hljs"><code>${hljs.highlight(code, { language }).value}</code></pre>`;
     return `<pre class="hljs"><code>${markdown.utils.escapeHtml(code)}</code></pre>`;
   },
-}).use(emoji).use(taskLists).use(footnote).use(sub).use(sup);
+})
+  .use(emoji)
+  .use(taskLists)
+  .use(footnote)
+  .use(sub)
+  .use(sup);
 
-const defaultLinkOpen: RenderRule = markdown.renderer.rules.link_open ?? ((tokens, index, options, _environment, renderer) => renderer.renderToken(tokens, index, options));
+const defaultLinkOpen: RenderRule =
+  markdown.renderer.rules.link_open ??
+  ((tokens, index, options, _environment, renderer) =>
+    renderer.renderToken(tokens, index, options));
 markdown.renderer.rules.link_open = (tokens, index, options, environment, renderer) => {
   const token = tokens[index];
   const href = token.attrGet("href") ?? "";
@@ -46,7 +55,9 @@ markdown.renderer.rules.link_open = (tokens, index, options, environment, render
   return defaultLinkOpen(tokens, index, options, environment, renderer);
 };
 
-const defaultText: RenderRule = markdown.renderer.rules.text ?? ((tokens, index) => markdown.utils.escapeHtml(tokens[index].content));
+const defaultText: RenderRule =
+  markdown.renderer.rules.text ??
+  ((tokens, index) => markdown.utils.escapeHtml(tokens[index].content));
 markdown.renderer.rules.text = (tokens, index, options, environment, renderer) => {
   let linkDepth = 0;
   for (let tokenIndex = 0; tokenIndex < index; tokenIndex += 1) {
@@ -54,11 +65,19 @@ markdown.renderer.rules.text = (tokens, index, options, environment, renderer) =
     if (tokens[tokenIndex].type === "link_close") linkDepth -= 1;
   }
   if (linkDepth > 0) return defaultText(tokens, index, options, environment, renderer);
-  return markdown.utils.escapeHtml(tokens[index].content).replace(/(^|\s)#([\p{L}\p{N}_-]+)/gu, (_match: string, spacing: string, tag: string) => `${spacing}<a href="/search?tag=${encodeURIComponent(tag)}" class="rich-content__tag">#${tag}</a>`);
+  return markdown.utils
+    .escapeHtml(tokens[index].content)
+    .replace(
+      /(^|\s)#([\p{L}\p{N}_-]+)/gu,
+      (_match: string, spacing: string, tag: string) =>
+        `${spacing}<a href="/search?tag=${encodeURIComponent(tag)}" class="rich-content__tag">#${tag}</a>`,
+    );
 };
 
 export function renderRichContent(content: unknown) {
-  const source = String(content ?? "").replace(/\u2028|\u2029/g, "\n").trim();
+  const source = String(content ?? "")
+    .replace(/\u2028|\u2029/g, "\n")
+    .trim();
   if (!source) return "";
   return DOMPurify.sanitize(markdown.render(source), {
     ADD_ATTR: ["checked", "target"],

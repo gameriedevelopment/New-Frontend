@@ -1,3 +1,80 @@
 import { X } from "lucide-react";
 import { useEffect, useId, useRef, type ReactNode } from "react";
-export function CommunityDialog({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) { const id = useId(); const panel = useRef<HTMLElement>(null); const close = useRef<HTMLButtonElement>(null); useEffect(() => { const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null; let keyboardExit = false; const overflow = document.body.style.overflow; document.body.style.overflow = "hidden"; const frame = requestAnimationFrame(() => panel.current?.querySelector<HTMLElement>("textarea,input,select,button")?.focus() ?? close.current?.focus()); const key = (event: KeyboardEvent) => { keyboardExit = true; if (event.key === "Escape") { event.preventDefault(); onClose(); } if (event.key !== "Tab" || !panel.current) return; const nodes = [...panel.current.querySelectorAll<HTMLElement>('button:not(:disabled),input:not(:disabled),textarea:not(:disabled),select:not(:disabled),a[href]')]; if (!nodes.length) return; const first = nodes[0], last = nodes[nodes.length - 1]; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } }; const pointer = () => { keyboardExit = false; }; document.addEventListener("keydown", key); document.addEventListener("pointerdown", pointer); return () => { cancelAnimationFrame(frame); document.removeEventListener("keydown", key); document.removeEventListener("pointerdown", pointer); document.body.style.overflow = overflow; if (keyboardExit) previous?.focus(); }; }, [onClose]); return <div className="community-dialog" role="presentation" onMouseDown={(e) => e.target === e.currentTarget && onClose()}><section ref={panel} role="dialog" aria-modal="true" aria-labelledby={id}><header><h2 id={id}>{title}</h2><button ref={close} type="button" aria-label="Close dialog" onClick={onClose}><X size={17} /></button></header>{children}</section></div>; }
+export function CommunityDialog({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: ReactNode;
+}) {
+  const id = useId();
+  const panel = useRef<HTMLElement>(null);
+  const close = useRef<HTMLButtonElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  useEffect(() => {
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    let keyboardExit = false;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const frame = requestAnimationFrame(
+      () =>
+        panel.current?.querySelector<HTMLElement>("textarea,input,select,button")?.focus() ??
+        close.current?.focus(),
+    );
+    const key = (event: KeyboardEvent) => {
+      keyboardExit = true;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onCloseRef.current();
+      }
+      if (event.key !== "Tab" || !panel.current) return;
+      const nodes = [
+        ...panel.current.querySelectorAll<HTMLElement>(
+          "button:not(:disabled),input:not(:disabled),textarea:not(:disabled),select:not(:disabled),a[href]",
+        ),
+      ];
+      if (!nodes.length) return;
+      const first = nodes[0],
+        last = nodes[nodes.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    const pointer = () => {
+      keyboardExit = false;
+    };
+    document.addEventListener("keydown", key);
+    document.addEventListener("pointerdown", pointer);
+    return () => {
+      cancelAnimationFrame(frame);
+      document.removeEventListener("keydown", key);
+      document.removeEventListener("pointerdown", pointer);
+      document.body.style.overflow = overflow;
+      if (keyboardExit) previous?.focus();
+    };
+  }, []);
+  return (
+    <div
+      className="community-dialog"
+      role="presentation"
+      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <section ref={panel} role="dialog" aria-modal="true" aria-labelledby={id}>
+        <header>
+          <h2 id={id}>{title}</h2>
+          <button ref={close} type="button" aria-label="Close dialog" onClick={onClose}>
+            <X size={17} />
+          </button>
+        </header>
+        {children}
+      </section>
+    </div>
+  );
+}

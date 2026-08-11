@@ -11,9 +11,15 @@ import type {
   Paginated,
 } from "./types";
 
-interface ApiEnvelope<T> { data: T; }
+interface ApiEnvelope<T> {
+  data: T;
+}
 
-export async function getGames(filters: GameFilters, page = 1, limit = 12): Promise<Paginated<Game>> {
+export async function getGames(
+  filters: GameFilters,
+  page = 1,
+  limit = 12,
+): Promise<Paginated<Game>> {
   const { data } = await api.get<ApiEnvelope<Paginated<Game>>>("/games", {
     params: {
       search: filters.search || undefined,
@@ -38,18 +44,34 @@ export async function getGameStats(gameId: string): Promise<GameStats> {
 }
 
 export async function getGamesStats(gameIds: string[]): Promise<Record<string, GameStats>> {
-  const { data } = await api.post<ApiEnvelope<Record<string, GameStats>>>("/games/stats/batch", { gameIds });
+  const { data } = await api.post<ApiEnvelope<Record<string, GameStats>>>("/games/stats/batch", {
+    gameIds,
+  });
   return data.data;
 }
 
-export async function getActiveGameUsers(gameId: string, search: string, page = 1): Promise<Paginated<ActiveGameUser>> {
+export async function getActiveGameUsers(
+  gameId: string,
+  search: string,
+  page = 1,
+): Promise<Paginated<ActiveGameUser>> {
   const { data } = await api.get<Paginated<ActiveGameUser>>(`/games/users/${gameId}`, {
     params: { searchTerm: search || undefined, page, limit: 12 },
   });
-  return { ...data, page: Number(data.page), limit: Number(data.limit), total: Number(data.total), totalPages: Number(data.totalPages) };
+  return {
+    ...data,
+    page: Number(data.page),
+    limit: Number(data.limit),
+    total: Number(data.total),
+    totalPages: Number(data.totalPages),
+  };
 }
 
-export async function getActiveGameTeams(gameId: string, filters: ActiveTeamFilters, page = 1): Promise<Paginated<ActiveGameTeam>> {
+export async function getActiveGameTeams(
+  gameId: string,
+  filters: ActiveTeamFilters,
+  page = 1,
+): Promise<Paginated<ActiveGameTeam>> {
   const { data } = await api.get<Paginated<ActiveGameTeam>>(`/games/teams/${gameId}`, {
     params: {
       searchTerm: filters.search || undefined,
@@ -59,7 +81,13 @@ export async function getActiveGameTeams(gameId: string, filters: ActiveTeamFilt
       limit: 12,
     },
   });
-  return { ...data, page: Number(data.page), limit: Number(data.limit), total: Number(data.total), totalPages: Number(data.totalPages) };
+  return {
+    ...data,
+    page: Number(data.page),
+    limit: Number(data.limit),
+    total: Number(data.total),
+    totalPages: Number(data.totalPages),
+  };
 }
 
 export async function getGridSeries(game: GridGameKey): Promise<GridSeriesResponse> {

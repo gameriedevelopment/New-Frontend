@@ -17,7 +17,7 @@ export function usePlayers(filters: PlayerFilters) {
     queryKey: ["discovery-players", filters],
     queryFn: ({ pageParam }) => getPlayers(filters, pageParam),
     initialPageParam: 1,
-    getNextPageParam: (page) => page.page < page.totalPages ? page.page + 1 : undefined,
+    getNextPageParam: (page) => (page.page < page.totalPages ? page.page + 1 : undefined),
     staleTime: 2 * 60_000,
   });
 }
@@ -27,7 +27,7 @@ export function useUnifiedSearch(kind: SearchKind, term: string) {
     queryKey: ["unified-search", kind, term],
     queryFn: ({ pageParam }) => searchGamerie(kind, term, pageParam),
     initialPageParam: 1,
-    getNextPageParam: (page) => page.page < page.totalPages ? page.page + 1 : undefined,
+    getNextPageParam: (page) => (page.page < page.totalPages ? page.page + 1 : undefined),
     enabled: term.trim().length > 0,
     staleTime: 60_000,
   });

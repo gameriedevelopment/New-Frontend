@@ -1,9 +1,20 @@
 import { api } from "../../lib/api";
-import type { Challenge, ChallengeFilters, ChallengePageData, ChallengeType, CreateChallengePayload } from "./types";
+import type {
+  Challenge,
+  ChallengeFilters,
+  ChallengePageData,
+  ChallengeType,
+  CreateChallengePayload,
+} from "./types";
 
-interface Envelope<T> { data: T; }
+interface Envelope<T> {
+  data: T;
+}
 
-export async function getMyChallenges(filters: ChallengeFilters, page = 1): Promise<ChallengePageData> {
+export async function getMyChallenges(
+  filters: ChallengeFilters,
+  page = 1,
+): Promise<ChallengePageData> {
   const { data } = await api.get<Envelope<ChallengePageData>>("/challenges/mine", {
     params: { ...filters, page, limit: 12, searchTerm: filters.searchTerm || undefined },
   });
@@ -20,13 +31,23 @@ export async function createChallenge(payload: CreateChallengePayload): Promise<
   return data.data;
 }
 
-export async function updateChallenge(id: string, type: ChallengeType, updates: Partial<Challenge>): Promise<Challenge> {
+export async function updateChallenge(
+  id: string,
+  type: ChallengeType,
+  updates: Partial<Challenge>,
+): Promise<Challenge> {
   const { data } = await api.patch<Envelope<Challenge>>(`/challenges/${id}/${type}`, updates);
   return data.data;
 }
 
-export async function refreshChallenge(id: string, type: ChallengeType, scheduledDate: string): Promise<Challenge> {
-  const { data } = await api.patch<Envelope<Challenge>>(`/challenges/${id}/${type}/refresh`, { scheduledDate });
+export async function refreshChallenge(
+  id: string,
+  type: ChallengeType,
+  scheduledDate: string,
+): Promise<Challenge> {
+  const { data } = await api.patch<Envelope<Challenge>>(`/challenges/${id}/${type}/refresh`, {
+    scheduledDate,
+  });
   return data.data;
 }
 

@@ -1,5 +1,16 @@
 import { api } from "../../lib/api";
-import type { CreatePostPayload, FeedComment, FeedFilter, FeedPage, FeedPost, HubPostContext, LinkPreview, PostOwnerType, TeamPostContext, TrendingTopic } from "./types";
+import type {
+  CreatePostPayload,
+  FeedComment,
+  FeedFilter,
+  FeedPage,
+  FeedPost,
+  HubPostContext,
+  LinkPreview,
+  PostOwnerType,
+  TeamPostContext,
+  TrendingTopic,
+} from "./types";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -15,7 +26,9 @@ export function normalizeFeedPage(payload: unknown): FeedPage {
   const root = record(payload);
   const nested = record(root?.data);
   const source = nested ?? root;
-  const posts = postArray(source?.posts ?? source?.items ?? (Array.isArray(payload) ? payload : []));
+  const posts = postArray(
+    source?.posts ?? source?.items ?? (Array.isArray(payload) ? payload : []),
+  );
   const cursor = source?.nextCursor;
   return { posts, nextCursor: typeof cursor === "string" && cursor ? cursor : null };
 }
@@ -27,7 +40,11 @@ export async function getFeedPosts(filter: FeedFilter, cursor?: string | null): 
   return normalizeFeedPage(data);
 }
 
-export async function getSinglePost(postId: string, teamId?: string, hubId?: string): Promise<FeedPost> {
+export async function getSinglePost(
+  postId: string,
+  teamId?: string,
+  hubId?: string,
+): Promise<FeedPost> {
   const { data } = await api.get(`/newsfeed/${postId}`, { params: { teamId, hubId } });
   return (record(data)?.data ?? data) as FeedPost;
 }
@@ -45,10 +62,15 @@ export async function getTeamPostContext(teamId: string): Promise<TeamPostContex
 export async function getPostComments(postId: string, type: PostOwnerType): Promise<FeedComment[]> {
   const { data } = await api.get(`/newsfeed/${postId}/comments/${type}`);
   const payload = record(data)?.data ?? data;
-  return Array.isArray(payload) ? payload as FeedComment[] : [];
+  return Array.isArray(payload) ? (payload as FeedComment[]) : [];
 }
 
-export async function addComment(postId: string, content: string, parentCommentId: string | null, type: PostOwnerType) {
+export async function addComment(
+  postId: string,
+  content: string,
+  parentCommentId: string | null,
+  type: PostOwnerType,
+) {
   await api.post(`/newsfeed/${postId}/comment/${type}`, { content, parentCommentId });
 }
 
@@ -66,11 +88,21 @@ export async function deleteComment(commentId: string) {
   await api.delete(`/newsfeed/comment/${commentId}/delete`);
 }
 
-export async function notifyPostComment(payload: { userId: string; targetId: string; contentType: "post"; contentId: string }) {
+export async function notifyPostComment(payload: {
+  userId: string;
+  targetId: string;
+  contentType: "post";
+  contentId: string;
+}) {
   await api.post("/notifications/comment", payload);
 }
 
-export async function notifyPostLike(payload: { userId: string; targetId: string; contentType: "post"; contentId: string }) {
+export async function notifyPostLike(payload: {
+  userId: string;
+  targetId: string;
+  contentType: "post";
+  contentId: string;
+}) {
   await api.post("/notifications/like", payload);
 }
 
@@ -85,7 +117,12 @@ export async function createPost(userId: string, payload: CreatePostPayload): Pr
   return (record(data)?.data ?? data) as FeedPost;
 }
 
-export async function createCommunityPost(kind: "team" | "hub", userId: string, communityId: string, payload: CreatePostPayload): Promise<FeedPost> {
+export async function createCommunityPost(
+  kind: "team" | "hub",
+  userId: string,
+  communityId: string,
+  payload: CreatePostPayload,
+): Promise<FeedPost> {
   const formData = new FormData();
   formData.append("content", payload.content);
   formData.append("isAnnouncement", String(Boolean(payload.isAnnouncement)));
@@ -101,7 +138,11 @@ export async function togglePostLike(postId: string, type: PostOwnerType): Promi
   return (record(data)?.data ?? data) as FeedPost;
 }
 
-export async function editPost(postId: string, content: string, type: PostOwnerType): Promise<FeedPost> {
+export async function editPost(
+  postId: string,
+  content: string,
+  type: PostOwnerType,
+): Promise<FeedPost> {
   const { data } = await api.patch(`/newsfeed/${postId}/${type}`, { content });
   return (record(data)?.data ?? data) as FeedPost;
 }
@@ -110,7 +151,10 @@ export async function deletePost(postId: string, type: PostOwnerType) {
   await api.delete(`/newsfeed/${postId}/${type}`);
 }
 
-export async function toggleRepost(postId: string, comment: string): Promise<{ reposted: boolean }> {
+export async function toggleRepost(
+  postId: string,
+  comment: string,
+): Promise<{ reposted: boolean }> {
   const { data } = await api.post(`/newsfeed/${postId}/repost`, { comment });
   return (record(data)?.data ?? data) as { reposted: boolean };
 }

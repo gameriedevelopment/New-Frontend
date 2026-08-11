@@ -6,6 +6,10 @@
   "scripts": {
     "dev": "vite --port 5173",
     "build": "tsc && vite build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "cd .. && husky",
+    "prepush": "npm run typecheck && npm test",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
@@ -15,6 +19,8 @@
     "@fontsource-variable/instrument-sans": "^5.3.0",
     "@fontsource-variable/manrope": "^5.3.0",
     "@hookform/resolvers": "^3.3.4",
+    "@stripe/react-stripe-js": "^6.8.1",
+    "@stripe/stripe-js": "^9.13.0",
     "@tanstack/react-query": "^5.101.4",
     "@tiptap/extension-code-block-lowlight": "^2.27.2",
     "@tiptap/extension-link": "^2.27.2",
@@ -51,11 +57,17 @@
     "zod": "^3.22.4",
     "zustand": "^4.5.1"
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,md,html}": "prettier --write"
+  },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
+    "prettier": "^3.9.6",
     "typescript": "^5.2.2",
     "vite": "^5.1.4",
     "vitest": "^2.1.9"

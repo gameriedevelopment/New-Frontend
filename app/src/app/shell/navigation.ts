@@ -1,4 +1,16 @@
-import { CalendarDays, Compass, Gamepad2, Home, Medal, MessagesSquare, RadioTower, Shield, Swords, Trophy, Wallet } from "lucide-react";
+import {
+  CalendarDays,
+  Compass,
+  Gamepad2,
+  Home,
+  Medal,
+  MessagesSquare,
+  RadioTower,
+  Shield,
+  Swords,
+  Trophy,
+  Wallet,
+} from "lucide-react";
 
 export const primaryNavigation = [
   { label: "Feed", href: "/feed", icon: Home },

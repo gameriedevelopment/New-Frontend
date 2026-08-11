@@ -22,7 +22,9 @@ export function VerifyEmailPage() {
 
   useEffect(() => {
     if (user?.emailVerified) navigate("/feed", { replace: true });
-    return () => { if (timerRef.current) window.clearInterval(timerRef.current); };
+    return () => {
+      if (timerRef.current) window.clearInterval(timerRef.current);
+    };
   }, [navigate, user?.emailVerified]);
 
   const startCountdown = () => {
@@ -60,14 +62,24 @@ export function VerifyEmailPage() {
       startCountdown();
     } catch (requestError) {
       const status = (requestError as { response?: { status?: number } }).response?.status;
-      setError(status === 400 ? "This email address is already verified." : status === 404 ? "We couldn't find this account." : getApiErrorMessage(requestError, "We couldn't resend the verification email."));
+      setError(
+        status === 400
+          ? "This email address is already verified."
+          : status === 404
+            ? "We couldn't find this account."
+            : getApiErrorMessage(requestError, "We couldn't resend the verification email."),
+      );
     } finally {
       setIsResending(false);
     }
   };
 
   const backToLogin = async () => {
-    try { await signOut(); } catch { clearUser(); }
+    try {
+      await signOut();
+    } catch {
+      clearUser();
+    }
     navigate("/login", { replace: true });
   };
 
@@ -76,18 +88,74 @@ export function VerifyEmailPage() {
 
   return (
     <main className="auth-entry">
-      <header className="auth-topbar"><a className="auth-brand" href="http://localhost:5173" aria-label="Gamerie website"><img src="/gamerie-logo.svg" alt="" /><span>Gamerie</span></a></header>
+      <header className="auth-topbar">
+        <a className="auth-brand" href="http://localhost:5173" aria-label="Gamerie website">
+          <img src="/gamerie-logo.svg" alt="" />
+          <span>Gamerie</span>
+        </a>
+      </header>
       <section className="auth-stage" aria-labelledby="verify-email-title">
-        <aside className="auth-story" aria-label="About Gamerie"><div className="auth-story__copy"><h1>Your game life,<br /><span>connected.</span></h1><p>Build a credible gaming identity, find your people, and move from playing to belonging.</p></div></aside>
+        <aside className="auth-story" aria-label="About Gamerie">
+          <div className="auth-story__copy">
+            <h1>
+              Your game life,
+              <br />
+              <span>connected.</span>
+            </h1>
+            <p>
+              Build a credible gaming identity, find your people, and move from playing to
+              belonging.
+            </p>
+          </div>
+        </aside>
         <section className="auth-panel auth-confirmation">
           <h2 id="verify-email-title">Check your email.</h2>
-          <p>We sent a verification link{email ? <> to <strong>{email}</strong></> : " to your email address"}. Open it to finish creating your account.</p>
-          <p className="auth-confirmation__note">It may take a few minutes to arrive. Check your spam folder if you do not see it.</p>
-          {message && <p className="auth-inline-success" role="status">{message}</p>}
-          {error && <div className="auth-error" role="alert"><AlertCircle size={17} /><p><strong>Email not sent</strong>{error}</p></div>}
+          <p>
+            We sent a verification link
+            {email ? (
+              <>
+                {" "}
+                to <strong>{email}</strong>
+              </>
+            ) : (
+              " to your email address"
+            )}
+            . Open it to finish creating your account.
+          </p>
+          <p className="auth-confirmation__note">
+            It may take a few minutes to arrive. Check your spam folder if you do not see it.
+          </p>
+          {message && (
+            <p className="auth-inline-success" role="status">
+              {message}
+            </p>
+          )}
+          {error && (
+            <div className="auth-error" role="alert">
+              <AlertCircle size={17} />
+              <p>
+                <strong>Email not sent</strong>
+                {error}
+              </p>
+            </div>
+          )}
           <Turnstile onVerify={onTurnstileVerify} onExpire={onTurnstileExpire} />
-          <button className="auth-secondary-action" type="button" onClick={resend} disabled={isResending || countdown > 0 || (turnstileRequired && !turnstileToken)}>{isResending ? "Sending…" : countdown > 0 ? `Resend available in ${countdown}s` : "Resend verification email"}</button>
-          <button className="auth-back auth-confirmation__back" type="button" onClick={backToLogin}><ArrowLeft size={15} />Back to sign in</button>
+          <button
+            className="auth-secondary-action"
+            type="button"
+            onClick={resend}
+            disabled={isResending || countdown > 0 || (turnstileRequired && !turnstileToken)}
+          >
+            {isResending
+              ? "Sending…"
+              : countdown > 0
+                ? `Resend available in ${countdown}s`
+                : "Resend verification email"}
+          </button>
+          <button className="auth-back auth-confirmation__back" type="button" onClick={backToLogin}>
+            <ArrowLeft size={15} />
+            Back to sign in
+          </button>
         </section>
       </section>
     </main>

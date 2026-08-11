@@ -99,13 +99,7 @@ export interface PlayerProfile extends AuthUser {
   };
 }
 
-export type ProfileTab =
-  | "info"
-  | "career"
-  | "games"
-  | "matches"
-  | "posts"
-  | "achievements";
+export type ProfileTab = "info" | "career" | "games" | "matches" | "posts" | "achievements";
 
 export interface ProfileTeam {
   id?: string;

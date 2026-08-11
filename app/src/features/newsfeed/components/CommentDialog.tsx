@@ -1,7 +1,17 @@
 import { AlertTriangle, X } from "lucide-react";
 import { useEffect, useId, useRef, type ReactNode } from "react";
 
-export function CommentDialog({ children, destructive = false, onClose, title }: { children: ReactNode; destructive?: boolean; onClose: () => void; title: string }) {
+export function CommentDialog({
+  children,
+  destructive = false,
+  onClose,
+  title,
+}: {
+  children: ReactNode;
+  destructive?: boolean;
+  onClose: () => void;
+  title: string;
+}) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLElement>(null);
   const onCloseRef = useRef(onClose);
@@ -12,7 +22,8 @@ export function CommentDialog({ children, destructive = false, onClose, title }:
   }, [onClose]);
 
   useEffect(() => {
-    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const previouslyFocused =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const focusFrame = window.requestAnimationFrame(() => {
@@ -31,9 +42,11 @@ export function CommentDialog({ children, destructive = false, onClose, title }:
 
       if (event.key !== "Tab" || !dialogRef.current) return;
 
-      const focusable = Array.from(dialogRef.current.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), [contenteditable="true"], [tabindex]:not([tabindex="-1"])',
-      )).filter((element) => element.getClientRects().length > 0);
+      const focusable = Array.from(
+        dialogRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), [contenteditable="true"], [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => element.getClientRects().length > 0);
 
       if (focusable.length === 0) return;
       const first = focusable[0];
@@ -56,10 +69,23 @@ export function CommentDialog({ children, destructive = false, onClose, title }:
     };
   }, []);
 
-  return <div className="comment-dialog" role="presentation" onClick={(event) => event.stopPropagation()} onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-    <section ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId}>
-      <header>{destructive ? <AlertTriangle size={18} aria-hidden="true" /> : null}<h2 id={titleId}>{title}</h2><button ref={closeRef} type="button" onClick={onClose} aria-label="Close dialog"><X size={17} /></button></header>
-      {children}
-    </section>
-  </div>;
+  return (
+    <div
+      className="comment-dialog"
+      role="presentation"
+      onClick={(event) => event.stopPropagation()}
+      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+    >
+      <section ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId}>
+        <header>
+          {destructive ? <AlertTriangle size={18} aria-hidden="true" /> : null}
+          <h2 id={titleId}>{title}</h2>
+          <button ref={closeRef} type="button" onClick={onClose} aria-label="Close dialog">
+            <X size={17} />
+          </button>
+        </header>
+        {children}
+      </section>
+    </div>
+  );
 }

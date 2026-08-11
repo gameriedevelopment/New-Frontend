@@ -9,7 +9,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 /** Keeps profile, paginated discovery, and search results in sync during a follow mutation. */
-export function updatePlayerFollowCache(value: unknown, profileId: string, wasFollowing: boolean): unknown {
+export function updatePlayerFollowCache(
+  value: unknown,
+  profileId: string,
+  wasFollowing: boolean,
+): unknown {
   if (Array.isArray(value)) {
     let changed = false;
     const next = value.map((item) => {

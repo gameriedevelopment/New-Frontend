@@ -88,17 +88,13 @@ export function FeedComposer({ community }: FeedComposerProps = {}) {
       <section className="feed-composer feed-composer--locked">
         <div>
           <strong>Complete your profile to post</strong>
-          <p>
-            Add enough of your gaming identity to reach 50% profile completion.
-          </p>
+          <p>Add enough of your gaming identity to reach 50% profile completion.</p>
           <span>
             <i style={{ width: `${score}%` }} />
           </span>
           <small>{score}% complete</small>
         </div>
-        <Link to={`/profile/${user?.username ?? user?.id}`}>
-          Continue profile
-        </Link>
+        <Link to={`/profile/${user?.username ?? user?.id}`}>Continue profile</Link>
       </section>
     );
 
@@ -129,9 +125,7 @@ export function FeedComposer({ community }: FeedComposerProps = {}) {
       </button>
       <div className="feed-composer__editor">
         <div className="feed-composer__heading">
-          <label>
-            {community ? `Post to ${community.name}` : "Create a post"}
-          </label>
+          <label>{community ? `Post to ${community.name}` : "Create a post"}</label>
           {community?.canAnnounce ? (
             <label className="feed-composer__announcement">
               <input
@@ -164,9 +158,7 @@ export function FeedComposer({ community }: FeedComposerProps = {}) {
                 <button
                   type="button"
                   onClick={() => {
-                    setFiles((current) =>
-                      current.filter((_, fileIndex) => fileIndex !== index),
-                    );
+                    setFiles((current) => current.filter((_, fileIndex) => fileIndex !== index));
                     setMediaError(null);
                   }}
                   aria-label={`Remove selected media ${index + 1}`}
@@ -174,18 +166,14 @@ export function FeedComposer({ community }: FeedComposerProps = {}) {
                   <X size={15} />
                 </button>
                 <figcaption>
-                  {files[index]?.type.startsWith("video/") ? "Video" : "Image"}{" "}
-                  {index + 1}
+                  {files[index]?.type.startsWith("video/") ? "Video" : "Image"} {index + 1}
                 </figcaption>
               </figure>
             ))}
           </div>
         ) : null}
         {detectedUrl && detectedUrl !== dismissedUrl ? (
-          <LinkPreviewCard
-            content={content}
-            onDismiss={() => setDismissedUrl(detectedUrl)}
-          />
+          <LinkPreviewCard content={content} onDismiss={() => setDismissedUrl(detectedUrl)} />
         ) : null}
         {mediaError ? (
           <p className="feed-inline-error" role="alert">

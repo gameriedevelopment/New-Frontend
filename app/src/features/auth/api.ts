@@ -74,7 +74,10 @@ export async function confirmPasswordReset(payload: {
   await api.post("/auth/reset-password", payload);
 }
 
-export async function resendConfirmationEmail(email: string, turnstileToken?: string): Promise<void> {
+export async function resendConfirmationEmail(
+  email: string,
+  turnstileToken?: string,
+): Promise<void> {
   await api.post(
     `/auth/resend-confirmation/${encodeURIComponent(email)}`,
     {},
@@ -83,7 +86,9 @@ export async function resendConfirmationEmail(email: string, turnstileToken?: st
 }
 
 export async function confirmEmail(token: string): Promise<AuthUser> {
-  const { data: response } = await api.post<RegistrationEnvelope>(`/auth/confirm-email/${encodeURIComponent(token)}`);
+  const { data: response } = await api.post<RegistrationEnvelope>(
+    `/auth/confirm-email/${encodeURIComponent(token)}`,
+  );
   const authToken = response.data.token;
   const responseUser = response.data.user;
 
@@ -96,7 +101,8 @@ export async function confirmEmail(token: string): Promise<AuthUser> {
     });
   }
 
-  if (!responseUser?.id) throw new Error("The server returned an incomplete confirmation response.");
+  if (!responseUser?.id)
+    throw new Error("The server returned an incomplete confirmation response.");
   const { data: profileResponse } = await api.get<ProfileEnvelope>(`/users/${responseUser.id}`);
   useAuthStore.getState().setUser(profileResponse.data);
   return profileResponse.data;
@@ -104,7 +110,9 @@ export async function confirmEmail(token: string): Promise<AuthUser> {
 
 export async function fetchSmsVerificationEnabled(): Promise<boolean> {
   try {
-    const { data } = await api.get<{ data?: { smsVerificationEnabled?: boolean } }>("/verification/status");
+    const { data } = await api.get<{ data?: { smsVerificationEnabled?: boolean } }>(
+      "/verification/status",
+    );
     return data.data?.smsVerificationEnabled ?? true;
   } catch {
     return true;
@@ -130,7 +138,9 @@ export async function syncUserWithBackend(): Promise<AuthUser | null> {
 }
 
 export async function confirmEmailChange(token: string): Promise<{ email: string }> {
-  const { data } = await api.post<{ data: { email: string } }>(`/auth/confirm-email-change/${encodeURIComponent(token)}`);
+  const { data } = await api.post<{ data: { email: string } }>(
+    `/auth/confirm-email-change/${encodeURIComponent(token)}`,
+  );
   return data.data;
 }
 
@@ -138,7 +148,11 @@ export async function requestEmailChange(newEmail: string, currentPassword: stri
   await api.post("/auth/change-email", { newEmail, currentPassword, origin: "app" });
 }
 
-export async function changePassword(currentPassword: string, newPassword: string, confirmPassword: string): Promise<void> {
+export async function changePassword(
+  currentPassword: string,
+  newPassword: string,
+  confirmPassword: string,
+): Promise<void> {
   await api.post("/auth/change-password", { currentPassword, newPassword, confirmPassword });
 }
 
@@ -170,11 +184,16 @@ export async function signOut(): Promise<void> {
   useAuthStore.getState().clearUser();
 }
 
-export async function signIn(email: string, password: string, remember: boolean): Promise<LoginResult> {
+export async function signIn(
+  email: string,
+  password: string,
+  remember: boolean,
+): Promise<LoginResult> {
   const { data: response } = await api.post<LoginEnvelope>("/auth/login", { email, password });
   const { token, user: loginUser } = response.data;
 
-  if (!token || !loginUser?.id) throw new Error("The server returned an incomplete sign-in response.");
+  if (!token || !loginUser?.id)
+    throw new Error("The server returned an incomplete sign-in response.");
 
   const decoded = jwtDecode<{ exp?: number }>(token);
   Cookies.set("auth_token", token, {
@@ -188,7 +207,10 @@ export async function signIn(email: string, password: string, remember: boolean)
     const user = profileResponse.data;
     useAuthStore.getState().setUser(user, remember);
     const smsVerificationEnabled = await fetchSmsVerificationEnabled();
-    return { user, next: smsVerificationEnabled && user.phoneVerified === false ? "verify-phone" : "feed" };
+    return {
+      user,
+      next: smsVerificationEnabled && user.phoneVerified === false ? "verify-phone" : "feed",
+    };
   } catch (error) {
     Cookies.remove("auth_token");
     throw error;

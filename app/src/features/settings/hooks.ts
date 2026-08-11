@@ -3,7 +3,12 @@ import { getPlayerSettings, updatePlayerSettings } from "./api";
 import type { PlayerSettings } from "./types";
 
 export function usePlayerSettings(userId?: string) {
-  return useQuery({ queryKey: ["player-settings", userId], queryFn: () => getPlayerSettings(userId!), enabled: Boolean(userId), staleTime: 60_000 });
+  return useQuery({
+    queryKey: ["player-settings", userId],
+    queryFn: () => getPlayerSettings(userId!),
+    enabled: Boolean(userId),
+    staleTime: 60_000,
+  });
 }
 
 export function useUpdatePlayerSettings(userId?: string) {

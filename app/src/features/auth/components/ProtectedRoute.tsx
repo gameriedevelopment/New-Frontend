@@ -6,7 +6,13 @@ import { useAuthStore } from "../authStore";
 
 type GateState = "checking" | "ready" | "login" | "email" | "phone";
 
-export function ProtectedRoute({ children, allowedRoles }: { children: ReactNode; allowedRoles?: string[] }) {
+export function ProtectedRoute({
+  children,
+  allowedRoles,
+}: {
+  children: ReactNode;
+  allowedRoles?: string[];
+}) {
   const location = useLocation();
   const storedUser = useAuthStore((state) => state.user);
   const [gate, setGate] = useState<GateState>("checking");
@@ -33,15 +39,24 @@ export function ProtectedRoute({ children, allowedRoles }: { children: ReactNode
 
     setGate("checking");
     void resolveAccess();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [storedUser?.emailVerified, storedUser?.id, storedUser?.phoneVerified]);
 
   if (gate === "checking") {
-    return <main className="session-check" role="status"><img src="/gamerie-logo.svg" alt="" /><span>Opening Gamerie</span><i aria-hidden="true" /></main>;
+    return (
+      <main className="session-check" role="status">
+        <img src="/gamerie-logo.svg" alt="" />
+        <span>Opening Gamerie</span>
+        <i aria-hidden="true" />
+      </main>
+    );
   }
   if (gate === "login") return <Navigate to="/login" state={{ from: location }} replace />;
   if (gate === "email") return <Navigate to="/verify-email" replace />;
   if (gate === "phone") return <Navigate to="/verify-phone" replace />;
-  if (allowedRoles && (!storedUser?.role || !allowedRoles.includes(storedUser.role.toLowerCase()))) return <Navigate to="/login" replace />;
+  if (allowedRoles && (!storedUser?.role || !allowedRoles.includes(storedUser.role.toLowerCase())))
+    return <Navigate to="/login" replace />;
   return <>{children}</>;
 }

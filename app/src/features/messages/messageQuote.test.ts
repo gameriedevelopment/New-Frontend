@@ -7,6 +7,11 @@ describe("durable message reply context", () => {
   });
 
   it("persists sender context through the existing Markdown content field", () => {
-    expect(createQuotedReply({ id: "m1", senderId: "u1", senderName: "Nova", content: "Meet in the lobby" }, "On my way")).toBe("> **Nova:** Meet in the lobby\n\nOn my way");
+    expect(
+      createQuotedReply(
+        { id: "m1", senderId: "u1", senderName: "Nova", content: "Meet in the lobby" },
+        "On my way",
+      ),
+    ).toBe("> **Nova:** Meet in the lobby\n\nOn my way");
   });
 });

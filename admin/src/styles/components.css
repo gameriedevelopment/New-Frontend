@@ -1,0 +1,109 @@
+.admin-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.72rem;
+  min-width: 0;
+}
+.admin-brand__mark {
+  display: block;
+  width: 11px;
+  height: 34px;
+  flex: 0 0 11px;
+  object-fit: contain;
+}
+.admin-brand__copy {
+  display: grid;
+  line-height: 1.05;
+  gap: 0.18rem;
+}
+.admin-brand__copy strong {
+  font-family: var(--ao-font-display);
+  font-size: 0.95rem;
+  letter-spacing: -0.025em;
+}
+.admin-brand__copy small {
+  color: var(--ao-text-muted);
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.admin-eyebrow {
+  color: var(--ao-accent);
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.admin-icon-button,
+.admin-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ao-border);
+  background: transparent;
+  border-radius: var(--ao-radius-sm);
+  cursor: pointer;
+}
+.admin-icon-button {
+  width: 40px;
+  height: 40px;
+}
+.admin-secondary-button {
+  min-height: 42px;
+  gap: 0.55rem;
+  padding: 0 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.admin-icon-button:hover,
+.admin-secondary-button:hover {
+  border-color: var(--ao-border-strong);
+  background: var(--ao-accent-soft);
+}
+button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+.admin-state-panel {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid rgb(241 138 150 / 0.25);
+  border-radius: var(--ao-radius-md);
+  background: rgb(241 138 150 / 0.04);
+}
+.admin-state-panel h2 {
+  font-family: var(--ao-font-display);
+  font-size: 1rem;
+}
+.admin-state-panel p {
+  color: var(--ao-text-secondary);
+  font-size: 0.82rem;
+}
+.admin-page-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 100vh;
+  background: var(--ao-canvas);
+}
+.admin-page-loader span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ao-accent);
+  animation: admin-loader 900ms ease-in-out infinite alternate;
+}
+.admin-page-loader span:nth-child(2) {
+  animation-delay: 150ms;
+}
+.admin-page-loader span:nth-child(3) {
+  animation-delay: 300ms;
+}
+@keyframes admin-loader {
+  to {
+    opacity: 0.28;
+    transform: translateY(-5px);
+  }
+}

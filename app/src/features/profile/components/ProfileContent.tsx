@@ -42,11 +42,7 @@ export function ProfileContent({
   profile: PlayerProfile;
   tab: ProfileTab;
 }) {
-  if (
-    !own &&
-    (profile.profileVisibility === "private" ||
-      profile.profileVisibility === "friends")
-  )
+  if (!own && (profile.profileVisibility === "private" || profile.profileVisibility === "friends"))
     return (
       <Empty
         icon={<Lock size={20} />}
@@ -65,8 +61,7 @@ export function ProfileContent({
 
   if (tab === "games") return <GamesAndRankings own={own} profile={profile} />;
   if (tab === "career") return <ProfileCareer own={own} profile={profile} />;
-  if (tab === "achievements")
-    return <AchievementsPanel own={own} profile={profile} />;
+  if (tab === "achievements") return <AchievementsPanel own={own} profile={profile} />;
   if (tab === "matches") return <MatchHistory profile={profile} />;
   if (tab === "posts") return <ProfilePosts own={own} profile={profile} />;
 
@@ -82,15 +77,12 @@ export function ProfileContent({
     <div className="profile-overview">
       <section className="profile-overview__primary">
         <header>
-          <span aria-hidden="true">01</span>
           <div>
             <p>About</p>
             <h2>Player information</h2>
           </div>
         </header>
-        {profile.bio ? (
-          <p className="profile-overview__bio">{profile.bio}</p>
-        ) : null}
+        {profile.bio ? <p className="profile-overview__bio">{profile.bio}</p> : null}
         {info.length ? (
           <dl>
             {info.map(([name, value]) => (

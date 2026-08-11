@@ -4,28 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
-import {
-  Button,
-  SafeImage,
-  SearchSelect,
-  SkeletonText,
-  StatePanel,
-} from "../../components/ui";
+import { Button, SafeImage, SearchSelect, SkeletonText, StatePanel } from "../../components/ui";
 import { getApiErrorMessage } from "../../lib/errors";
 import { useGames } from "../games/hooks";
 import type { Game } from "../games/types";
-import {
-  useCommunityDetail,
-  useCreateCommunity,
-  useUpdateCommunity,
-} from "./hooks";
+import { useCommunityDetail, useCreateCommunity, useUpdateCommunity } from "./hooks";
 import { COMMUNITY_REGIONS, getTimezoneOptions, TEAM_LEVELS } from "./options";
-import type {
-  CommunityFormPayload,
-  CommunityGame,
-  HubSummary,
-  TeamSummary,
-} from "./types";
+import type { CommunityFormPayload, CommunityGame, HubSummary, TeamSummary } from "./types";
 import "./communities.css";
 
 const formSchema = z.object({
@@ -43,10 +28,7 @@ const formSchema = z.object({
   region: z.string().trim().max(80),
   timezone: z.string().trim().max(80),
   level: z.string(),
-  teamMessage: z
-    .string()
-    .trim()
-    .max(300, "Keep this message under 300 characters."),
+  teamMessage: z.string().trim().max(300, "Keep this message under 300 characters."),
   type: z.enum(["community", "organization"]),
   visibility: z.enum(["public", "private"]),
   joinPolicy: z.enum(["open", "request"]),
@@ -65,13 +47,7 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
-const platformOptions = [
-  "PC",
-  "PlayStation",
-  "Xbox",
-  "Nintendo Switch",
-  "Mobile",
-];
+const platformOptions = ["PC", "PlayStation", "Xbox", "Nintendo Switch", "Mobile"];
 const timezoneOptions = getTimezoneOptions();
 const selectTimezones = (current: string, filtered: typeof timezoneOptions) => {
   const options = filtered.map((zone) => ({ value: zone.value, label: zone.label }));
@@ -102,10 +78,7 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-function valuesFor(
-  item: TeamSummary | HubSummary,
-  kind: "team" | "hub",
-): FormValues {
+function valuesFor(item: TeamSummary | HubSummary, kind: "team" | "hub"): FormValues {
   const hub = item as HubSummary;
   const team = item as TeamSummary;
   return {
@@ -125,14 +98,9 @@ function valuesFor(
       .filter((game) => game.id),
     level: kind === "team" ? team.level || "Amateur" : "Amateur",
     teamMessage: kind === "team" ? team.teamMessage || "" : "",
-    type:
-      kind === "hub" && hub.type === "organization"
-        ? "organization"
-        : "community",
-    visibility:
-      kind === "hub" && hub.visibility === "private" ? "private" : "public",
-    joinPolicy:
-      kind === "hub" && hub.joinPolicy === "open" ? "open" : "request",
+    type: kind === "hub" && hub.type === "organization" ? "organization" : "community",
+    visibility: kind === "hub" && hub.visibility === "private" ? "private" : "public",
+    joinPolicy: kind === "hub" && hub.joinPolicy === "open" ? "open" : "request",
     organizationName: hub.organizationName || "",
     vatNumber: hub.vatNumber || "",
   };
@@ -186,11 +154,7 @@ function MediaField({
       >
         <SafeImage
           src={preview}
-          fallback={
-            shape === "logo"
-              ? "/avatar-fallback.svg"
-              : "/profile-cover-fallback.jpg"
-          }
+          fallback={shape === "logo" ? "/avatar-fallback.svg" : "/profile-cover-fallback.jpg"}
           alt={`${kind} ${label.toLowerCase()} preview`}
         />
         <i>
@@ -276,9 +240,7 @@ export function CommunityFormPage({
   const filteredTimezones = useMemo(() => {
     const query = timezoneSearch.trim().toLowerCase();
     return query
-      ? timezoneOptions.filter((zone) =>
-          zone.label.toLowerCase().includes(query),
-        )
+      ? timezoneOptions.filter((zone) => zone.label.toLowerCase().includes(query))
       : timezoneOptions;
   }, [timezoneSearch]);
 
@@ -296,41 +258,24 @@ export function CommunityFormPage({
   }, [dirty]);
   useEffect(() => {
     const intercept = (event: MouseEvent) => {
-      if (
-        !dirty ||
-        saved.current ||
-        event.defaultPrevented ||
-        event.button !== 0
-      )
-        return;
+      if (!dirty || saved.current || event.defaultPrevented || event.button !== 0) return;
       const anchor = (event.target as Element).closest("a");
-      if (
-        !anchor ||
-        anchor.target === "_blank" ||
-        !anchor.href.startsWith(window.location.origin)
-      )
+      if (!anchor || anchor.target === "_blank" || !anchor.href.startsWith(window.location.origin))
         return;
-      if (!window.confirm("Discard your unsaved changes?"))
-        event.preventDefault();
+      if (!window.confirm("Discard your unsaved changes?")) event.preventDefault();
     };
     document.addEventListener("click", intercept, true);
     return () => document.removeEventListener("click", intercept, true);
   }, [dirty]);
 
-  const acceptMedia = useCallback(
-    (next: File | undefined, setter: (file?: File) => void) => {
-      setMediaError("");
-      if (
-        next &&
-        (!next.type.startsWith("image/") || next.size > 5 * 1024 * 1024)
-      ) {
-        setMediaError("Use a PNG, JPEG, or WebP image smaller than 5 MB.");
-        return;
-      }
-      setter(next);
-    },
-    [],
-  );
+  const acceptMedia = useCallback((next: File | undefined, setter: (file?: File) => void) => {
+    setMediaError("");
+    if (next && (!next.type.startsWith("image/") || next.size > 5 * 1024 * 1024)) {
+      setMediaError("Use a PNG, JPEG, or WebP image smaller than 5 MB.");
+      return;
+    }
+    setter(next);
+  }, []);
   const leave = () => {
     if (!dirty || window.confirm("Discard your unsaved changes?"))
       navigate(editing ? `/${kind}s/${communitySlug}` : `/${kind}s`);
@@ -345,8 +290,7 @@ export function CommunityFormPage({
         {
           id: game.id,
           name: game.name,
-          platforms:
-            game.platforms?.filter((entry) => platforms.includes(entry)) || [],
+          platforms: game.platforms?.filter((entry) => platforms.includes(entry)) || [],
         },
       ],
       { shouldDirty: true, shouldValidate: true },
@@ -361,11 +305,7 @@ export function CommunityFormPage({
       { shouldDirty: true },
     );
   const submit = handleSubmit(async (values) => {
-    if (
-      kind === "hub" &&
-      values.type === "organization" &&
-      !values.organizationName
-    ) {
+    if (kind === "hub" && values.type === "organization" && !values.organizationName) {
       setError("organizationName", {
         message: "Add the organization’s legal or public name.",
       });
@@ -392,14 +332,9 @@ export function CommunityFormPage({
       Object.assign(payload, {
         type: values.type,
         visibility: values.visibility,
-        joinPolicy:
-          values.visibility === "private" ? "request" : values.joinPolicy,
-        organizationName:
-          values.type === "organization" ? values.organizationName : undefined,
-        vatNumber:
-          values.type === "organization"
-            ? values.vatNumber || undefined
-            : undefined,
+        joinPolicy: values.visibility === "private" ? "request" : values.joinPolicy,
+        organizationName: values.type === "organization" ? values.organizationName : undefined,
+        vatNumber: values.type === "organization" ? values.vatNumber || undefined : undefined,
       });
     try {
       const result =
@@ -455,10 +390,7 @@ export function CommunityFormPage({
           title="Owner access required"
           description={`Only the ${noun} owner can change its identity and access settings.`}
           action={
-            <Button
-              variant="secondary"
-              onClick={() => navigate(`/${kind}s/${communitySlug}`)}
-            >
+            <Button variant="secondary" onClick={() => navigate(`/${kind}s/${communitySlug}`)}>
               Back to {noun}
             </Button>
           }
@@ -493,10 +425,7 @@ export function CommunityFormPage({
             <span>01</span>
             <div>
               <h2>Identity media</h2>
-              <p>
-                Keep it recognizable at avatar size and composed across wide
-                screens.
-              </p>
+              <p>Keep it recognizable at avatar size and composed across wide screens.</p>
             </div>
           </header>
           <div className="community-media-grid">
@@ -528,9 +457,7 @@ export function CommunityFormPage({
             <span>02</span>
             <div>
               <h2>Core information</h2>
-              <p>
-                Clear, specific details make the right players stop and look.
-              </p>
+              <p>Clear, specific details make the right players stop and look.</p>
             </div>
           </header>
           <div className="community-form-fields">
@@ -543,14 +470,8 @@ export function CommunityFormPage({
                 maxLength={60}
                 autoComplete="organization"
                 aria-invalid={Boolean(errors.name)}
-                aria-describedby={
-                  errors.name ? "community-name-error" : undefined
-                }
-                placeholder={
-                  kind === "team"
-                    ? "e.g. Lagos Sentinels"
-                    : "e.g. West Africa Arena"
-                }
+                aria-describedby={errors.name ? "community-name-error" : undefined}
+                placeholder={kind === "team" ? "e.g. Lagos Sentinels" : "e.g. West Africa Arena"}
               />
               {errors.name ? (
                 <small id="community-name-error" role="alert">
@@ -624,10 +545,7 @@ export function CommunityFormPage({
               <span>03</span>
               <div>
                 <h2>Purpose and access</h2>
-                <p>
-                  These choices shape who can discover the hub and how
-                  membership works.
-                </p>
+                <p>These choices shape who can discover the hub and how membership works.</p>
               </div>
             </header>
             <div className="community-choice-group">
@@ -636,11 +554,7 @@ export function CommunityFormPage({
                 <div>
                   {(
                     [
-                      [
-                        "community",
-                        "Community",
-                        "For players and teams around a shared interest.",
-                      ],
+                      ["community", "Community", "For players and teams around a shared interest."],
                       [
                         "organization",
                         "Organization",
@@ -665,19 +579,11 @@ export function CommunityFormPage({
                   {(
                     [
                       ["public", "Public", "Anyone can discover this hub."],
-                      [
-                        "private",
-                        "Private",
-                        "Identity is visible; activity stays member-only.",
-                      ],
+                      ["private", "Private", "Identity is visible; activity stays member-only."],
                     ] as const
                   ).map(([value, label, copy]) => (
                     <label key={value}>
-                      <input
-                        type="radio"
-                        value={value}
-                        {...register("visibility")}
-                      />
+                      <input type="radio" value={value} {...register("visibility")} />
                       <span>
                         <strong>{label}</strong>
                         <small>{copy}</small>
@@ -693,24 +599,12 @@ export function CommunityFormPage({
                   <div>
                     {(
                       [
-                        [
-                          "request",
-                          "Request approval",
-                          "Admins review each membership request.",
-                        ],
-                        [
-                          "open",
-                          "Open membership",
-                          "Players can join immediately.",
-                        ],
+                        ["request", "Request approval", "Admins review each membership request."],
+                        ["open", "Open membership", "Players can join immediately."],
                       ] as const
                     ).map(([value, label, copy]) => (
                       <label key={value}>
-                        <input
-                          type="radio"
-                          value={value}
-                          {...register("joinPolicy")}
-                        />
+                        <input type="radio" value={value} {...register("joinPolicy")} />
                         <span>
                           <strong>{label}</strong>
                           <small>{copy}</small>
@@ -738,9 +632,7 @@ export function CommunityFormPage({
                     placeholder="Registered or public name"
                   />
                   {errors.organizationName ? (
-                    <small role="alert">
-                      {errors.organizationName.message}
-                    </small>
+                    <small role="alert">{errors.organizationName.message}</small>
                   ) : null}
                 </label>
                 <label className="community-field">
@@ -762,24 +654,13 @@ export function CommunityFormPage({
             <span>{kind === "hub" ? "04" : "03"}</span>
             <div>
               <h2>Games and platforms</h2>
-              <p>
-                Connect the identity to the titles and places where the
-                community plays.
-              </p>
+              <p>Connect the identity to the titles and places where the community plays.</p>
             </div>
           </header>
-          <div
-            className="community-platforms"
-            role="group"
-            aria-label="Platforms"
-          >
+          <div className="community-platforms" role="group" aria-label="Platforms">
             {platformOptions.map((platform) => (
               <label key={platform}>
-                <input
-                  type="checkbox"
-                  value={platform}
-                  {...register("platforms")}
-                />
+                <input type="checkbox" value={platform} {...register("platforms")} />
                 <span>
                   {platform}
                   <Check size={13} />
@@ -803,8 +684,7 @@ export function CommunityFormPage({
                 loadingMore={gameQuery.isFetchingNextPage}
                 hasMore={gameQuery.hasNextPage}
                 onLoadMore={() => {
-                  if (!gameQuery.isFetchingNextPage)
-                    void gameQuery.fetchNextPage();
+                  if (!gameQuery.isFetchingNextPage) void gameQuery.fetchNextPage();
                 }}
                 options={gameOptions.map((game: Game) => ({
                   value: game.id,
@@ -843,10 +723,7 @@ export function CommunityFormPage({
             <span>{kind === "hub" ? "05" : "04"}</span>
             <div>
               <h2>Location</h2>
-              <p>
-                Optional context for regional discovery, scheduling, and
-                competition.
-              </p>
+              <p>Optional context for regional discovery, scheduling, and competition.</p>
             </div>
           </header>
           <div className="community-form-fields">
@@ -863,9 +740,7 @@ export function CommunityFormPage({
               <select {...register("region")}>
                 <option value="">Select region</option>
                 {item?.region &&
-                !COMMUNITY_REGIONS.includes(
-                  item.region as (typeof COMMUNITY_REGIONS)[number],
-                ) ? (
+                !COMMUNITY_REGIONS.includes(item.region as (typeof COMMUNITY_REGIONS)[number]) ? (
                   <option>{item.region}</option>
                 ) : null}
                 {COMMUNITY_REGIONS.map((region) => (
@@ -901,10 +776,7 @@ export function CommunityFormPage({
                 : `${noun[0].toUpperCase() + noun.slice(1)} was not created.`}
             </strong>
             <span>
-              {getApiErrorMessage(
-                mutation.error,
-                "Check the information and try again.",
-              )}
+              {getApiErrorMessage(mutation.error, "Check the information and try again.")}
             </span>
           </div>
         ) : null}

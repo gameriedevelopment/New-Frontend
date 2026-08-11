@@ -1,9 +1,4 @@
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   cancelHubTeamInvite,
   cancelHubUserInvite,
@@ -29,6 +24,8 @@ import {
   getTeamRequests,
   getTeams,
   getTeamWallet,
+  getTeamWalletInsights,
+  getTeamWalletTransactions,
   inviteHubMember,
   inviteTeamMember,
   inviteTeamToHub,
@@ -45,6 +42,7 @@ import {
   respondToInvite,
   toggleCommunityFollow,
   transferCommunityOwnership,
+  transferTeamWalletTokens,
   updateCommunity,
   updateHubPolicy,
 } from "./api";
@@ -52,6 +50,7 @@ import type {
   CommunityFilters,
   CommunityFormPayload,
   CommunityMediaFiles,
+  TeamWalletTransactionFilters,
 } from "./types";
 const refreshMembershipCaches = (client: ReturnType<typeof useQueryClient>) => {
   void client.invalidateQueries({ queryKey: ["profile-teams"] });
@@ -67,12 +66,9 @@ export function useCommunityDirectory(
   return useInfiniteQuery({
     queryKey: [kind, "directory", filters],
     queryFn: ({ pageParam }) =>
-      kind === "teams"
-        ? getTeams(filters, pageParam)
-        : getHubs(filters, pageParam),
+      kind === "teams" ? getTeams(filters, pageParam) : getHubs(filters, pageParam),
     initialPageParam: 1,
-    getNextPageParam: (page) =>
-      page.page < page.totalPages ? page.page + 1 : undefined,
+    getNextPageParam: (page) => (page.page < page.totalPages ? page.page + 1 : undefined),
     enabled,
     staleTime: 60_000,
   });
@@ -126,11 +122,7 @@ export function useCommunityFollow(
     },
   });
 }
-export function useCommunityJoin(
-  kind: "team" | "hub",
-  slug: string,
-  id: string,
-) {
+export function useCommunityJoin(kind: "team" | "hub", slug: string, id: string) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: async (message: string) => {
@@ -144,11 +136,7 @@ export function useCommunityJoin(
     },
   });
 }
-export function useCommunityLeave(
-  kind: "team" | "hub",
-  slug: string,
-  id: string,
-) {
+export function useCommunityLeave(kind: "team" | "hub", slug: string, id: string) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: () => leaveCommunity(kind, id),
@@ -159,21 +147,13 @@ export function useCommunityLeave(
     },
   });
 }
-export function useCommunityReport(
-  kind: "team" | "hub",
-  id: string,
-  ownerId: string,
-) {
+export function useCommunityReport(kind: "team" | "hub", id: string, ownerId: string) {
   return useMutation({
     mutationFn: ({ type, reason }: { type: string; reason: string }) =>
       reportCommunity(kind, id, ownerId, type, reason),
   });
 }
-export function useCommunityPosts(
-  kind: "team" | "hub",
-  id: string,
-  enabled: boolean,
-) {
+export function useCommunityPosts(kind: "team" | "hub", id: string, enabled: boolean) {
   return useQuery({
     queryKey: [`${kind}-posts`, id],
     queryFn: () => getCommunityPosts(kind, id),
@@ -212,17 +192,12 @@ export function useUpdateCommunity(kind: "team" | "hub", slug?: string) {
     onSuccess: () => {
       client.invalidateQueries({ queryKey: [kind, "detail", slug] });
       client.invalidateQueries({ queryKey: [`${kind}s`, "directory"] });
-      if (kind === "hub")
-        client.invalidateQueries({ queryKey: ["user-hubs"] });
+      if (kind === "hub") client.invalidateQueries({ queryKey: ["user-hubs"] });
     },
   });
 }
 
-const refreshTeam = (
-  client: ReturnType<typeof useQueryClient>,
-  teamId: string,
-  slug: string,
-) => {
+const refreshTeam = (client: ReturnType<typeof useQueryClient>, teamId: string, slug: string) => {
   void client.invalidateQueries({ queryKey: ["team", "detail", slug] });
   void client.invalidateQueries({ queryKey: ["team-operations", teamId] });
   void client.invalidateQueries({ queryKey: ["teams", "directory"] });
@@ -249,8 +224,7 @@ export function useTeamFollowers(teamId: string, enabled: boolean) {
     queryKey: ["team-followers", teamId],
     queryFn: ({ pageParam }) => getTeamFollowers(teamId, pageParam),
     initialPageParam: 1,
-    getNextPageParam: (page) =>
-      page.page < page.totalPages ? page.page + 1 : undefined,
+    getNextPageParam: (page) => (page.page < page.totalPages ? page.page + 1 : undefined),
     enabled,
     staleTime: 45_000,
   });
@@ -273,13 +247,8 @@ export function useInviteTeamMember(teamId: string, slug: string) {
 export function useRespondTeamRequest(teamId: string, slug: string) {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      requestId,
-      accept,
-    }: {
-      requestId: string;
-      accept: boolean;
-    }) => respondTeamRequest(requestId, accept),
+    mutationFn: ({ requestId, accept }: { requestId: string; accept: boolean }) =>
+      respondTeamRequest(requestId, accept),
     onSuccess: () => refreshTeam(client, teamId, slug),
   });
 }
@@ -293,15 +262,8 @@ export function useCancelTeamInvite(teamId: string, slug: string) {
 export function useChangeTeamMember(teamId: string, slug: string) {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      userId,
-      role,
-      title,
-    }: {
-      userId: string;
-      role: string;
-      title: string;
-    }) => changeTeamMember(teamId, userId, role, title),
+    mutationFn: ({ userId, role, title }: { userId: string; role: string; title: string }) =>
+      changeTeamMember(teamId, userId, role, title),
     onSuccess: () => refreshTeam(client, teamId, slug),
   });
 }
@@ -313,11 +275,7 @@ export function useRemoveTeamMember(teamId: string, slug: string) {
   });
 }
 
-const refreshHub = (
-  client: ReturnType<typeof useQueryClient>,
-  hubId: string,
-  slug: string,
-) => {
+const refreshHub = (client: ReturnType<typeof useQueryClient>, hubId: string, slug: string) => {
   void client.invalidateQueries({ queryKey: ["hub", "detail", slug] });
   void client.invalidateQueries({ queryKey: ["hub-operations", hubId] });
   void client.invalidateQueries({ queryKey: ["hubs", "directory"] });
@@ -374,26 +332,16 @@ export function useInviteTeamToHub(hubId: string, slug: string) {
 export function useRespondHubRequest(hubId: string, slug: string) {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      requestId,
-      accept,
-    }: {
-      requestId: string;
-      accept: boolean;
-    }) => respondHubRequest(requestId, accept),
+    mutationFn: ({ requestId, accept }: { requestId: string; accept: boolean }) =>
+      respondHubRequest(requestId, accept),
     onSuccess: () => refreshHub(client, hubId, slug),
   });
 }
 export function useRespondHubTeamRequest(hubId: string, slug: string) {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      requestId,
-      accept,
-    }: {
-      requestId: string;
-      accept: boolean;
-    }) => respondHubTeamRequest(requestId, accept),
+    mutationFn: ({ requestId, accept }: { requestId: string; accept: boolean }) =>
+      respondHubTeamRequest(requestId, accept),
     onSuccess: () => refreshHub(client, hubId, slug),
   });
 }
@@ -414,15 +362,8 @@ export function useCancelHubTeamInvite(hubId: string, slug: string) {
 export function useChangeHubMember(hubId: string, slug: string) {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      userId,
-      role,
-      title,
-    }: {
-      userId: string;
-      role: string;
-      title: string;
-    }) => changeHubMember(hubId, userId, role, title),
+    mutationFn: ({ userId, role, title }: { userId: string; role: string; title: string }) =>
+      changeHubMember(hubId, userId, role, title),
     onSuccess: () => refreshHub(client, hubId, slug),
   });
 }
@@ -443,13 +384,8 @@ export function useRemoveHubTeam(hubId: string, slug: string) {
 export function useUpdateHubPolicy(hubId: string, slug: string) {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      visibility,
-      joinPolicy,
-    }: {
-      visibility: string;
-      joinPolicy: string;
-    }) => updateHubPolicy(hubId, visibility, joinPolicy),
+    mutationFn: ({ visibility, joinPolicy }: { visibility: string; joinPolicy: string }) =>
+      updateHubPolicy(hubId, visibility, joinPolicy),
     onSuccess: () => refreshHub(client, hubId, slug),
   });
 }
@@ -461,15 +397,44 @@ export function useTeamWallet(teamId: string, enabled: boolean) {
     staleTime: 30_000,
   });
 }
-export function useTransferCommunityOwnership(
-  kind: "team" | "hub",
-  id: string,
-  slug: string,
+export function useTeamWalletInsights(teamId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ["team-wallet", teamId, "insights"],
+    queryFn: () => getTeamWalletInsights(teamId),
+    enabled,
+    staleTime: 30_000,
+  });
+}
+export function useTeamWalletTransactions(
+  teamId: string,
+  filters: TeamWalletTransactionFilters,
+  enabled: boolean,
 ) {
+  return useInfiniteQuery({
+    queryKey: ["team-wallet", teamId, "transactions", filters],
+    queryFn: ({ pageParam }) => getTeamWalletTransactions(teamId, filters, pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (page) => (page.page < page.totalPages ? page.page + 1 : undefined),
+    enabled: Boolean(teamId) && enabled,
+    staleTime: 20_000,
+  });
+}
+export function useTransferTeamWalletTokens(teamId: string) {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: (newOwnerId: string) =>
-      transferCommunityOwnership(kind, id, newOwnerId),
+    mutationFn: transferTeamWalletTokens,
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: ["team-wallet", teamId] });
+      void client.invalidateQueries({ queryKey: ["wallet"] });
+      void client.invalidateQueries({ queryKey: ["notifications"] });
+      void client.invalidateQueries({ queryKey: ["notification-menu"] });
+    },
+  });
+}
+export function useTransferCommunityOwnership(kind: "team" | "hub", id: string, slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (newOwnerId: string) => transferCommunityOwnership(kind, id, newOwnerId),
     onSuccess: () => {
       client.invalidateQueries({ queryKey: [kind, "detail", slug] });
       client.invalidateQueries({ queryKey: [`${kind}s`, "directory"] });

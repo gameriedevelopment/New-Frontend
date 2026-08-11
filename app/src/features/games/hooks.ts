@@ -1,6 +1,14 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { getActiveGameTeams, getActiveGameUsers, getGame, getGames, getGamesStats, getGameStats, getGridSeries } from "./api";
+import {
+  getActiveGameTeams,
+  getActiveGameUsers,
+  getGame,
+  getGames,
+  getGamesStats,
+  getGameStats,
+  getGridSeries,
+} from "./api";
 import type { ActiveTeamFilters, GameFilters, GridGameKey } from "./types";
 
 export function useDebouncedGameValue(value: string, delay = 300) {
@@ -17,7 +25,7 @@ export function useGames(filters: GameFilters, enabled = true) {
     queryKey: ["games", "catalogue", filters],
     queryFn: ({ pageParam }) => getGames(filters, pageParam),
     initialPageParam: 1,
-    getNextPageParam: (page) => page.page < page.totalPages ? page.page + 1 : undefined,
+    getNextPageParam: (page) => (page.page < page.totalPages ? page.page + 1 : undefined),
     enabled,
     staleTime: 5 * 60_000,
   });
@@ -63,7 +71,7 @@ export function useActiveGameUsers(gameId: string, search: string, enabled = tru
     queryKey: ["games", gameId, "players", search],
     queryFn: ({ pageParam }) => getActiveGameUsers(gameId, search, pageParam),
     initialPageParam: 1,
-    getNextPageParam: (page) => page.page < page.totalPages ? page.page + 1 : undefined,
+    getNextPageParam: (page) => (page.page < page.totalPages ? page.page + 1 : undefined),
     enabled: Boolean(gameId) && enabled,
     staleTime: 60_000,
   });
@@ -74,7 +82,7 @@ export function useActiveGameTeams(gameId: string, filters: ActiveTeamFilters, e
     queryKey: ["games", gameId, "teams", filters],
     queryFn: ({ pageParam }) => getActiveGameTeams(gameId, filters, pageParam),
     initialPageParam: 1,
-    getNextPageParam: (page) => page.page < page.totalPages ? page.page + 1 : undefined,
+    getNextPageParam: (page) => (page.page < page.totalPages ? page.page + 1 : undefined),
     enabled: Boolean(gameId) && enabled,
     staleTime: 60_000,
   });

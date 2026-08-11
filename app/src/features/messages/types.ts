@@ -62,7 +62,11 @@ export interface MessagesPage {
   nextCursor?: string | null;
 }
 
-export interface ApiEnvelope<T> { data: T; message?: string; statusCode?: number }
+export interface ApiEnvelope<T> {
+  data: T;
+  message?: string;
+  statusCode?: number;
+}
 
 export interface RecipientUser extends MessageUser {
   username: string;

@@ -8,7 +8,11 @@ function NavigationGroup({ label, items }: { label: string; items: typeof primar
       <p>{label}</p>
       <nav aria-label={label}>
         {items.map(({ href, icon: Icon, label: itemLabel }) => (
-          <NavLink key={href} to={href} className={({ isActive }) => isActive ? "is-active" : undefined}>
+          <NavLink
+            key={href}
+            to={href}
+            className={({ isActive }) => (isActive ? "is-active" : undefined)}
+          >
             <Icon size={17} strokeWidth={1.8} />
             <span>{itemLabel}</span>
           </NavLink>
@@ -21,13 +25,22 @@ function NavigationGroup({ label, items }: { label: string; items: typeof primar
 export function AppSidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   return (
     <aside className="app-sidebar">
-      <NavLink className="app-sidebar__brand" to="/feed" aria-label="Gamerie feed"><img src="/gamerie-logo.svg" alt="" /><span>Gamerie</span></NavLink>
+      <NavLink className="app-sidebar__brand" to="/feed" aria-label="Gamerie feed">
+        <img src="/gamerie-logo.svg" alt="" />
+        <span>Gamerie</span>
+      </NavLink>
       <div className="app-sidebar__navigation">
         <NavigationGroup label="Gamerie" items={primaryNavigation} />
         <NavigationGroup label="Your space" items={secondaryNavigation} />
       </div>
       <div className="app-sidebar__bottom">
-        <button className="app-sidebar__collapse" type="button" onClick={onToggle} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} title={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
+        <button
+          className="app-sidebar__collapse"
+          type="button"
+          onClick={onToggle}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
           {collapsed ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
           <span>Collapse sidebar</span>
         </button>

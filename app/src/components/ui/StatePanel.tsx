@@ -16,7 +16,11 @@ export function StatePanel({
   tone = "neutral",
 }: StatePanelProps) {
   return (
-    <section className="g-state-panel" data-tone={tone} role={tone === "error" ? "alert" : undefined}>
+    <section
+      className="g-state-panel"
+      data-tone={tone}
+      role={tone === "error" ? "alert" : undefined}
+    >
       <span className="g-state-panel__mark" aria-hidden="true">
         {icon ?? "•"}
       </span>

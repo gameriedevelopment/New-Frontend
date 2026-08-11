@@ -1,4 +1,16 @@
-import { Award, Check, ChevronRight, Edit3, Gamepad2, Plus, RefreshCw, Swords, ThumbsUp, Trash2, TrendingUp } from "lucide-react";
+import {
+  Award,
+  Check,
+  ChevronRight,
+  Edit3,
+  Gamepad2,
+  Plus,
+  RefreshCw,
+  Swords,
+  ThumbsUp,
+  Trash2,
+  TrendingUp,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, SafeImage, SkeletonText, StatePanel } from "../../../components/ui";
@@ -6,75 +18,676 @@ import { getApiErrorMessage } from "../../../lib/errors";
 import { useAuthStore } from "../../auth/authStore";
 import { FeedComposer } from "../../newsfeed/components/FeedComposer";
 import { FeedPostCard } from "../../newsfeed/components/FeedPostCard";
-import { useAchievements, useClaimAchievement, usePlayerMatches, usePlayerPosts, usePlayerRankings, useRecalculateSalary, useSalaryHistory, useSalaryInsights, useSkillEndorsers, useToggleSkillEndorsement, useUpdatePlayerProfile } from "../hooks";
+import {
+  useAchievements,
+  useClaimAchievement,
+  usePlayerMatches,
+  usePlayerPosts,
+  usePlayerRankings,
+  useRecalculateSalary,
+  useSalaryHistory,
+  useSalaryInsights,
+  useSkillEndorsers,
+  useToggleSkillEndorsement,
+  useUpdatePlayerProfile,
+} from "../hooks";
 import type { PlayerProfile, ProfileGame, ProfileSkill } from "../types";
 import { ProfileDialog } from "./interactions/ProfileDialog";
 import { GameIdentityDialog } from "./interactions/GameIdentityDialog";
 import { GameConnectionsPanel } from "../../games/connections/GameConnectionsPanel";
 
-function SectionLoading() { return <div className="profile-section-loading"><SkeletonText lines={3} /><SkeletonText lines={2} /></div>; }
-function ErrorState({ message, retry }: { message: string; retry: () => void }) { return <StatePanel title="This section could not load" description={message} action={<Button variant="secondary" onClick={retry}>Try again</Button>} />; }
-function gameName(value: unknown) { if (typeof value === "string") return value; if (value && typeof value === "object") { const game = value as { name?: string; game?: { name?: string }; gameUsername?: string }; return game.game?.name || game.name || game.gameUsername || "Game"; } return "Game"; }
+function SectionLoading() {
+  return (
+    <div className="profile-section-loading">
+      <SkeletonText lines={3} />
+      <SkeletonText lines={2} />
+    </div>
+  );
+}
+function ErrorState({ message, retry }: { message: string; retry: () => void }) {
+  return (
+    <StatePanel
+      title="This section could not load"
+      description={message}
+      action={
+        <Button variant="secondary" onClick={retry}>
+          Try again
+        </Button>
+      }
+    />
+  );
+}
+function gameName(value: unknown) {
+  if (typeof value === "string") return value;
+  if (value && typeof value === "object") {
+    const game = value as { name?: string; game?: { name?: string }; gameUsername?: string };
+    return game.game?.name || game.name || game.gameUsername || "Game";
+  }
+  return "Game";
+}
 
 export function GamesAndRankings({ own, profile }: { own: boolean; profile: PlayerProfile }) {
   const query = usePlayerRankings(profile.id);
   const update = useUpdatePlayerProfile(profile.id);
   const [editing, setEditing] = useState<ProfileGame | "new" | null>(null);
   const [confirming, setConfirming] = useState<string | null>(null);
-  const games = profile.gamesPlayed?.length ? profile.gamesPlayed : profile.games ?? [];
+  const games = profile.gamesPlayed?.length ? profile.gamesPlayed : (profile.games ?? []);
   const ranks = query.data ?? [];
-  const remove = async (index: number) => { await update.mutateAsync({ gamesPlayed: games.filter((_item, itemIndex) => itemIndex !== index).map((item) => ({ id: item.id, gameId: item.gameId || item.game?.id, name: item.name || item.game?.name, gameUsername: item.gameUsername, platform: item.platform || item.platforms?.[0], platforms: item.platforms?.length ? item.platforms : item.platform ? [item.platform] : [], skillLevel: item.skillLevel, rank: item.rankData?.rank || item.rank, nickname: item.nickname })) }); setConfirming(null); };
-  return <div className="profile-data-stack"><section className="profile-data-heading"><div><p>Game identity</p><h2>Connected games</h2></div>{own ? <button type="button" className="profile-data-heading__action" onClick={() => setEditing("new")}><Plus size={14} />Add game</button> : <span>{games.length} {games.length === 1 ? "game" : "games"}</span>}</section>{games.length ? <div className="profile-game-list">{games.map((game, index) => { const rank = ranks.find((item) => String(item.gameId ?? (typeof item.game === "object" ? item.game?.id : "")) === String(game.id ?? game.game?.id)); const gameKey = game.id || String(index); return <article key={gameKey}><span className="profile-game-mark"><Gamepad2 size={17} /></span><div><h3>{game.game?.name || game.name || "Connected game"}</h3><p>{game.gameUsername || game.platform || game.platforms?.join(" · ") || "Player account"}</p>{own ? <footer><button type="button" onClick={() => setEditing(game)}><Edit3 size={13} />Edit</button><button type="button" data-confirm={confirming === gameKey} disabled={update.isPending} onClick={() => confirming === gameKey ? void remove(index) : setConfirming(gameKey)}>{confirming === gameKey ? "Confirm remove" : <><Trash2 size={13} />Remove</>}</button></footer> : null}</div><div><strong>{game.rankData?.rank || game.rank || game.skillLevel || "Unranked"}</strong>{rank?.rankingScore != null ? <small>{Math.round(rank.rankingScore)} ranking score</small> : null}</div></article>; })}</div> : <p className="profile-panel-empty">No games have been connected to this player identity yet.</p>}
-    {own ? <GameConnectionsPanel username={profile.username} /> : null}
-    <section className="profile-rankings"><header><div><p>Competitive standing</p><h2>Player rankings</h2></div><Link to="/leaderboard?tab=gameRanking">Leaderboards <ChevronRight size={14} /></Link></header>{query.isLoading ? <SectionLoading /> : query.isError ? <ErrorState message={getApiErrorMessage(query.error, "Rankings could not be retrieved.")} retry={() => void query.refetch()} /> : ranks.length ? <div>{ranks.map((rank, index) => <article key={rank.gameId || index}><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{gameName(rank.game)}</h3><p>{typeof rank.game === "object" ? rank.game?.rankData?.rank || rank.game?.rank || "Ranked profile" : "Ranked profile"}</p></div><strong>{Math.round(rank.rankingScore ?? 0)}</strong></article>)}</div> : <p className="profile-panel-empty">Rankings appear after verified competitive activity is recorded.</p>}</section>
-    {update.isError ? <p className="profile-inline-action-error" role="alert">{getApiErrorMessage(update.error, "The game could not be removed.")}</p> : null}
-    {editing ? <GameIdentityDialog game={editing === "new" ? undefined : editing} profile={profile} onClose={() => setEditing(null)} /> : null}
-  </div>;
+  const remove = async (index: number) => {
+    await update.mutateAsync({
+      gamesPlayed: games
+        .filter((_item, itemIndex) => itemIndex !== index)
+        .map((item) => ({
+          id: item.id,
+          gameId: item.gameId || item.game?.id,
+          name: item.name || item.game?.name,
+          gameUsername: item.gameUsername,
+          platform: item.platform || item.platforms?.[0],
+          platforms: item.platforms?.length ? item.platforms : item.platform ? [item.platform] : [],
+          skillLevel: item.skillLevel,
+          rank: item.rankData?.rank || item.rank,
+          nickname: item.nickname,
+        })),
+    });
+    setConfirming(null);
+  };
+  return (
+    <div className="profile-data-stack">
+      <section className="profile-data-heading">
+        <div>
+          <p>Game identity</p>
+          <h2>Connected games</h2>
+        </div>
+        {own ? (
+          <button
+            type="button"
+            className="profile-data-heading__action"
+            onClick={() => setEditing("new")}
+          >
+            <Plus size={14} />
+            Add game
+          </button>
+        ) : (
+          <span>
+            {games.length} {games.length === 1 ? "game" : "games"}
+          </span>
+        )}
+      </section>
+      {games.length ? (
+        <div className="profile-game-list">
+          {games.map((game, index) => {
+            const rank = ranks.find(
+              (item) =>
+                String(item.gameId ?? (typeof item.game === "object" ? item.game?.id : "")) ===
+                String(game.id ?? game.game?.id),
+            );
+            const gameKey = game.id || String(index);
+            return (
+              <article key={gameKey}>
+                <span className="profile-game-mark">
+                  <Gamepad2 size={17} />
+                </span>
+                <div>
+                  <h3>{game.game?.name || game.name || "Connected game"}</h3>
+                  <p>
+                    {game.gameUsername ||
+                      game.platform ||
+                      game.platforms?.join(" · ") ||
+                      "Player account"}
+                  </p>
+                  {own ? (
+                    <footer>
+                      <button type="button" onClick={() => setEditing(game)}>
+                        <Edit3 size={13} />
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        data-confirm={confirming === gameKey}
+                        disabled={update.isPending}
+                        onClick={() =>
+                          confirming === gameKey ? void remove(index) : setConfirming(gameKey)
+                        }
+                      >
+                        {confirming === gameKey ? (
+                          "Confirm remove"
+                        ) : (
+                          <>
+                            <Trash2 size={13} />
+                            Remove
+                          </>
+                        )}
+                      </button>
+                    </footer>
+                  ) : null}
+                </div>
+                <div>
+                  <strong>
+                    {game.rankData?.rank || game.rank || game.skillLevel || "Unranked"}
+                  </strong>
+                  {rank?.rankingScore != null ? (
+                    <small>{Math.round(rank.rankingScore)} ranking score</small>
+                  ) : null}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="profile-panel-empty">
+          No games have been connected to this player identity yet.
+        </p>
+      )}
+      {own ? <GameConnectionsPanel username={profile.username} /> : null}
+      <section className="profile-rankings">
+        <header>
+          <div>
+            <p>Competitive standing</p>
+            <h2>Player rankings</h2>
+          </div>
+          <Link to="/leaderboard?tab=gameRanking">
+            Leaderboards <ChevronRight size={14} />
+          </Link>
+        </header>
+        {query.isLoading ? (
+          <SectionLoading />
+        ) : query.isError ? (
+          <ErrorState
+            message={getApiErrorMessage(query.error, "Rankings could not be retrieved.")}
+            retry={() => void query.refetch()}
+          />
+        ) : ranks.length ? (
+          <div>
+            {ranks.map((rank, index) => (
+              <article key={rank.gameId || index}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3>{gameName(rank.game)}</h3>
+                  <p>
+                    {typeof rank.game === "object"
+                      ? rank.game?.rankData?.rank || rank.game?.rank || "Ranked profile"
+                      : "Ranked profile"}
+                  </p>
+                </div>
+                <strong>{Math.round(rank.rankingScore ?? 0)}</strong>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="profile-panel-empty">
+            Rankings appear after verified competitive activity is recorded.
+          </p>
+        )}
+      </section>
+      {update.isError ? (
+        <p className="profile-inline-action-error" role="alert">
+          {getApiErrorMessage(update.error, "The game could not be removed.")}
+        </p>
+      ) : null}
+      {editing ? (
+        <GameIdentityDialog
+          game={editing === "new" ? undefined : editing}
+          profile={profile}
+          onClose={() => setEditing(null)}
+        />
+      ) : null}
+    </div>
+  );
 }
 
 export function MatchHistory({ profile }: { profile: PlayerProfile }) {
   const query = usePlayerMatches(profile.id);
   if (query.isLoading) return <SectionLoading />;
-  if (query.isError) return <ErrorState message={getApiErrorMessage(query.error, "Match history could not be retrieved.")} retry={() => void query.refetch()} />;
+  if (query.isError)
+    return (
+      <ErrorState
+        message={getApiErrorMessage(query.error, "Match history could not be retrieved.")}
+        retry={() => void query.refetch()}
+      />
+    );
   const matches = query.data ?? [];
-  return <section className="profile-history"><header><div><p>Competitive activity</p><h2>Match history</h2></div><span>{matches.length} recorded</span></header>{matches.length ? <div>{matches.map((match, index) => { const date = match.scheduledDate || match.date || match.createdAt; return <article key={match.id || index}><span data-result={String(match.result || match.status || "scheduled").toLowerCase()}><Swords size={15} /></span><div><h3>{gameName(match.game)}</h3><p>{match.opponent ? `Against ${match.opponent}` : "Gamerie match"}{date ? ` · ${new Date(date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}` : ""}</p></div><div><strong>{match.score || match.result || match.status || "Scheduled"}</strong></div></article>; })}</div> : <p className="profile-panel-empty">Completed and scheduled matches will appear here as this player competes.</p>}</section>;
+  return (
+    <section className="profile-history">
+      <header>
+        <div>
+          <p>Competitive activity</p>
+          <h2>Match history</h2>
+        </div>
+        <span>{matches.length} recorded</span>
+      </header>
+      {matches.length ? (
+        <div>
+          {matches.map((match, index) => {
+            const date = match.scheduledDate || match.date || match.createdAt;
+            return (
+              <article key={match.id || index}>
+                <span
+                  data-result={String(match.result || match.status || "scheduled").toLowerCase()}
+                >
+                  <Swords size={15} />
+                </span>
+                <div>
+                  <h3>{gameName(match.game)}</h3>
+                  <p>
+                    {match.opponent ? `Against ${match.opponent}` : "Gamerie match"}
+                    {date
+                      ? ` · ${new Date(date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}`
+                      : ""}
+                  </p>
+                </div>
+                <div>
+                  <strong>{match.score || match.result || match.status || "Scheduled"}</strong>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="profile-panel-empty">
+          Completed and scheduled matches will appear here as this player competes.
+        </p>
+      )}
+    </section>
+  );
 }
 
 export function ProfilePosts({ own, profile }: { own: boolean; profile: PlayerProfile }) {
   const query = usePlayerPosts(profile.id);
   if (query.isLoading) return <SectionLoading />;
-  if (query.isError) return <ErrorState message={getApiErrorMessage(query.error, "Profile posts could not be retrieved.")} retry={() => void query.refetch()} />;
+  if (query.isError)
+    return (
+      <ErrorState
+        message={getApiErrorMessage(query.error, "Profile posts could not be retrieved.")}
+        retry={() => void query.refetch()}
+      />
+    );
   const posts = query.data ?? [];
-  return <div className="profile-post-history">{own ? <FeedComposer /> : null}<section className="profile-data-heading"><div><p>Shared activity</p><h2>Post history</h2></div><span>{posts.length} {posts.length === 1 ? "post" : "posts"}</span></section>{posts.length ? <div className="feed-stream">{posts.map((post) => <FeedPostCard key={post.id} post={post} />)}</div> : <p className="profile-panel-empty">{own ? "Your posts will collect here after you share with the community." : "This player has not shared a post yet."}</p>}</div>;
+  return (
+    <div className="profile-post-history">
+      {own ? <FeedComposer /> : null}
+      <section className="profile-data-heading">
+        <div>
+          <p>Shared activity</p>
+          <h2>Post history</h2>
+        </div>
+        <span>
+          {posts.length} {posts.length === 1 ? "post" : "posts"}
+        </span>
+      </section>
+      {posts.length ? (
+        <div className="feed-stream">
+          {posts.map((post) => (
+            <FeedPostCard key={post.id} post={post} />
+          ))}
+        </div>
+      ) : (
+        <p className="profile-panel-empty">
+          {own
+            ? "Your posts will collect here after you share with the community."
+            : "This player has not shared a post yet."}
+        </p>
+      )}
+    </div>
+  );
 }
 
-function EndorsersDialog({ profile, skill, onClose }: { profile: PlayerProfile; skill: ProfileSkill; onClose: () => void }) {
+function EndorsersDialog({
+  profile,
+  skill,
+  onClose,
+}: {
+  profile: PlayerProfile;
+  skill: ProfileSkill;
+  onClose: () => void;
+}) {
   const query = useSkillEndorsers(profile.id, skill.id || "", true);
   const load = useRef<HTMLDivElement>(null);
   const entries = query.data?.pages.flatMap((page) => page.data) ?? [];
-  useEffect(() => { const node = load.current; if (!node || !query.hasNextPage) return; const observer = new IntersectionObserver(([entry]) => { if (entry.isIntersecting && !query.isFetchingNextPage) void query.fetchNextPage(); }, { rootMargin: "120px" }); observer.observe(node); return () => observer.disconnect(); }, [query.fetchNextPage, query.hasNextPage, query.isFetchingNextPage]);
-  return <ProfileDialog title={`${skill.name || "Skill"} endorsements`} onClose={onClose}><div className="profile-endorser-list">{query.isLoading ? <SectionLoading /> : null}{query.isError ? <ErrorState message="Endorsers could not be retrieved." retry={() => void query.refetch()} /> : null}{entries.map((entry) => <Link key={entry.id} to={`/profile/${entry.username}`} onClick={onClose}><SafeImage src={entry.profileImage} alt="" /><span><strong>{entry.username}</strong><small>{entry.gamerTitle || "Gamerie player"}</small></span><time>{new Date(entry.endorsedAt || entry.timestamp || Date.now()).toLocaleDateString(undefined, { day: "numeric", month: "short" })}</time></Link>)}{!query.isLoading && !entries.length ? <p className="profile-panel-empty">No endorsements yet.</p> : null}<div ref={load}>{query.isFetchingNextPage ? "Loading more…" : query.hasNextPage ? <button type="button" onClick={() => query.fetchNextPage()}>Load more</button> : null}</div></div></ProfileDialog>;
+  useEffect(() => {
+    const node = load.current;
+    if (!node || !query.hasNextPage) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !query.isFetchingNextPage) void query.fetchNextPage();
+      },
+      { rootMargin: "120px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [query.fetchNextPage, query.hasNextPage, query.isFetchingNextPage]);
+  return (
+    <ProfileDialog title={`${skill.name || "Skill"} endorsements`} onClose={onClose}>
+      <div className="profile-endorser-list">
+        {query.isLoading ? <SectionLoading /> : null}
+        {query.isError ? (
+          <ErrorState
+            message="Endorsers could not be retrieved."
+            retry={() => void query.refetch()}
+          />
+        ) : null}
+        {entries.map((entry) => (
+          <Link key={entry.id} to={`/profile/${entry.username}`} onClick={onClose}>
+            <SafeImage src={entry.profileImage} alt="" />
+            <span>
+              <strong>{entry.username}</strong>
+              <small>{entry.gamerTitle || "Gamerie player"}</small>
+            </span>
+            <time>
+              {new Date(entry.endorsedAt || entry.timestamp || Date.now()).toLocaleDateString(
+                undefined,
+                { day: "numeric", month: "short" },
+              )}
+            </time>
+          </Link>
+        ))}
+        {!query.isLoading && !entries.length ? (
+          <p className="profile-panel-empty">No endorsements yet.</p>
+        ) : null}
+        <div ref={load}>
+          {query.isFetchingNextPage ? (
+            "Loading more…"
+          ) : query.hasNextPage ? (
+            <button type="button" onClick={() => query.fetchNextPage()}>
+              Load more
+            </button>
+          ) : null}
+        </div>
+      </div>
+    </ProfileDialog>
+  );
 }
 
 export function SkillsPanel({ own, profile }: { own: boolean; profile: PlayerProfile }) {
   const viewer = useAuthStore((state) => state.user);
   const mutation = useToggleSkillEndorsement(viewer?.id, profile.id);
   const [selected, setSelected] = useState<ProfileSkill | null>(null);
-  return <section className="profile-skills"><header><div><p>Strengths</p><h2>Player skills</h2></div></header>{profile.skills?.length ? <div>{profile.skills.map((skill, index) => { const count = Number(skill.endorsementCount ?? (typeof skill.endorsements === "number" ? skill.endorsements : 0)); return <article key={skill.id || index}><div><h3>{skill.name || "Skill"}</h3>{skill.level ? <p>{skill.level}</p> : null}</div><button type="button" onClick={() => skill.id && setSelected(skill)}>{count} {count === 1 ? "endorsement" : "endorsements"}</button>{!own && viewer ? <button type="button" className="profile-endorse" data-active={skill.hasEndorsed} disabled={mutation.isPending} onClick={() => mutation.mutate({ skillId: skill.id, skillName: skill.name || "Skill", alreadyEndorsed: Boolean(skill.hasEndorsed) })}>{skill.hasEndorsed ? <Check size={14} /> : <ThumbsUp size={14} />}{skill.hasEndorsed ? "Endorsed" : "Endorse"}</button> : null}</article>; })}</div> : <p className="profile-muted">No skills have been added yet.</p>}{mutation.isError ? <p className="profile-inline-action-error" role="alert">{getApiErrorMessage(mutation.error, "The endorsement could not be updated.")}</p> : null}{selected ? <EndorsersDialog profile={profile} skill={selected} onClose={() => setSelected(null)} /> : null}</section>;
+  const [showAll, setShowAll] = useState(false);
+  const skills = profile.skills ?? [];
+  const preview = skills.slice(0, 4);
+  const renderSkill = (skill: ProfileSkill, index: number) => {
+    const count = Number(
+      skill.endorsementCount ?? (typeof skill.endorsements === "number" ? skill.endorsements : 0),
+    );
+    return (
+      <article key={skill.id || index}>
+        <div>
+          <h3>{skill.name || "Skill"}</h3>
+          {skill.level ? <p>{skill.level}</p> : null}
+        </div>
+        <button
+          type="button"
+          disabled={!skill.id}
+          onClick={() => {
+            if (!skill.id) return;
+            setShowAll(false);
+            setSelected(skill);
+          }}
+        >
+          {count} {count === 1 ? "endorsement" : "endorsements"}
+        </button>
+        {!own && viewer ? (
+          <button
+            type="button"
+            className="profile-endorse"
+            data-active={skill.hasEndorsed}
+            disabled={mutation.isPending}
+            onClick={() =>
+              mutation.mutate({
+                skillId: skill.id,
+                skillName: skill.name || "Skill",
+                alreadyEndorsed: Boolean(skill.hasEndorsed),
+              })
+            }
+          >
+            {skill.hasEndorsed ? <Check size={14} /> : <ThumbsUp size={14} />}
+            {skill.hasEndorsed ? "Endorsed" : "Endorse"}
+          </button>
+        ) : null}
+      </article>
+    );
+  };
+  return (
+    <section className="profile-skills">
+      <header>
+        <div>
+          <p>Strengths</p>
+          <h2>Player skills</h2>
+        </div>
+        {skills.length > 4 ? <span>{skills.length} skills</span> : null}
+      </header>
+      {skills.length ? (
+        <>
+          <div>{preview.map(renderSkill)}</div>
+          {skills.length > preview.length ? (
+            <button
+              type="button"
+              className="profile-collection-more"
+              onClick={() => setShowAll(true)}
+            >
+              +{skills.length - preview.length} more skills
+            </button>
+          ) : null}
+        </>
+      ) : (
+        <p className="profile-muted">No skills have been added yet.</p>
+      )}
+      {mutation.isError ? (
+        <p className="profile-inline-action-error" role="alert">
+          {getApiErrorMessage(mutation.error, "The endorsement could not be updated.")}
+        </p>
+      ) : null}
+      {showAll ? (
+        <ProfileDialog
+          title={`All player skills (${skills.length})`}
+          onClose={() => setShowAll(false)}
+        >
+          <div className="profile-skills-dialog">{skills.map(renderSkill)}</div>
+        </ProfileDialog>
+      ) : null}
+      {selected ? (
+        <EndorsersDialog profile={profile} skill={selected} onClose={() => setSelected(null)} />
+      ) : null}
+    </section>
+  );
 }
 
 export function AchievementsPanel({ own, profile }: { own: boolean; profile: PlayerProfile }) {
-  const query = useAchievements(profile.id); const claim = useClaimAchievement(profile.id);
+  const query = useAchievements(profile.id);
+  const claim = useClaimAchievement(profile.id);
   if (query.isLoading) return <SectionLoading />;
-  if (query.isError) return <ErrorState message={getApiErrorMessage(query.error, "Achievements could not be retrieved.")} retry={() => void query.refetch()} />;
-  const data = query.data; const achievements = data?.achievements ?? [];
-  return <div className="profile-achievements"><section className="profile-achievement-summary"><div><span>Completed</span><strong>{data?.completedCount ?? 0}<small> / {data?.totalCount ?? 0}</small></strong></div><div><span>Reward points</span><strong>{(data?.totalPoints ?? 0).toLocaleString()}</strong></div><div><span>Completion</span><strong>{data?.totalCount ? Math.round((data.completedCount / data.totalCount) * 100) : 0}%</strong></div></section>{achievements.length ? <div className="profile-achievement-grid">{achievements.map((achievement) => <article key={achievement.id} data-complete={achievement.completed}><span><Award size={17} /></span><div><p>{achievement.category}</p><h2>{achievement.name}</h2><p>{achievement.description}</p></div>{achievement.progress ? <div className="profile-progress"><span><i style={{ width: `${Math.min(100, achievement.progress.percentage)}%` }} /></span><small>{achievement.progress.current} / {achievement.progress.required}</small></div> : null}<footer><strong>{achievement.points} points</strong>{own && achievement.completed && !achievement.rewardsClaimed ? <button type="button" disabled={claim.isPending} onClick={() => claim.mutate(achievement.id)}>{claim.isPending ? "Claiming…" : "Claim reward"}</button> : <span>{achievement.rewardsClaimed ? "Claimed" : achievement.completed ? "Completed" : "In progress"}</span>}</footer></article>)}</div> : <p className="profile-panel-empty">Achievements earned across Gamerie will be collected here.</p>}{claim.isError ? <p className="profile-inline-action-error" role="alert">{getApiErrorMessage(claim.error, "The reward could not be claimed.")}</p> : null}</div>;
+  if (query.isError)
+    return (
+      <ErrorState
+        message={getApiErrorMessage(query.error, "Achievements could not be retrieved.")}
+        retry={() => void query.refetch()}
+      />
+    );
+  const data = query.data;
+  const achievements = data?.achievements ?? [];
+  return (
+    <div className="profile-achievements">
+      <section className="profile-achievement-summary">
+        <div>
+          <span>Completed</span>
+          <strong>
+            {data?.completedCount ?? 0}
+            <small> / {data?.totalCount ?? 0}</small>
+          </strong>
+        </div>
+        <div>
+          <span>Reward points</span>
+          <strong>{(data?.totalPoints ?? 0).toLocaleString()}</strong>
+        </div>
+        <div>
+          <span>Completion</span>
+          <strong>
+            {data?.totalCount ? Math.round((data.completedCount / data.totalCount) * 100) : 0}%
+          </strong>
+        </div>
+      </section>
+      {achievements.length ? (
+        <div className="profile-achievement-grid">
+          {achievements.map((achievement) => (
+            <article key={achievement.id} data-complete={achievement.completed}>
+              <span>
+                <Award size={17} />
+              </span>
+              <div>
+                <p>{achievement.category}</p>
+                <h2>{achievement.name}</h2>
+                <p>{achievement.description}</p>
+              </div>
+              {achievement.progress ? (
+                <div className="profile-progress">
+                  <span>
+                    <i style={{ width: `${Math.min(100, achievement.progress.percentage)}%` }} />
+                  </span>
+                  <small>
+                    {achievement.progress.current} / {achievement.progress.required}
+                  </small>
+                </div>
+              ) : null}
+              <footer>
+                <strong>{achievement.points} points</strong>
+                {own && achievement.completed && !achievement.rewardsClaimed ? (
+                  <button
+                    type="button"
+                    disabled={claim.isPending}
+                    onClick={() => claim.mutate(achievement.id)}
+                  >
+                    {claim.isPending ? "Claiming…" : "Claim reward"}
+                  </button>
+                ) : (
+                  <span>
+                    {achievement.rewardsClaimed
+                      ? "Claimed"
+                      : achievement.completed
+                        ? "Completed"
+                        : "In progress"}
+                  </span>
+                )}
+              </footer>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p className="profile-panel-empty">
+          Achievements earned across Gamerie will be collected here.
+        </p>
+      )}
+      {claim.isError ? (
+        <p className="profile-inline-action-error" role="alert">
+          {getApiErrorMessage(claim.error, "The reward could not be claimed.")}
+        </p>
+      ) : null}
+    </div>
+  );
 }
 
-export function SalaryInsights({ profile }: { profile: PlayerProfile }) {
-  const query = useSalaryInsights(profile.id, true); const history = useSalaryHistory(profile.id, true); const recalculate = useRecalculateSalary(profile.id);
+export function SalaryInsights({ own, profile }: { own: boolean; profile: PlayerProfile }) {
+  const query = useSalaryInsights(profile.id, true);
+  const history = useSalaryHistory(profile.id, own);
+  const recalculate = useRecalculateSalary(profile.id);
   if (query.isLoading) return <SectionLoading />;
-  if (query.isError) return <ErrorState message={getApiErrorMessage(query.error, "Market-value insights could not be calculated.")} retry={() => void query.refetch()} />;
+  if (query.isError)
+    return (
+      <ErrorState
+        message={getApiErrorMessage(query.error, "Market-value insights could not be calculated.")}
+        retry={() => void query.refetch()}
+      />
+    );
   const salary = query.data;
-  return <section className="profile-salary"><header><div><p>Career insight</p><h2>Estimated player market value</h2></div><button type="button" disabled={recalculate.isPending} onClick={() => recalculate.mutate()}><RefreshCw size={14} />{recalculate.isPending ? "Recalculating…" : "Refresh estimate"}</button></header><div className="profile-salary__hero"><div><span>Estimated monthly value</span><strong>{new Intl.NumberFormat(undefined, { style: "currency", currency: salary?.currency || "USD", maximumFractionDigits: 0 }).format(salary?.estimate ?? 0)}</strong><small>{salary?.tier || "Player"} tier · {salary?.confidenceScore ?? 0}% confidence</small></div><div><span>Range</span><strong>${(salary?.min ?? 0).toLocaleString()} – ${(salary?.max ?? 0).toLocaleString()}</strong><small>{salary?.benchmarks?.percentile != null ? `${salary.benchmarks.percentile}th percentile` : "Based on current profile signals"}</small></div></div>{salary?.components?.length ? <div className="profile-salary__factors">{salary.components.slice(0, 5).map((component) => <div key={component.factor}><span>{component.factor}</span><strong>{Math.round(component.normalizedScore)}</strong><i><b style={{ width: `${Math.min(100, component.normalizedScore)}%` }} /></i></div>)}</div> : null}{history.data?.length ? <div className="profile-salary__history"><p>Recent estimates</p>{history.data.slice(0, 6).map((item) => <span key={item.id} title={new Date(item.calculatedAt).toLocaleDateString()} style={{ height: `${Math.max(16, (item.estimate / Math.max(...history.data.map((value) => value.estimate))) * 100)}%` }} />)}</div> : null}{salary?.improvementSuggestions?.length ? <div className="profile-salary__suggestions"><TrendingUp size={16} /><div><strong>Ways to strengthen this estimate</strong>{salary.improvementSuggestions.slice(0, 3).map((suggestion) => <p key={suggestion}>{suggestion}</p>)}</div></div> : null}{recalculate.isError ? <p className="profile-inline-action-error" role="alert">{getApiErrorMessage(recalculate.error, "The estimate could not be refreshed.")}</p> : null}</section>;
+  return (
+    <section className="profile-salary">
+      <header>
+        <div>
+          <p>Career insight</p>
+          <h2>Estimated player market value</h2>
+        </div>
+        {own ? (
+          <button
+            type="button"
+            disabled={recalculate.isPending}
+            onClick={() => recalculate.mutate()}
+          >
+            <RefreshCw size={14} />
+            {recalculate.isPending ? "Recalculating…" : "Refresh estimate"}
+          </button>
+        ) : (
+          <span className="profile-salary__disclosure">
+            Estimated benchmark · not a salary offer
+          </span>
+        )}
+      </header>
+      <div className="profile-salary__hero">
+        <div>
+          <span>Estimated monthly value</span>
+          <strong>
+            {new Intl.NumberFormat(undefined, {
+              style: "currency",
+              currency: salary?.currency || "USD",
+              maximumFractionDigits: 0,
+            }).format(salary?.estimate ?? 0)}
+          </strong>
+          <small>
+            {salary?.tier || "Player"} tier · {salary?.confidenceScore ?? 0}% confidence
+          </small>
+        </div>
+        <div>
+          <span>Range</span>
+          <strong>
+            ${(salary?.min ?? 0).toLocaleString()} – ${(salary?.max ?? 0).toLocaleString()}
+          </strong>
+          <small>
+            {salary?.benchmarks?.percentile != null
+              ? `${salary.benchmarks.percentile}th percentile`
+              : "Based on current profile signals"}
+          </small>
+        </div>
+      </div>
+      {salary?.components?.length ? (
+        <div className="profile-salary__factors">
+          {salary.components.slice(0, 5).map((component) => (
+            <div key={component.factor}>
+              <span>{component.factor}</span>
+              <strong>{Math.round(component.normalizedScore)}</strong>
+              <i>
+                <b style={{ width: `${Math.min(100, component.normalizedScore)}%` }} />
+              </i>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {own && history.data?.length ? (
+        <div className="profile-salary__history">
+          <p>Recent estimates</p>
+          {history.data.slice(0, 6).map((item) => (
+            <span
+              key={item.id}
+              title={new Date(item.calculatedAt).toLocaleDateString()}
+              style={{
+                height: `${Math.max(16, (item.estimate / Math.max(...history.data.map((value) => value.estimate))) * 100)}%`,
+              }}
+            />
+          ))}
+        </div>
+      ) : null}
+      {own && salary?.improvementSuggestions?.length ? (
+        <div className="profile-salary__suggestions">
+          <TrendingUp size={16} />
+          <div>
+            <strong>Ways to strengthen this estimate</strong>
+            {salary.improvementSuggestions.slice(0, 3).map((suggestion) => (
+              <p key={suggestion}>{suggestion}</p>
+            ))}
+          </div>
+        </div>
+      ) : null}
+      {own && recalculate.isError ? (
+        <p className="profile-inline-action-error" role="alert">
+          {getApiErrorMessage(recalculate.error, "The estimate could not be refreshed.")}
+        </p>
+      ) : null}
+    </section>
+  );
 }

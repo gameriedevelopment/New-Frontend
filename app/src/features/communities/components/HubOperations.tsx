@@ -14,12 +14,7 @@ import {
 import { useMemo, useState, type KeyboardEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "../../auth/authStore";
-import {
-  Button,
-  SafeImage,
-  SkeletonText,
-  StatePanel,
-} from "../../../components/ui";
+import { Button, SafeImage, SkeletonText, StatePanel } from "../../../components/ui";
 import { getApiErrorMessage } from "../../../lib/errors";
 import { useDebouncedValue, useUnifiedSearch } from "../../discovery/hooks";
 import type { SearchEntity, SearchTeam } from "../../discovery/types";
@@ -50,12 +45,9 @@ import type {
 import { CommunityDialog } from "./CommunityDialog";
 import { SensitiveCommunityOperations } from "./SensitiveCommunityOperations";
 
-const isPlayer = (item: SearchEntity): item is PlayerProfile =>
-  "username" in item;
+const isPlayer = (item: SearchEntity): item is PlayerProfile => "username" in item;
 const isTeam = (item: SearchEntity): item is SearchTeam =>
-  "name" in item &&
-  ("members" in item || "level" in item) &&
-  !("username" in item);
+  "name" in item && ("members" in item || "level" in item) && !("username" in item);
 const memberUserId = (member: CommunityMember) =>
   member.user?.id || member.userId || member.id || "";
 const pending = <T extends { status?: string }>(items?: T[]) =>
@@ -84,15 +76,9 @@ function PlayerIdentity({ request }: { request: HubRequestSummary }) {
   const user = request.user;
   return (
     <div className="team-operation-person">
-      <SafeImage
-        src={user?.profileImage}
-        fallback="/avatar-fallback.svg"
-        alt=""
-      />
+      <SafeImage src={user?.profileImage} fallback="/avatar-fallback.svg" alt="" />
       <div>
-        <strong>
-          {user?.displayName || user?.username || "Gamerie player"}
-        </strong>
+        <strong>{user?.displayName || user?.username || "Gamerie player"}</strong>
         <span>{user?.username ? `@${user.username}` : "Player"}</span>
       </div>
     </div>
@@ -112,13 +98,7 @@ function TeamIdentity({ request }: { request: HubTeamRequestSummary }) {
   );
 }
 
-export function HubOperations({
-  hub,
-  slug,
-}: {
-  hub: HubSummary;
-  slug: string;
-}) {
+export function HubOperations({ hub, slug }: { hub: HubSummary; slug: string }) {
   const currentUserId = useAuthStore((state) => state.user?.id);
   const relationship = hub.viewerRelationship;
   const [params, setParams] = useSearchParams();
@@ -126,24 +106,16 @@ export function HubOperations({
     { value: "people", label: "Members" },
     { value: "teams", label: "Teams" },
     { value: "access", label: "Access & growth" },
-    ...(relationship?.isOwner
-      ? [{ value: "ownership" as const, label: "Ownership" }]
-      : []),
+    ...(relationship?.isOwner ? [{ value: "ownership" as const, label: "Ownership" }] : []),
   ];
   const requestedView = params.get("manage") as HubManageView | null;
-  const activeView = managementViews.some(
-    (view) => view.value === requestedView,
-  )
+  const activeView = managementViews.some((view) => view.value === requestedView)
     ? requestedView!
     : "people";
   const [playerTerm, setPlayerTerm] = useState("");
   const [teamTerm, setTeamTerm] = useState("");
-  const [editingMember, setEditingMember] = useState<CommunityMember | null>(
-    null,
-  );
-  const [removingMember, setRemovingMember] = useState<CommunityMember | null>(
-    null,
-  );
+  const [editingMember, setEditingMember] = useState<CommunityMember | null>(null);
+  const [removingMember, setRemovingMember] = useState<CommunityMember | null>(null);
   const [removingTeam, setRemovingTeam] = useState<TeamSummary | null>(null);
   const [role, setRole] = useState("member");
   const [title, setTitle] = useState("player");
@@ -164,8 +136,7 @@ export function HubOperations({
   );
   const invites = useHubPendingInvites(
     hub.id,
-    Boolean(relationship?.canManage) &&
-      (activeView === "people" || activeView === "teams"),
+    Boolean(relationship?.canManage) && (activeView === "people" || activeView === "teams"),
   );
   const dashboard = useHubDashboard(
     hub.id,
@@ -196,9 +167,7 @@ export function HubOperations({
       (teamSearch.data?.pages.flatMap((page) => page.data) ?? [])
         .filter(isTeam)
         .filter(
-          (team) =>
-            !affiliatedIds.has(team.id) &&
-            !(invites.data?.teamIds || []).includes(team.id),
+          (team) => !affiliatedIds.has(team.id) && !(invites.data?.teamIds || []).includes(team.id),
         )
         .slice(0, 6),
     [affiliatedIds, invites.data?.teamIds, teamSearch.data],
@@ -230,9 +199,7 @@ export function HubOperations({
               : index - 1;
     const nextView = managementViews[nextIndex].value;
     changeView(nextView);
-    requestAnimationFrame(() =>
-      document.getElementById(`hub-manage-tab-${nextView}`)?.focus(),
-    );
+    requestAnimationFrame(() => document.getElementById(`hub-manage-tab-${nextView}`)?.focus());
   };
 
   const openMember = (member: CommunityMember) => {
@@ -243,10 +210,7 @@ export function HubOperations({
   const saveMember = () => {
     const userId = editingMember ? memberUserId(editingMember) : "";
     if (userId)
-      changeMember.mutate(
-        { userId, role, title },
-        { onSuccess: () => setEditingMember(null) },
-      );
+      changeMember.mutate({ userId, role, title }, { onSuccess: () => setEditingMember(null) });
   };
   const copyReferral = async () => {
     const code = dashboard.data?.referral.code;
@@ -265,11 +229,7 @@ export function HubOperations({
     );
   return (
     <div className="hub-operations">
-      <div
-        className="community-manage-tabs"
-        role="tablist"
-        aria-label="Hub management sections"
-      >
+      <div className="community-manage-tabs" role="tablist" aria-label="Hub management sections">
         {managementViews.map((view, index) => (
           <button
             id={`hub-manage-tab-${view.value}`}
@@ -294,10 +254,7 @@ export function HubOperations({
         aria-labelledby="hub-manage-tab-people"
         hidden={activeView !== "people"}
       >
-        <section
-          className="community-section hub-operations__invite"
-          id="hub-people"
-        >
+        <section className="community-section hub-operations__invite" id="hub-people">
           <header>
             <div>
               <h2>Invite people</h2>
@@ -322,15 +279,9 @@ export function HubOperations({
               ) : playerCandidates.length ? (
                 playerCandidates.map((player) => (
                   <article key={player.id}>
-                    <SafeImage
-                      src={player.profileImage}
-                      fallback="/avatar-fallback.svg"
-                      alt=""
-                    />
+                    <SafeImage src={player.profileImage} fallback="/avatar-fallback.svg" alt="" />
                     <div>
-                      <strong>
-                        {player.personalInfo?.fullName || player.username}
-                      </strong>
+                      <strong>{player.personalInfo?.fullName || player.username}</strong>
                       <span>@{player.username}</span>
                     </div>
                     <Button
@@ -355,10 +306,7 @@ export function HubOperations({
           ) : null}
           {invitePlayer.isError ? (
             <p className="community-action-error" role="alert">
-              {getApiErrorMessage(
-                invitePlayer.error,
-                "This player could not be invited.",
-              )}
+              {getApiErrorMessage(invitePlayer.error, "This player could not be invited.")}
             </p>
           ) : invitePlayer.isSuccess ? (
             <p className="community-action-success" role="status">
@@ -382,16 +330,9 @@ export function HubOperations({
               <StatePanel
                 tone="error"
                 title="Player requests could not load"
-                description={getApiErrorMessage(
-                  requests.error,
-                  "Try this queue again.",
-                )}
+                description={getApiErrorMessage(requests.error, "Try this queue again.")}
                 action={
-                  <Button
-                    size="small"
-                    variant="secondary"
-                    onClick={() => requests.refetch()}
-                  >
+                  <Button size="small" variant="secondary" onClick={() => requests.refetch()}>
                     Retry
                   </Button>
                 }
@@ -435,16 +376,11 @@ export function HubOperations({
                 ))}
               </div>
             ) : (
-              <p className="community-section__empty">
-                No player requests need attention.
-              </p>
+              <p className="community-section__empty">No player requests need attention.</p>
             )}
             {respondPlayer.isError ? (
               <p className="community-action-error" role="alert">
-                {getApiErrorMessage(
-                  respondPlayer.error,
-                  "This request could not be updated.",
-                )}
+                {getApiErrorMessage(respondPlayer.error, "This request could not be updated.")}
               </p>
             ) : null}
           </section>
@@ -462,16 +398,9 @@ export function HubOperations({
               <StatePanel
                 tone="error"
                 title="Player invitations could not load"
-                description={getApiErrorMessage(
-                  invites.error,
-                  "Try this queue again.",
-                )}
+                description={getApiErrorMessage(invites.error, "Try this queue again.")}
                 action={
-                  <Button
-                    size="small"
-                    variant="secondary"
-                    onClick={() => invites.refetch()}
-                  >
+                  <Button size="small" variant="secondary" onClick={() => invites.refetch()}>
                     Retry
                   </Button>
                 }
@@ -485,9 +414,7 @@ export function HubOperations({
                       size="small"
                       variant="quiet"
                       disabled={cancelPlayer.isPending}
-                      onClick={() =>
-                        request.user?.id && cancelPlayer.mutate(request.user.id)
-                      }
+                      onClick={() => request.user?.id && cancelPlayer.mutate(request.user.id)}
                     >
                       Cancel invite
                     </Button>
@@ -495,9 +422,7 @@ export function HubOperations({
                 ))}
               </div>
             ) : (
-              <p className="community-section__empty">
-                No player invitations are waiting.
-              </p>
+              <p className="community-section__empty">No player invitations are waiting.</p>
             )}
           </section>
         </div>
@@ -507,8 +432,7 @@ export function HubOperations({
             <div>
               <h2>Member roles</h2>
               <p>
-                Keep operational responsibility clear without making the roster
-                feel bureaucratic.
+                Keep operational responsibility clear without making the roster feel bureaucratic.
               </p>
             </div>
             <span>{members.length} members</span>
@@ -517,10 +441,8 @@ export function HubOperations({
             <div className="hub-member-controls">
               {members.map((member, index) => {
                 const userId = memberUserId(member);
-                const isOwner =
-                  member.role === "owner" || userId === hub.ownerId;
-                const protectedAdmin =
-                  relationship.role === "admin" && member.role === "admin";
+                const isOwner = member.role === "owner" || userId === hub.ownerId;
+                const protectedAdmin = relationship.role === "admin" && member.role === "admin";
                 return (
                   <article key={userId || index}>
                     <div className="team-operation-person">
@@ -531,9 +453,7 @@ export function HubOperations({
                       />
                       <div>
                         <strong>
-                          {member.user?.displayName ||
-                            member.user?.username ||
-                            "Gamerie player"}
+                          {member.user?.displayName || member.user?.username || "Gamerie player"}
                         </strong>
                         <span>
                           {member.role || "member"} · {member.title || "player"}
@@ -549,11 +469,7 @@ export function HubOperations({
                       <span className="hub-protected-label">Owner managed</span>
                     ) : (
                       <div>
-                        <Button
-                          size="small"
-                          variant="quiet"
-                          onClick={() => openMember(member)}
-                        >
+                        <Button size="small" variant="quiet" onClick={() => openMember(member)}>
                           Role
                         </Button>
                         <Button
@@ -585,10 +501,7 @@ export function HubOperations({
         aria-labelledby="hub-manage-tab-teams"
         hidden={activeView !== "teams"}
       >
-        <section
-          className="community-section hub-operations__invite"
-          id="hub-teams"
-        >
+        <section className="community-section hub-operations__invite" id="hub-teams">
           <header>
             <div>
               <h2>Invite a team</h2>
@@ -613,26 +526,17 @@ export function HubOperations({
               ) : teamCandidates.length ? (
                 teamCandidates.map((team) => (
                   <article key={team.id}>
-                    <SafeImage
-                      src={team.logo}
-                      fallback="/avatar-fallback.svg"
-                      alt=""
-                    />
+                    <SafeImage src={team.logo} fallback="/avatar-fallback.svg" alt="" />
                     <div>
                       <strong>{team.name}</strong>
-                      <span>
-                        {team.level || `${team.members?.length || 0} members`}
-                      </span>
+                      <span>{team.level || `${team.members?.length || 0} members`}</span>
                     </div>
                     <Button
                       size="small"
                       variant="secondary"
                       disabled={inviteTeam.isPending}
                       onClick={() =>
-                        inviteTeam.mutate(
-                          { teamId: team.id },
-                          { onSuccess: () => setTeamTerm("") },
-                        )
+                        inviteTeam.mutate({ teamId: team.id }, { onSuccess: () => setTeamTerm("") })
                       }
                     >
                       {inviteTeam.isPending ? "Inviting…" : "Invite"}
@@ -646,10 +550,7 @@ export function HubOperations({
           ) : null}
           {inviteTeam.isError ? (
             <p className="community-action-error" role="alert">
-              {getApiErrorMessage(
-                inviteTeam.error,
-                "This team could not be invited.",
-              )}
+              {getApiErrorMessage(inviteTeam.error, "This team could not be invited.")}
             </p>
           ) : inviteTeam.isSuccess ? (
             <p className="community-action-success" role="status">
@@ -673,16 +574,9 @@ export function HubOperations({
               <StatePanel
                 tone="error"
                 title="Team requests could not load"
-                description={getApiErrorMessage(
-                  teamRequests.error,
-                  "Try this queue again.",
-                )}
+                description={getApiErrorMessage(teamRequests.error, "Try this queue again.")}
                 action={
-                  <Button
-                    size="small"
-                    variant="secondary"
-                    onClick={() => teamRequests.refetch()}
-                  >
+                  <Button size="small" variant="secondary" onClick={() => teamRequests.refetch()}>
                     Retry
                   </Button>
                 }
@@ -726,9 +620,7 @@ export function HubOperations({
                 ))}
               </div>
             ) : (
-              <p className="community-section__empty">
-                No team requests need attention.
-              </p>
+              <p className="community-section__empty">No team requests need attention.</p>
             )}
           </section>
           <section className="community-section">
@@ -745,16 +637,9 @@ export function HubOperations({
               <StatePanel
                 tone="error"
                 title="Team invitations could not load"
-                description={getApiErrorMessage(
-                  invites.error,
-                  "Try this queue again.",
-                )}
+                description={getApiErrorMessage(invites.error, "Try this queue again.")}
                 action={
-                  <Button
-                    size="small"
-                    variant="secondary"
-                    onClick={() => invites.refetch()}
-                  >
+                  <Button size="small" variant="secondary" onClick={() => invites.refetch()}>
                     Retry
                   </Button>
                 }
@@ -768,9 +653,7 @@ export function HubOperations({
                       size="small"
                       variant="quiet"
                       disabled={cancelTeam.isPending}
-                      onClick={() =>
-                        request.team?.id && cancelTeam.mutate(request.team.id)
-                      }
+                      onClick={() => request.team?.id && cancelTeam.mutate(request.team.id)}
                     >
                       Cancel invite
                     </Button>
@@ -778,9 +661,7 @@ export function HubOperations({
                 ))}
               </div>
             ) : (
-              <p className="community-section__empty">
-                No team invitations are waiting.
-              </p>
+              <p className="community-section__empty">No team invitations are waiting.</p>
             )}
           </section>
         </div>
@@ -797,27 +678,15 @@ export function HubOperations({
             <div className="hub-affiliated-grid">
               {teams.map((team) => (
                 <article key={team.id}>
-                  <Link
-                    to={`/teams/${encodeURIComponent(team.slug || team.name)}`}
-                  >
-                    <SafeImage
-                      src={team.logo}
-                      fallback="/avatar-fallback.svg"
-                      alt=""
-                    />
+                  <Link to={`/teams/${encodeURIComponent(team.slug || team.name)}`}>
+                    <SafeImage src={team.logo} fallback="/avatar-fallback.svg" alt="" />
                     <span>
                       <strong>{team.name}</strong>
-                      <small>
-                        {team.level || team.region || "Gamerie team"}
-                      </small>
+                      <small>{team.level || team.region || "Gamerie team"}</small>
                     </span>
                     <ChevronRight size={14} />
                   </Link>
-                  <Button
-                    size="small"
-                    variant="quiet"
-                    onClick={() => setRemovingTeam(team)}
-                  >
+                  <Button size="small" variant="quiet" onClick={() => setRemovingTeam(team)}>
                     Remove
                   </Button>
                 </article>
@@ -879,8 +748,7 @@ export function HubOperations({
                   size="small"
                   disabled={
                     updatePolicy.isPending ||
-                    (visibility === hub.visibility &&
-                      joinPolicy === hub.joinPolicy)
+                    (visibility === hub.visibility && joinPolicy === hub.joinPolicy)
                   }
                 >
                   {updatePolicy.isPending ? "Saving…" : "Save policy"}
@@ -903,9 +771,7 @@ export function HubOperations({
                 <div>
                   <span>Joining</span>
                   <strong>
-                    {hub.joinPolicy === "open"
-                      ? "Open membership"
-                      : "Approval required"}
+                    {hub.joinPolicy === "open" ? "Open membership" : "Approval required"}
                   </strong>
                 </div>
                 <p>Only the hub owner can change access policy.</p>
@@ -926,16 +792,9 @@ export function HubOperations({
               <StatePanel
                 tone="error"
                 title="Growth data could not load"
-                description={getApiErrorMessage(
-                  dashboard.error,
-                  "Try this dashboard again.",
-                )}
+                description={getApiErrorMessage(dashboard.error, "Try this dashboard again.")}
                 action={
-                  <Button
-                    size="small"
-                    variant="secondary"
-                    onClick={() => dashboard.refetch()}
-                  >
+                  <Button size="small" variant="secondary" onClick={() => dashboard.refetch()}>
                     Retry
                   </Button>
                 }
@@ -944,40 +803,27 @@ export function HubOperations({
               <>
                 <div className="hub-growth-metrics">
                   <div>
-                    <strong>
-                      {dashboard.data.community.members.toLocaleString()}
-                    </strong>
+                    <strong>{dashboard.data.community.members.toLocaleString()}</strong>
                     <span>Members</span>
                   </div>
                   <div>
-                    <strong>
-                      {dashboard.data.community.teams.toLocaleString()}
-                    </strong>
+                    <strong>{dashboard.data.community.teams.toLocaleString()}</strong>
                     <span>Teams</span>
                   </div>
                   <div>
-                    <strong>
-                      {dashboard.data.community.posts.toLocaleString()}
-                    </strong>
+                    <strong>{dashboard.data.community.posts.toLocaleString()}</strong>
                     <span>Posts</span>
                   </div>
                   <div>
-                    <strong>
-                      {dashboard.data.referral.totalSignups.toLocaleString()}
-                    </strong>
+                    <strong>{dashboard.data.referral.totalSignups.toLocaleString()}</strong>
                     <span>Referred</span>
                   </div>
                 </div>
-                <div
-                  className="hub-growth-chart"
-                  aria-label="New members over the last 30 days"
-                >
+                <div className="hub-growth-chart" aria-label="New members over the last 30 days">
                   {dashboard.data.growth.memberGrowth.map((point) => {
                     const peak = Math.max(
                       1,
-                      ...dashboard.data!.growth.memberGrowth.map(
-                        (entry) => entry.count,
-                      ),
+                      ...dashboard.data!.growth.memberGrowth.map((entry) => entry.count),
                     );
                     return (
                       <i
@@ -993,9 +839,7 @@ export function HubOperations({
                 <div className="hub-referral-code">
                   <span>
                     <small>Referral code</small>
-                    <strong>
-                      {dashboard.data.referral.code || "Not available"}
-                    </strong>
+                    <strong>{dashboard.data.referral.code || "Not available"}</strong>
                   </span>
                   <Button
                     size="small"
@@ -1041,28 +885,20 @@ export function HubOperations({
         >
           <div className="community-dialog__body">
             <p>
-              Role controls administrative access. Title describes the member’s
-              function inside the hub.
+              Role controls administrative access. Title describes the member’s function inside the
+              hub.
             </p>
             <label>
               <span>Role</span>
-              <select
-                value={role}
-                onChange={(event) => setRole(event.target.value)}
-              >
-                {relationship.isOwner ? (
-                  <option value="admin">Admin</option>
-                ) : null}
+              <select value={role} onChange={(event) => setRole(event.target.value)}>
+                {relationship.isOwner ? <option value="admin">Admin</option> : null}
                 <option value="manager">Manager</option>
                 <option value="member">Member</option>
               </select>
             </label>
             <label>
               <span>Title</span>
-              <select
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-              >
+              <select value={title} onChange={(event) => setTitle(event.target.value)}>
                 <option value="player">Player</option>
                 <option value="coach">Coach</option>
                 <option value="manager">Manager</option>
@@ -1070,10 +906,7 @@ export function HubOperations({
             </label>
             {changeMember.isError ? (
               <p className="community-action-error" role="alert">
-                {getApiErrorMessage(
-                  changeMember.error,
-                  "This member could not be updated.",
-                )}
+                {getApiErrorMessage(changeMember.error, "This member could not be updated.")}
               </p>
             ) : null}
           </div>
@@ -1098,17 +931,12 @@ export function HubOperations({
         >
           <div className="community-dialog__body">
             <p>
-              {removingMember.user?.displayName ||
-                removingMember.user?.username ||
-                "This player"}{" "}
+              {removingMember.user?.displayName || removingMember.user?.username || "This player"}{" "}
               will lose access to member-only hub activity.
             </p>
             {removeMember.isError ? (
               <p className="community-action-error" role="alert">
-                {getApiErrorMessage(
-                  removeMember.error,
-                  "The member could not be removed.",
-                )}
+                {getApiErrorMessage(removeMember.error, "The member could not be removed.")}
               </p>
             ) : null}
           </div>
@@ -1142,8 +970,8 @@ export function HubOperations({
         >
           <div className="community-dialog__body">
             <p>
-              {removingTeam.name} will no longer appear as an affiliated team in
-              this hub. The team itself will not be deleted.
+              {removingTeam.name} will no longer appear as an affiliated team in this hub. The team
+              itself will not be deleted.
             </p>
             {removeTeam.isError ? (
               <p className="community-action-error" role="alert">

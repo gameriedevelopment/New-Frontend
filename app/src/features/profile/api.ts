@@ -18,13 +18,8 @@ interface ApiEnvelope<T> {
   data: T;
 }
 
-export async function getPlayerProfile(
-  identity: string,
-): Promise<PlayerProfile> {
-  const legacyId =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      identity,
-    );
+export async function getPlayerProfile(identity: string): Promise<PlayerProfile> {
+  const legacyId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(identity);
   const endpoint = legacyId
     ? `/users/${identity}`
     : `/users/by-username/${encodeURIComponent(identity)}`;
@@ -33,23 +28,15 @@ export async function getPlayerProfile(
 }
 
 export async function getProfileTeams(userId: string): Promise<ProfileTeam[]> {
-  const { data } = await api.get<ApiEnvelope<ProfileTeam[]>>(
-    `/teams/user/${userId}`,
-  );
+  const { data } = await api.get<ApiEnvelope<ProfileTeam[]>>(`/teams/user/${userId}`);
   return data.data ?? [];
 }
 
-export async function followPlayer(
-  currentUserId: string,
-  targetUserId: string,
-): Promise<void> {
+export async function followPlayer(currentUserId: string, targetUserId: string): Promise<void> {
   await api.post(`/users/${currentUserId}/follow/${targetUserId}`);
 }
 
-export async function unfollowPlayer(
-  currentUserId: string,
-  targetUserId: string,
-): Promise<void> {
+export async function unfollowPlayer(currentUserId: string, targetUserId: string): Promise<void> {
   await api.delete(`/users/${currentUserId}/unfollow/${targetUserId}`);
 }
 
@@ -57,10 +44,7 @@ export async function updatePlayerProfile(
   userId: string,
   updates: Partial<PlayerProfile>,
 ): Promise<PlayerProfile> {
-  const { data } = await api.patch<ApiEnvelope<PlayerProfile>>(
-    `/users/${userId}`,
-    updates,
-  );
+  const { data } = await api.patch<ApiEnvelope<PlayerProfile>>(`/users/${userId}`, updates);
   return data.data;
 }
 
@@ -81,10 +65,9 @@ export async function getPlayerConnections(
   kind: "followers" | "following",
   page: number,
 ): Promise<ConnectionPage> {
-  const { data } = await api.get<ApiEnvelope<ConnectionPage>>(
-    `/users/${kind}/all/${userId}`,
-    { params: { page, limit: 20 } },
-  );
+  const { data } = await api.get<ApiEnvelope<ConnectionPage>>(`/users/${kind}/all/${userId}`, {
+    params: { page, limit: 20 },
+  });
   return data.data;
 }
 
@@ -95,36 +78,23 @@ export async function getMyReferrals(page: number): Promise<ReferralPage> {
   return data;
 }
 
-export async function searchGameOptions(
-  search: string,
-  page = 1,
-): Promise<GamesPage> {
+export async function searchGameOptions(search: string, page = 1): Promise<GamesPage> {
   const { data } = await api.get<ApiEnvelope<GamesPage>>("/games", {
     params: { search: search || undefined, page, limit: 20 },
   });
   return data.data;
 }
 
-export async function getPlayerRankings(
-  userId: string,
-): Promise<GameRanking[]> {
-  const { data } = await api.get<ApiEnvelope<GameRanking[]>>(
-    `/users/game-ranks/${userId}`,
-  );
+export async function getPlayerRankings(userId: string): Promise<GameRanking[]> {
+  const { data } = await api.get<ApiEnvelope<GameRanking[]>>(`/users/game-ranks/${userId}`);
   return data.data ?? [];
 }
-export async function getPlayerMatches(
-  userId: string,
-): Promise<MatchHistoryEntry[]> {
-  const { data } = await api.get<ApiEnvelope<MatchHistoryEntry[]>>(
-    `/challenges/user/${userId}`,
-  );
+export async function getPlayerMatches(userId: string): Promise<MatchHistoryEntry[]> {
+  const { data } = await api.get<ApiEnvelope<MatchHistoryEntry[]>>(`/challenges/user/${userId}`);
   return data.data ?? [];
 }
 export async function getPlayerPosts(userId: string): Promise<FeedPost[]> {
-  const { data } = await api.get<ApiEnvelope<FeedPost[]>>(
-    `/newsfeed/user/${userId}`,
-  );
+  const { data } = await api.get<ApiEnvelope<FeedPost[]>>(`/newsfeed/user/${userId}`);
   return data.data ?? [];
 }
 export async function getSkillEndorsers(
@@ -159,36 +129,26 @@ export async function notifySkillEndorsement(payload: {
     contentType: "skill",
   });
 }
-export async function getAchievements(
-  userId: string,
-): Promise<AchievementsSummary> {
-  const { data } = await api.get<ApiEnvelope<AchievementsSummary>>(
-    `/achievements/${userId}`,
-  );
+export async function getAchievements(userId: string): Promise<AchievementsSummary> {
+  const { data } = await api.get<ApiEnvelope<AchievementsSummary>>(`/achievements/${userId}`);
   return data.data;
 }
 export async function claimAchievement(userId: string, achievementId: string) {
   await api.post(`/achievements/${userId}/${achievementId}/claim`);
 }
-export async function getSalaryEstimation(
-  userId: string,
-): Promise<SalaryEstimation> {
+export async function getSalaryEstimation(userId: string): Promise<SalaryEstimation> {
   const { data } = await api.get<ApiEnvelope<SalaryEstimation>>(
     `/users/${userId}/salary-estimation`,
   );
   return data.data;
 }
-export async function recalculateSalary(
-  userId: string,
-): Promise<SalaryEstimation> {
+export async function recalculateSalary(userId: string): Promise<SalaryEstimation> {
   const { data } = await api.post<ApiEnvelope<SalaryEstimation>>(
     `/users/${userId}/salary-estimation/recalculate`,
   );
   return data.data;
 }
-export async function getSalaryHistory(
-  userId: string,
-): Promise<SalaryHistoryItem[]> {
+export async function getSalaryHistory(userId: string): Promise<SalaryHistoryItem[]> {
   const { data } = await api.get<ApiEnvelope<SalaryHistoryItem[]>>(
     `/users/${userId}/salary-estimation/history`,
     { params: { limit: 12 } },

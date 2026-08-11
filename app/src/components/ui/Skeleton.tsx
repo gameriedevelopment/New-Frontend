@@ -27,13 +27,7 @@ export function SkeletonText({ lines = 3 }: { lines?: number }) {
 }
 
 export function SkeletonAvatar({ size = 42 }: { size?: number }) {
-  return (
-    <Skeleton
-      className="g-skeleton-avatar"
-      height={size}
-      width={size}
-    />
-  );
+  return <Skeleton className="g-skeleton-avatar" height={size} width={size} />;
 }
 
 export function SkeletonCard({ children }: { children?: ReactNode }) {

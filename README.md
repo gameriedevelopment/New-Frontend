@@ -1,11 +1,12 @@
 # Gamerie Frontend Revamp
 
-Ground-up frontend rebuild for Gamerie, organized as separate public website and authenticated product applications.
+Ground-up frontend rebuild for Gamerie, organized as separate public website, authenticated product, and operations applications.
 
 ```text
 frontend-revamp/
 ├── website/                 # Public marketing and brand website
 ├── app/                     # Authenticated Gamerie product
+├── admin/                   # Standalone Gamerie operations application
 └── private-notes/           # Project context and implementation plan
 ```
 
@@ -13,7 +14,7 @@ The existing `/Users/mac/work/gamerie/frontend` remains the behavior reference. 
 
 ## Commands
 
-The two projects are intentionally standalone. Run commands inside the project you are working on:
+The three projects are intentionally standalone. Run commands inside the project you are working on:
 
 ```bash
 cd website
@@ -21,6 +22,10 @@ npm install
 npm run dev
 
 cd ../app
+npm install
+npm run dev
+
+cd ../admin
 npm install
 npm run dev
 ```

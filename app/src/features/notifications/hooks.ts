@@ -1,9 +1,28 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getNotifications, getNotificationUnreadCount, markAllNotificationsRead, markNotificationRead } from "./api";
-import { patchAllNotificationCaches, patchNotificationCaches, restoreNotificationCaches, snapshotNotificationCaches } from "./cache";
+import {
+  getNotifications,
+  getNotificationUnreadCount,
+  markAllNotificationsRead,
+  markNotificationRead,
+} from "./api";
+import {
+  patchAllNotificationCaches,
+  patchNotificationCaches,
+  restoreNotificationCaches,
+  snapshotNotificationCaches,
+} from "./cache";
 import type { NotificationFilter } from "./types";
 
-export function useNotifications(userId?: string, options: { enabled?: boolean; filter?: NotificationFilter; isRead?: boolean; limit?: number; surface?: string } = {}) {
+export function useNotifications(
+  userId?: string,
+  options: {
+    enabled?: boolean;
+    filter?: NotificationFilter;
+    isRead?: boolean;
+    limit?: number;
+    surface?: string;
+  } = {},
+) {
   const { enabled = true, filter = "all", isRead, limit = 20, surface = "page" } = options;
   return useInfiniteQuery({
     queryKey: ["notifications", userId, surface, { filter, isRead, limit }],
@@ -24,11 +43,17 @@ export function useMarkNotificationRead(userId?: string) {
     onMutate: async (notificationId) => {
       await client.cancelQueries({ queryKey: ["notifications", userId] });
       const snapshots = snapshotNotificationCaches(client);
-      patchNotificationCaches(client, notificationId, (notification) => ({ ...notification, isRead: true }));
-      client.setQueryData<number>(["notifications", userId, "unread-count"], (count) => Math.max(0, (count ?? 1) - 1));
+      patchNotificationCaches(client, notificationId, (notification) => ({
+        ...notification,
+        isRead: true,
+      }));
+      client.setQueryData<number>(["notifications", userId, "unread-count"], (count) =>
+        Math.max(0, (count ?? 1) - 1),
+      );
       return { snapshots };
     },
-    onError: (_error, _notificationId, context) => restoreNotificationCaches(client, context?.snapshots),
+    onError: (_error, _notificationId, context) =>
+      restoreNotificationCaches(client, context?.snapshots),
     onSettled: () => client.invalidateQueries({ queryKey: ["notifications", userId] }),
   });
 }
@@ -60,4 +85,6 @@ export function useMarkAllNotificationsRead(userId?: string) {
   });
 }
 
-export function flattenNotifications(data: ReturnType<typeof useNotifications>["data"]) { return data?.pages.flatMap((page) => page.data) ?? []; }
+export function flattenNotifications(data: ReturnType<typeof useNotifications>["data"]) {
+  return data?.pages.flatMap((page) => page.data) ?? [];
+}

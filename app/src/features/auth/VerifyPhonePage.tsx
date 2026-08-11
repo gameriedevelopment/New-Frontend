@@ -54,7 +54,9 @@ export function VerifyPhonePage() {
     };
 
     void checkAccess();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [navigate, status, user]);
 
   const sendCode = async () => {
@@ -69,7 +71,9 @@ export function VerifyPhonePage() {
       await sendPhoneCode(phone);
       setStep("code");
     } catch (requestError) {
-      setError(getApiErrorMessage(requestError, "We couldn't send a verification code. Try again."));
+      setError(
+        getApiErrorMessage(requestError, "We couldn't send a verification code. Try again."),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -95,7 +99,11 @@ export function VerifyPhonePage() {
   };
 
   const backToLogin = async () => {
-    try { await signOut(); } catch { clearUser(); }
+    try {
+      await signOut();
+    } catch {
+      clearUser();
+    }
     navigate("/login", { replace: true });
   };
 
@@ -116,8 +124,15 @@ export function VerifyPhonePage() {
       <section className="auth-stage" aria-labelledby="verify-phone-title">
         <aside className="auth-story" aria-label="About Gamerie">
           <div className="auth-story__copy">
-            <h1>Your game life,<br /><span>connected.</span></h1>
-            <p>Build a credible gaming identity, find your people, and move from playing to belonging.</p>
+            <h1>
+              Your game life,
+              <br />
+              <span>connected.</span>
+            </h1>
+            <p>
+              Build a credible gaming identity, find your people, and move from playing to
+              belonging.
+            </p>
           </div>
         </aside>
         <section className="auth-panel auth-phone">
@@ -131,11 +146,27 @@ export function VerifyPhonePage() {
             <>
               <div className="auth-panel__header">
                 <h2 id="verify-phone-title">Verify your phone.</h2>
-                <p>{step === "phone" ? "Add a number we can use to secure your account." : <>Enter the code sent to <strong>{phone}</strong>.</>}</p>
+                <p>
+                  {step === "phone" ? (
+                    "Add a number we can use to secure your account."
+                  ) : (
+                    <>
+                      Enter the code sent to <strong>{phone}</strong>.
+                    </>
+                  )}
+                </p>
               </div>
 
               <div className="auth-form">
-                {error && <div className="auth-error" role="alert"><AlertCircle size={17} /><p><strong>Verification not completed</strong>{error}</p></div>}
+                {error && (
+                  <div className="auth-error" role="alert">
+                    <AlertCircle size={17} />
+                    <p>
+                      <strong>Verification not completed</strong>
+                      {error}
+                    </p>
+                  </div>
+                )}
 
                 {step === "phone" ? (
                   <div className="auth-field auth-phone-input">
@@ -167,14 +198,45 @@ export function VerifyPhonePage() {
                   </div>
                 )}
 
-                <button className="auth-submit" type="button" onClick={step === "phone" ? sendCode : verifyCode} disabled={isSubmitting}>
-                  {isSubmitting ? <><span className="auth-submit__loader" />{step === "phone" ? "Sending code…" : "Verifying…"}</> : <>{step === "phone" ? "Send verification code" : "Verify and continue"}<ArrowRight size={17} /></>}
+                <button
+                  className="auth-submit"
+                  type="button"
+                  onClick={step === "phone" ? sendCode : verifyCode}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="auth-submit__loader" />
+                      {step === "phone" ? "Sending code…" : "Verifying…"}
+                    </>
+                  ) : (
+                    <>
+                      {step === "phone" ? "Send verification code" : "Verify and continue"}
+                      <ArrowRight size={17} />
+                    </>
+                  )}
                 </button>
 
-                {step === "code" && <button className="auth-secondary-action" type="button" onClick={editNumber} disabled={isSubmitting}>Change number or resend code</button>}
+                {step === "code" && (
+                  <button
+                    className="auth-secondary-action"
+                    type="button"
+                    onClick={editNumber}
+                    disabled={isSubmitting}
+                  >
+                    Change number or resend code
+                  </button>
+                )}
               </div>
 
-              <button className="auth-back auth-confirmation__back" type="button" onClick={backToLogin}><ArrowLeft size={15} />Back to sign in</button>
+              <button
+                className="auth-back auth-confirmation__back"
+                type="button"
+                onClick={backToLogin}
+              >
+                <ArrowLeft size={15} />
+                Back to sign in
+              </button>
             </>
           )}
         </section>

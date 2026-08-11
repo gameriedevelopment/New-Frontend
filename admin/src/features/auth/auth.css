@@ -1,0 +1,104 @@
+.admin-sign-in {
+  min-height: 100vh;
+  padding: 0 var(--ao-page-gutter);
+  background: var(--ao-canvas-deep);
+}
+.admin-sign-in > header {
+  display: flex;
+  align-items: center;
+  min-height: 84px;
+  border-bottom: 1px solid var(--ao-border-subtle);
+}
+.admin-sign-in__layout {
+  width: min(100%, 29rem);
+  min-height: calc(100vh - 84px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 3rem 0 5rem;
+}
+.admin-sign-in__entry {
+  width: 100%;
+  display: grid;
+  gap: 2rem;
+}
+.admin-sign-in__copy {
+  display: grid;
+  gap: 0.65rem;
+}
+.admin-sign-in__copy h1 {
+  font: 600 clamp(2rem, 5vw, 2.65rem)/1 var(--ao-font-display);
+  letter-spacing: -0.055em;
+}
+.admin-sign-in__copy p {
+  color: var(--ao-text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+.admin-sign-in__form {
+  display: grid;
+  gap: 1.15rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--ao-border-subtle);
+}
+.admin-sign-in__form label {
+  display: grid;
+  gap: 0.48rem;
+  color: var(--ao-text-secondary);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+.admin-sign-in__form input {
+  min-width: 0;
+  height: 50px;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-sm);
+  padding: 0 0.9rem;
+  background: var(--ao-canvas-deep);
+  color: var(--ao-text);
+}
+.admin-sign-in__form input:focus-visible {
+  border-color: var(--ao-border-strong);
+}
+.admin-sign-in__form > button {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 0;
+  border-radius: var(--ao-radius-sm);
+  background: var(--ao-accent);
+  color: #100d18;
+  font-weight: 800;
+  cursor: pointer;
+}
+.admin-sign-in__form > button:hover {
+  background: var(--ao-accent-hover);
+}
+.admin-sign-in__form > small {
+  color: var(--ao-text-muted);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+.admin-form-error {
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgb(241 138 150 / 0.24);
+  border-radius: var(--ao-radius-sm);
+  background: rgb(241 138 150 / 0.06);
+  color: #ffc1c7;
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+@media (max-width: 800px) {
+  .admin-sign-in {
+    padding: 0 1rem;
+  }
+  .admin-sign-in__layout {
+    min-height: auto;
+    padding: 3rem 0;
+  }
+  .admin-sign-in__form {
+    padding-top: 1.35rem;
+  }
+}

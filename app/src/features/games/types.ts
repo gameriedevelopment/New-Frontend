@@ -126,7 +126,19 @@ export interface GridSeriesResponse {
   series: GridSeries[];
 }
 
-export type GameProviderId = "lichess" | "clash-royale" | "clash-of-clans" | "brawl-stars" | "league-of-legends" | "valorant" | "teamfight-tactics" | "pubg" | "dota-2" | "cs2" | "steam" | "battlenet";
+export type GameProviderId =
+  | "lichess"
+  | "clash-royale"
+  | "clash-of-clans"
+  | "brawl-stars"
+  | "league-of-legends"
+  | "valorant"
+  | "teamfight-tactics"
+  | "pubg"
+  | "dota-2"
+  | "cs2"
+  | "steam"
+  | "battlenet";
 
 export interface GameConnection {
   id: string;
@@ -139,4 +151,7 @@ export interface GameConnection {
   updatedAt: string;
 }
 
-export interface ProviderMetric { label: string; value: string | number; }
+export interface ProviderMetric {
+  label: string;
+  value: string | number;
+}
