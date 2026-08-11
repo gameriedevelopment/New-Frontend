@@ -21,6 +21,7 @@ import {
   Quote,
   Smile,
   Table2,
+  Trash2,
   UnderlineIcon,
   Unlink,
 } from "lucide-react";
@@ -247,14 +248,24 @@ export function RichPostEditor({
             <Unlink size={15} />
           </Tool>
         ) : null}
-        <Tool
-          label="Insert table"
-          onClick={() =>
-            editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
-          }
-        >
-          <Table2 size={15} />
-        </Tool>
+        {editor.isActive("table") ? (
+          <Tool
+            label="Remove table"
+            active
+            onClick={() => editor.chain().focus().deleteTable().run()}
+          >
+            <Trash2 size={15} />
+          </Tool>
+        ) : (
+          <Tool
+            label="Insert table"
+            onClick={() =>
+              editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+            }
+          >
+            <Table2 size={15} />
+          </Tool>
+        )}
         <Tool
           label="Add emoji"
           onClick={() => {

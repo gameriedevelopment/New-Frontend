@@ -6,6 +6,7 @@ import { getErrorMessage } from "../../lib/errors";
 import { useAdminAuth } from "../auth/AuthProvider";
 import { useAdminUsers, useSetAdminUserBan } from "./hooks";
 import type { AdminUserRecord, AdminUserStatus } from "./types";
+import { AdminAvatar } from "../../components/AdminAvatar";
 
 export function UsersPage() {
   const { user } = useAdminAuth();
@@ -80,18 +81,7 @@ export function UsersPage() {
             }}
           >
             <div className="admin-directory-identity">
-              <span className="admin-directory-avatar">
-                {record.username.slice(0, 2).toUpperCase()}
-                {record.profileImage ? (
-                  <img
-                    src={record.profileImage}
-                    alt=""
-                    onError={(event) => {
-                      event.currentTarget.hidden = true;
-                    }}
-                  />
-                ) : null}
-              </span>
+              <AdminAvatar name={record.username} src={record.profileImage} />
               <div>
                 <strong>{record.username}</strong>
                 <span>{record.email}</span>

@@ -1,0 +1,91 @@
+.admin-game-dialog > form {
+  width: min(100%, 44rem);
+  max-height: min(90dvh, 52rem);
+  overflow-y: auto;
+}
+.admin-game-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+.admin-game-form-grid label {
+  min-width: 0;
+}
+.admin-game-form-grid input,
+.admin-game-form-grid textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-sm);
+  outline: 0;
+  background: var(--ao-canvas-deep);
+  color: var(--ao-text);
+  font: 500 0.76rem/1.5 var(--ao-font-body);
+  box-shadow: none;
+}
+.admin-game-form-grid input:focus,
+.admin-game-form-grid textarea:focus {
+  border-color: var(--ao-border-strong);
+}
+.admin-game-form-grid textarea {
+  min-height: 96px;
+  padding-block: 0.7rem;
+  resize: vertical;
+}
+.admin-game-form-grid small {
+  color: var(--ao-text-muted);
+  font-size: 0.62rem;
+  font-weight: 550;
+}
+.admin-game-form-wide {
+  grid-column: 1 / -1;
+}
+.admin-game-file input {
+  padding: 0.55rem;
+  color: var(--ao-text-muted);
+}
+.admin-game-file input::file-selector-button {
+  margin-right: 0.7rem;
+  padding: 0.42rem 0.65rem;
+  border: 1px solid var(--ao-border);
+  border-radius: 5px;
+  background: var(--ao-surface-2);
+  color: var(--ao-text-secondary);
+}
+.admin-game-cover {
+  height: 10rem;
+  margin: 0 -1.5rem 0.25rem;
+  overflow: hidden;
+  border-bottom: 1px solid var(--ao-border-subtle);
+  background: linear-gradient(145deg, var(--ao-surface-2), var(--ao-canvas-deep));
+}
+.admin-game-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.admin-detail-list a {
+  color: var(--ao-accent);
+}
+.admin-danger-button {
+  min-height: 42px;
+  padding: 0 1rem;
+  border: 1px solid rgb(241 138 150 / 0.32);
+  border-radius: var(--ao-radius-sm);
+  background: rgb(241 138 150 / 0.1);
+  color: #ffc1c7;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+@media (max-width: 620px) {
+  .admin-game-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-game-form-wide {
+    grid-column: auto;
+  }
+  .admin-game-dialog > form {
+    max-height: 92dvh;
+  }
+}

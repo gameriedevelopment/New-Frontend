@@ -67,8 +67,11 @@
 }
 .app-sidebar__brand img,
 .app-header__mobile-brand img {
-  width: 25px;
-  height: 25px;
+  display: block;
+  width: 13px;
+  height: 40px;
+  flex: 0 0 13px;
+  object-fit: contain;
 }
 .app-sidebar__navigation {
   display: grid;

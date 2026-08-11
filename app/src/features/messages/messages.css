@@ -369,6 +369,18 @@
   font-size: 10px;
   font-weight: 760;
   place-items: center;
+  text-decoration: none;
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+.message-thread__avatar:is(a):hover {
+  border-color: var(--g-border-strong);
+  transform: translateY(-1px);
+}
+.message-thread__avatar:is(a):focus-visible {
+  outline: 2px solid var(--g-accent);
+  outline-offset: 3px;
 }
 .message-thread__avatar img {
   width: 100%;

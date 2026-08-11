@@ -5,6 +5,7 @@ import { ModerationDialog } from "../../components/ModerationDialog";
 import { getErrorMessage } from "../../lib/errors";
 import { useAdminHubs, useSetAdminHubBan } from "./hooks";
 import type { AdminHubRecord } from "./types";
+import { AdminAvatar } from "../../components/AdminAvatar";
 
 export function HubsPage() {
   const [search, setSearch] = useState("");
@@ -78,18 +79,7 @@ export function HubsPage() {
             }}
           >
             <div className="admin-directory-identity">
-              <span className="admin-directory-avatar admin-directory-avatar--rounded">
-                {record.name.slice(0, 2).toUpperCase()}
-                {record.logo ? (
-                  <img
-                    src={record.logo}
-                    alt=""
-                    onError={(event) => {
-                      event.currentTarget.hidden = true;
-                    }}
-                  />
-                ) : null}
-              </span>
+              <AdminAvatar name={record.name} src={record.logo} shape="rounded" />
               <div>
                 <strong>{record.name}</strong>
                 <span>

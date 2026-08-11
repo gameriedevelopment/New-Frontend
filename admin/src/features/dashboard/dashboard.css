@@ -84,21 +84,68 @@
   width: 68%;
   height: 8px;
 }
-.admin-dashboard__next {
-  max-width: 47rem;
+.admin-dashboard__workspaces {
   display: grid;
-  gap: 0.8rem;
-  margin-top: clamp(4rem, 9vw, 8rem);
+  gap: 1.35rem;
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
 }
-.admin-dashboard__next h2 {
-  max-width: 17ch;
-  font: 600 clamp(1.6rem, 3vw, 2.4rem)/1.08 var(--ao-font-display);
+.admin-dashboard__workspaces > header {
+  display: grid;
+  gap: 0.6rem;
+}
+.admin-dashboard__workspaces h2 {
+  font: 600 clamp(1.45rem, 2.6vw, 2rem)/1.08 var(--ao-font-display);
   letter-spacing: -0.045em;
 }
-.admin-dashboard__next p {
+.admin-dashboard__workspaces p {
   color: var(--ao-text-secondary);
   font-size: 0.84rem;
-  line-height: 1.75;
+  line-height: 1.6;
+}
+.admin-dashboard__workspaces > div {
+  display: grid;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-lg);
+  overflow: hidden;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  background: var(--ao-surface-1);
+}
+.admin-dashboard__workspaces a {
+  display: grid;
+  min-height: 104px;
+  padding: 1.2rem;
+  border-right: 1px solid var(--ao-border-subtle);
+  border-bottom: 1px solid var(--ao-border-subtle);
+  align-content: center;
+  gap: 0.42rem;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    background var(--ao-duration-fast),
+    color var(--ao-duration-fast);
+}
+.admin-dashboard__workspaces a:nth-child(2n) {
+  border-right: 0;
+}
+.admin-dashboard__workspaces a:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+.admin-dashboard__workspaces a:hover {
+  background: var(--ao-surface-2);
+}
+.admin-dashboard__workspaces a:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--ao-accent);
+  outline-offset: -2px;
+}
+.admin-dashboard__workspaces strong {
+  font-size: 0.84rem;
+}
+.admin-dashboard__workspaces a span {
+  color: var(--ao-text-muted);
+  font-size: 0.7rem;
+  line-height: 1.5;
 }
 @keyframes admin-shimmer {
   to {
@@ -141,7 +188,17 @@
     min-height: 138px;
     padding: 1rem;
   }
-  .admin-dashboard__next {
-    margin-top: 3.5rem;
+  .admin-dashboard__workspaces > div {
+    grid-template-columns: 1fr;
+  }
+  .admin-dashboard__workspaces a,
+  .admin-dashboard__workspaces a:nth-child(2n),
+  .admin-dashboard__workspaces a:nth-last-child(-n + 2) {
+    min-height: 88px;
+    border-right: 0;
+    border-bottom: 1px solid var(--ao-border-subtle);
+  }
+  .admin-dashboard__workspaces a:last-child {
+    border-bottom: 0;
   }
 }

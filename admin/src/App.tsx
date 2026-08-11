@@ -8,6 +8,10 @@ import { TeamsPage } from "./features/communities/TeamsPage";
 import { HubsPage } from "./features/communities/HubsPage";
 import { AdminsPage } from "./features/operators/AdminsPage";
 import { AcceptAdminInvitePage } from "./features/operators/AcceptAdminInvitePage";
+import { ModerationPage } from "./features/moderation/ModerationPage";
+import { GamesPage } from "./features/games/GamesPage";
+import { CompetitionPage } from "./features/competition/CompetitionPage";
+import { FinanceGrowthPage } from "./features/finance/FinanceGrowthPage";
 
 export function App() {
   return (
@@ -20,6 +24,10 @@ export function App() {
           <Route path="users" element={<UsersPage />} />
           <Route path="teams" element={<TeamsPage />} />
           <Route path="hubs" element={<HubsPage />} />
+          <Route path="games" element={<GamesPage />} />
+          <Route path="competition" element={<CompetitionPage />} />
+          <Route path="finance" element={<FinanceGrowthPage />} />
+          <Route path="moderation" element={<ModerationPage />} />
           <Route path="administrators" element={<AdminsPage />} />
         </Route>
       </Route>

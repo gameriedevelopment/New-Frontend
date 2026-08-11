@@ -1,6 +1,7 @@
 import { ArrowLeft, MessageCircle, RefreshCw } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button, SafeImage, Skeleton, SkeletonAvatar, SkeletonText } from "../../../components/ui";
 import { getApiErrorMessage } from "../../../lib/errors";
 import { useAuthStore } from "../../auth/authStore";
@@ -77,6 +78,10 @@ export function MessageThread({
     () => conversationIdentity(conversation, user?.id),
     [conversation, user?.id],
   );
+  const teammateProfilePath =
+    conversation.type === "user" && identity.teammate?.username
+      ? `/profile/${encodeURIComponent(identity.teammate.username)}`
+      : null;
   const send = useSendMessage(conversation.id, user);
   const edit = useEditMessage(conversation.id);
   const remove = useDeleteMessage(conversation.id);
@@ -185,19 +190,28 @@ export function MessageThread({
         >
           <ArrowLeft size={18} />
         </button>
-        <span className="message-thread__avatar">
-          {identity.image ? (
-            <SafeImage
-              src={identity.image}
-              alt=""
-              fallback={
-                conversation.type === "user" ? "/user-profile-fallback.jpg" : "/media-fallback.svg"
-              }
-            />
-          ) : (
-            identity.name.slice(0, 2).toUpperCase()
-          )}
-        </span>
+        {teammateProfilePath ? (
+          <Link
+            className="message-thread__avatar"
+            to={teammateProfilePath}
+            aria-label={`View ${identity.name}'s profile`}
+            title={`View ${identity.name}'s profile`}
+          >
+            {identity.image ? (
+              <SafeImage src={identity.image} alt="" fallback="/user-profile-fallback.jpg" />
+            ) : (
+              identity.name.slice(0, 2).toUpperCase()
+            )}
+          </Link>
+        ) : (
+          <span className="message-thread__avatar">
+            {identity.image ? (
+              <SafeImage src={identity.image} alt="" fallback="/media-fallback.svg" />
+            ) : (
+              identity.name.slice(0, 2).toUpperCase()
+            )}
+          </span>
+        )}
         <div>
           <h2>{identity.name}</h2>
           <p>

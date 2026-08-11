@@ -1130,12 +1130,13 @@
     display: none;
   }
   .calendar-month-layout {
-    padding: 0;
+    padding-inline: 14px;
   }
   .calendar-month {
-    border-right: 0;
-    border-left: 0;
-    border-radius: 0;
+    border-right: 1px solid var(--g-border-subtle);
+    border-left: 1px solid var(--g-border-subtle);
+    border-radius: 10px;
+    overflow: hidden;
   }
   .calendar-month__weekdays span {
     padding: 0;

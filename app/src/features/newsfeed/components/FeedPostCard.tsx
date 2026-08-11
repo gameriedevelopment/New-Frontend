@@ -208,17 +208,17 @@ export function FeedPostCard({
           aria-pressed={liked}
         >
           <Heart size={18} fill={liked ? "currentColor" : "none"} />
-          <span>{totalLikes(post) || "Like"}</span>
+          <span className="feed-post__action-count">{totalLikes(post).toLocaleString()}</span>
         </button>
         {single ? (
           <a href="#comments">
             <MessageCircle size={18} />
-            <span>{comments || "Comment"}</span>
+            <span className="feed-post__action-count">{comments.toLocaleString()}</span>
           </a>
         ) : (
           <Link to={postHref}>
             <MessageCircle size={18} />
-            <span>{comments || "Comment"}</span>
+            <span className="feed-post__action-count">{comments.toLocaleString()}</span>
           </Link>
         )}
         {canRepost ? (
@@ -230,7 +230,9 @@ export function FeedPostCard({
             aria-pressed={reposted}
           >
             <Repeat2 size={18} />
-            <span>{post.repostsCount || "Repost"}</span>
+            <span className="feed-post__action-count">
+              {Number(post.repostsCount ?? 0).toLocaleString()}
+            </span>
           </button>
         ) : null}
         <button type="button" onClick={sharePost}>

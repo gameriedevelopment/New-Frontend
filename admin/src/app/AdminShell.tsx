@@ -36,6 +36,18 @@ export function AdminShell() {
           <NavLink to="/hubs" onClick={() => setOpen(false)}>
             <span>Hubs</span>
           </NavLink>
+          <NavLink to="/games" onClick={() => setOpen(false)}>
+            <span>Games</span>
+          </NavLink>
+          <NavLink to="/competition" onClick={() => setOpen(false)}>
+            <span>Competition</span>
+          </NavLink>
+          <NavLink to="/moderation" onClick={() => setOpen(false)}>
+            <span>Moderation</span>
+          </NavLink>
+          <NavLink to="/finance" onClick={() => setOpen(false)}>
+            <span>Finance &amp; growth</span>
+          </NavLink>
           {user?.isSuperAdmin ? (
             <NavLink to="/administrators" onClick={() => setOpen(false)}>
               <span>Administrators</span>

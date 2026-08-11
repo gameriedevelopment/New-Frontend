@@ -1,4 +1,5 @@
 import { RefreshCw } from "lucide-react";
+import { Link } from "react-router-dom";
 import { StatePanel } from "../../components/Feedback";
 import { getErrorMessage } from "../../lib/errors";
 import { useDashboardMetrics } from "./hooks";
@@ -78,13 +79,34 @@ export function DashboardPage() {
         </section>
       )}
 
-      <section className="admin-dashboard__next">
-        <span className="admin-eyebrow">Controlled rollout</span>
-        <h2>Management surfaces are being connected deliberately.</h2>
-        <p>
-          User, community, content, competition, and finance controls will appear only after their
-          server authorization and audit contracts pass the Phase 11 gate.
-        </p>
+      <section className="admin-dashboard__workspaces" aria-labelledby="operations-heading">
+        <header>
+          <span className="admin-eyebrow">Operations</span>
+          <h2 id="operations-heading">Open a management workspace.</h2>
+          <p>Move directly into the platform area you need to review.</p>
+        </header>
+        <div>
+          <Link to="/users">
+            <strong>Players</strong>
+            <span>Account access and identity review</span>
+          </Link>
+          <Link to="/moderation">
+            <strong>Moderation</strong>
+            <span>Reports, flagged content, and audit history</span>
+          </Link>
+          <Link to="/games">
+            <strong>Games</strong>
+            <span>Catalogue and integration context</span>
+          </Link>
+          <Link to="/competition">
+            <strong>Competition</strong>
+            <span>Tournaments and achievement definitions</span>
+          </Link>
+          <Link to="/finance">
+            <strong>Finance &amp; growth</strong>
+            <span>Ledger, commissions, purchases, and referral programmes</span>
+          </Link>
+        </div>
       </section>
     </main>
   );

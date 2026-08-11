@@ -1612,6 +1612,11 @@
   .feed-post__actions span {
     display: none;
   }
+  .feed-post__actions .feed-post__action-count {
+    display: inline;
+    min-width: 1ch;
+    font-variant-numeric: tabular-nums;
+  }
   .feed-post__media figure {
     min-height: 140px;
   }

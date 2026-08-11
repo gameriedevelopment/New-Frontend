@@ -1,0 +1,77 @@
+.admin-competition-switch {
+  display: inline-flex;
+  min-height: 42px;
+  padding: 3px;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-sm);
+  gap: 2px;
+  background: var(--ao-canvas-deep);
+}
+.admin-competition-switch button {
+  padding: 0 0.8rem;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--ao-text-muted);
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+.admin-competition-switch button.is-active {
+  background: var(--ao-surface-interactive);
+  color: var(--ao-text);
+}
+.admin-competition-dialog > form {
+  width: min(100%, 48rem);
+  max-height: min(92dvh, 56rem);
+  overflow-y: auto;
+}
+.admin-competition-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+.admin-competition-form label {
+  min-width: 0;
+}
+.admin-competition-form input,
+.admin-competition-form select,
+.admin-competition-form textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-sm);
+  outline: 0;
+  background: var(--ao-canvas-deep);
+  color: var(--ao-text);
+  font: 500 0.76rem/1.5 var(--ao-font-body);
+  box-shadow: none;
+}
+.admin-competition-form input:focus,
+.admin-competition-form select:focus,
+.admin-competition-form textarea:focus {
+  border-color: var(--ao-border-strong);
+}
+.admin-competition-form textarea {
+  min-height: 96px;
+  padding-block: 0.7rem;
+  resize: vertical;
+}
+.admin-competition-form__wide {
+  grid-column: 1 / -1;
+}
+@media (max-width: 720px) {
+  .admin-competition-switch {
+    width: 100%;
+    order: 3;
+  }
+  .admin-competition-switch button {
+    flex: 1;
+  }
+  .admin-competition-form {
+    grid-template-columns: 1fr;
+  }
+  .admin-competition-form__wide {
+    grid-column: auto;
+  }
+}

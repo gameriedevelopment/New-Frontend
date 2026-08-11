@@ -8,6 +8,15 @@
   display: grid;
   gap: 0.62rem;
 }
+.admin-directory-heading-row {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.admin-directory-heading-action {
+  flex: 0 0 auto;
+}
 .admin-directory-heading h1 {
   font: 600 clamp(1.85rem, 4vw, 2.65rem)/1.02 var(--ao-font-display);
   letter-spacing: -0.052em;
@@ -105,6 +114,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+.admin-directory-avatar > span {
+  line-height: 1;
 }
 .admin-directory-avatar--rounded {
   border-radius: 0.7rem;
@@ -381,6 +393,12 @@
   }
   .admin-directory-toolbar {
     grid-template-columns: 1fr;
+  }
+  .admin-directory-heading-row {
+    display: grid;
+  }
+  .admin-directory-heading-action > * {
+    width: 100%;
   }
   .admin-directory-toolbar select {
     border-top: 1px solid var(--ao-border-subtle);
