@@ -1476,20 +1476,7 @@
   gap: 22px;
 }
 .community-form-section > header {
-  display: grid;
-  grid-template-columns: 28px minmax(0, 1fr);
-  gap: 12px;
-}
-.community-form-section > header > span {
-  display: grid;
-  width: 26px;
-  height: 26px;
-  border: 1px solid var(--g-border-default);
-  border-radius: 50%;
-  color: var(--g-accent);
-  font-size: 9px;
-  font-weight: 780;
-  place-items: center;
+  display: block;
 }
 .community-form-section h2 {
   margin: 0;

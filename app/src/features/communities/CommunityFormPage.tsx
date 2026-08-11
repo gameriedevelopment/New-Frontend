@@ -422,7 +422,6 @@ export function CommunityFormPage({
       <form className="community-form" noValidate onSubmit={submit}>
         <section className="community-form-section community-form-section--media">
           <header>
-            <span>01</span>
             <div>
               <h2>Identity media</h2>
               <p>Keep it recognizable at avatar size and composed across wide screens.</p>
@@ -454,7 +453,6 @@ export function CommunityFormPage({
         </section>
         <section className="community-form-section">
           <header>
-            <span>02</span>
             <div>
               <h2>Core information</h2>
               <p>Clear, specific details make the right players stop and look.</p>
@@ -542,7 +540,6 @@ export function CommunityFormPage({
         {kind === "hub" ? (
           <section className="community-form-section">
             <header>
-              <span>03</span>
               <div>
                 <h2>Purpose and access</h2>
                 <p>These choices shape who can discover the hub and how membership works.</p>
@@ -651,7 +648,6 @@ export function CommunityFormPage({
         ) : null}
         <section className="community-form-section">
           <header>
-            <span>{kind === "hub" ? "04" : "03"}</span>
             <div>
               <h2>Games and platforms</h2>
               <p>Connect the identity to the titles and places where the community plays.</p>
@@ -720,7 +716,6 @@ export function CommunityFormPage({
         </section>
         <section className="community-form-section">
           <header>
-            <span>{kind === "hub" ? "05" : "04"}</span>
             <div>
               <h2>Location</h2>
               <p>Optional context for regional discovery, scheduling, and competition.</p>
