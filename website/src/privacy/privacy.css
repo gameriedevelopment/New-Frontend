@@ -147,16 +147,22 @@
     right: 10px;
     bottom: calc(10px + env(safe-area-inset-bottom));
     width: calc(100% - 20px);
-    padding: 16px;
+    max-height: min(28rem, calc(100svh - 20px));
+    padding: 15px;
+    overflow-y: auto;
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: 13px;
   }
   .cookie-banner__actions {
     display: grid;
-    grid-template-columns: 1fr 0.8fr 0.8fr;
+    grid-template-columns: 1fr 1fr;
+  }
+  .cookie-banner__actions button:first-child {
+    grid-column: 1 / -1;
   }
   .cookie-banner button {
-    min-height: 42px;
+    min-width: 0;
+    min-height: 40px;
     padding-inline: 8px;
   }
   .cookie-dialog-backdrop {

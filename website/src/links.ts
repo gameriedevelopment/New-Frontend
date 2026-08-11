@@ -6,17 +6,21 @@ function normalizePublicUrl(value: string | undefined, fallback: string) {
   return `https://${candidate}`;
 }
 
+const appUrl = normalizePublicUrl(
+  import.meta.env.VITE_APP_URL,
+  import.meta.env.DEV ? "http://localhost:5173" : "https://app.gamerie.gg",
+).replace(/\/+$/, "");
+
 export const websiteLinks = {
-  app: normalizePublicUrl(
-    import.meta.env.VITE_APP_URL,
-    import.meta.env.DEV ? "http://localhost:5173" : "https://app.gamerie.gg",
-  ).replace(/\/+$/, ""),
-  api: normalizePublicUrl(
-    import.meta.env.VITE_API_URL,
-    import.meta.env.DEV
-      ? "http://localhost:8000/api/v1"
-      : "https://api.gamerie.gg/api/v1",
-  ).replace(/\/+$/, ""),
+  website: normalizePublicUrl(import.meta.env.VITE_WEBSITE_URL, "https://gamerie.gg").replace(
+    /\/+$/,
+    "",
+  ),
+  app: appUrl,
+  auth: {
+    register: `${appUrl}/register`,
+    signIn: `${appUrl}/signin`,
+  },
   terms: normalizePublicUrl(
     import.meta.env.VITE_TERMS_OF_SERVICE,
     "https://gameriedevelopment.github.io/Terms-of-service/",
@@ -42,17 +46,16 @@ export const websiteLinks = {
     "https://discord.gg/tKmCVrMw",
   ),
   partners: normalizePublicUrl(import.meta.env.VITE_PARTNERS_PAGE, "#partners"),
-  demoVideo: normalizePublicUrl(
-    import.meta.env.VITE_GAMERIE_DEMO_VIDEO,
-    "https://www.youtube.com/embed/kncaQs8zntI",
-  ),
   kamkProof: normalizePublicUrl(
     import.meta.env.VITE_KAMK_PROOF,
     "https://kamk.fi/en/news/kamk-is-number-one-in-finland/",
   ),
+  demoVideo: normalizePublicUrl(import.meta.env.VITE_GAMERIE_DEMO_VIDEO, "#"),
   social: {
     instagram: normalizePublicUrl(import.meta.env.VITE_INSTAGRAM, "#"),
+    facebook: normalizePublicUrl(import.meta.env.VITE_FACEBOOK, "#"),
     youtube: normalizePublicUrl(import.meta.env.VITE_YOUTUBE, "#"),
+    tiktok: normalizePublicUrl(import.meta.env.VITE_TIKTOK, "#"),
     x: normalizePublicUrl(import.meta.env.VITE_TWITTER, "#"),
     linkedin: normalizePublicUrl(import.meta.env.VITE_LINKEDIN, "#"),
   },

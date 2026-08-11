@@ -106,6 +106,7 @@ export function App() {
       <AnalyticsRouteTracker />
       <Routes>
         <Route path="/" element={<Navigate to="/feed" replace />} />
+        <Route path="/signin" element={<SignInPage />} />
         <Route path="/login" element={<SignInPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<PasswordRecoveryPage />} />

@@ -1,84 +1,93 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState, type ReactNode } from "react";
 import { websiteLinks } from "../../links";
-import {
-  COOKIE_SETTINGS_EVENT,
-  readCookieConsent,
-} from "../../privacy/consent";
-import {
-  earlyBenefits,
-  faqs,
-  features,
-  industryStats,
-  roles,
-  testimonials,
-} from "./landing-content";
-import { WaitlistForm } from "./WaitlistForm";
+import { COOKIE_SETTINGS_EVENT } from "../../privacy/consent";
+import { audiences, faqs, platformLayers } from "./landing-content";
 
-const reveal = {
-  hidden: { opacity: 0, y: 22 },
-  visible: { opacity: 1, y: 0 },
-};
+const ease = [0.22, 1, 0.36, 1] as const;
 
 function Brand() {
   return (
-    <a className="marketing-brand" href="#top" aria-label="Gamerie home">
+    <a className="site-brand" href="#top" aria-label="Gamerie home">
       <img src="/gamerie-logo.svg" alt="" />
       <strong>Gamerie</strong>
     </a>
   );
 }
 
+function Reveal({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  const reducedMotion = useReducedMotion();
+
+  return (
+    <motion.div
+      className={className}
+      initial={reducedMotion ? false : { opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.18 }}
+      transition={{ duration: 0.78, ease }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 function Header() {
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [open]);
+
   return (
-    <header className="marketing-header">
+    <header className="site-header">
       <Brand />
       <button
-        className="marketing-menu-button"
+        className="site-menu"
         type="button"
+        aria-label={open ? "Close navigation" : "Open navigation"}
         aria-expanded={open}
-        aria-controls="marketing-navigation"
-        onClick={() => setOpen((current) => !current)}
+        aria-controls="site-navigation"
+        onClick={() => setOpen((value) => !value)}
       >
         <span />
         <span />
-        <span className="sr-only">Open navigation</span>
       </button>
       <div
-        className="marketing-header__navigation"
+        className="site-navigation"
+        id="site-navigation"
         data-open={open || undefined}
-        id="marketing-navigation"
       >
         <nav aria-label="Website navigation">
           <a href="#platform" onClick={() => setOpen(false)}>
             Platform
           </a>
-          <a href="#network" onClick={() => setOpen(false)}>
-            Who it is for
+          <a href="#identity" onClick={() => setOpen(false)}>
+            Identity
           </a>
-          <a href="#early-access" onClick={() => setOpen(false)}>
-            Early access
+          <a href="#community" onClick={() => setOpen(false)}>
+            Community
           </a>
-          <a href="#faq" onClick={() => setOpen(false)}>
-            FAQ
+          <a href="#competition" onClick={() => setOpen(false)}>
+            Competition
           </a>
         </nav>
-        <div className="marketing-header__actions">
-          <a href={`${websiteLinks.app}/login`}>Sign in</a>
-          <a
-            className="marketing-button"
-            href="#join"
-            onClick={() => setOpen(false)}
-          >
-            Join the waitlist <span aria-hidden="true">↗</span>
+        <div className="site-navigation__actions">
+          <a className="site-sign-in" href={websiteLinks.auth.signIn}>
+            Sign in
+          </a>
+          <a className="button button--primary" href={websiteLinks.auth.register}>
+            Create account <span aria-hidden="true">↗</span>
           </a>
         </div>
       </div>
@@ -87,362 +96,326 @@ function Header() {
 }
 
 function Hero() {
-  const reduceMotion = useReducedMotion();
-  const heroRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const imageY = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [0, reduceMotion ? 0 : 72],
-  );
-  const copyY = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [0, reduceMotion ? 0 : 34],
-  );
+  const reducedMotion = useReducedMotion();
+  const heroFrames = [
+    "/media/player-setup.jpg",
+    "/media/player-community.jpg",
+    "/media/competition-stage.jpg",
+  ];
+  const [activeFrame, setActiveFrame] = useState(0);
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    const timer = window.setInterval(() => {
+      setActiveFrame((frame) => (frame + 1) % heroFrames.length);
+    }, 6200);
+    return () => window.clearInterval(timer);
+  }, [reducedMotion, heroFrames.length]);
 
   return (
-    <section className="landing-hero" id="top" ref={heroRef}>
+    <section className="hero" id="top">
+      <div className="hero__art" aria-hidden="true">
+        <AnimatePresence initial={false} mode="sync">
+          <motion.img
+            key={heroFrames[activeFrame]}
+            src={heroFrames[activeFrame]}
+            alt=""
+            initial={reducedMotion ? false : { opacity: 0, scale: 1.035 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.25, ease }}
+          />
+        </AnimatePresence>
+        <div className="hero__frame-indicator">
+          {heroFrames.map((frame, index) => (
+            <span key={frame} data-active={activeFrame === index || undefined} />
+          ))}
+        </div>
+      </div>
+
       <motion.div
-        className="landing-hero__image"
-        style={{ y: imageY }}
-        aria-hidden="true"
-      >
-        <img src="/media/competition-stage.jpg" alt="" />
-      </motion.div>
-      <div className="landing-hero__shade" aria-hidden="true" />
-      <motion.div
-        className="landing-hero__content"
-        initial="hidden"
+        className="hero__copy"
+        initial={reducedMotion ? false : "hidden"}
         animate="visible"
-        transition={{ staggerChildren: 0.1 }}
-        style={{ y: copyY }}
+        variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
       >
-        <motion.p className="section-kicker" variants={reveal}>
-          The verified platform for competitive gamers
+        <motion.p
+          className="section-kicker"
+          variants={{
+            hidden: { opacity: 0, y: 10 },
+            visible: { opacity: 1, y: 0 },
+          }}
+          transition={{ duration: 0.55, ease }}
+        >
+          Built around the player
         </motion.p>
-        <motion.h1 variants={reveal}>
-          Your game life.
-          <span>One verified place.</span>
+        <motion.h1
+          variants={{
+            hidden: { opacity: 0, y: 24 },
+            visible: { opacity: 1, y: 0 },
+          }}
+          transition={{ duration: 0.8, ease }}
+        >
+          Everything you build through games.
+          <span>Finally connected.</span>
         </motion.h1>
-        <motion.p className="landing-hero__lead" variants={reveal}>
-          Build a credible gaming identity, find the right people, grow with
-          your team, and let every result become part of a story that is
-          actually yours.
+        <motion.p
+          className="hero__lead"
+          variants={{
+            hidden: { opacity: 0, y: 16 },
+            visible: { opacity: 1, y: 0 },
+          }}
+          transition={{ duration: 0.68, ease }}
+        >
+          Bring your games, people, teams, and competitive progress into one
+          identity that grows with every match.
         </motion.p>
-        <motion.div variants={reveal}>
-          <WaitlistForm id="hero-waitlist" />
-        </motion.div>
-        <motion.div className="landing-hero__proof" variants={reveal}>
-          <span>Free core experience</span>
-          <span>Early access in stages</span>
-          <span>Built with gaming communities</span>
+        <motion.div
+          className="hero__actions"
+          variants={{
+            hidden: { opacity: 0, y: 14 },
+            visible: { opacity: 1, y: 0 },
+          }}
+          transition={{ duration: 0.62, ease }}
+        >
+          <a
+            className="button button--primary button--large"
+            href={websiteLinks.auth.register}
+          >
+            Create your identity <span aria-hidden="true">↗</span>
+          </a>
+          <a className="button button--quiet button--large" href={websiteLinks.auth.signIn}>
+            Sign in
+          </a>
         </motion.div>
       </motion.div>
-      <a className="landing-hero__scroll" href="#platform">
-        Explore Gamerie <span aria-hidden="true">↓</span>
-      </a>
+
+      <motion.a
+        className="hero__scroll"
+        href="#platform"
+        aria-label="Continue to the Gamerie platform overview"
+        initial={reducedMotion ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.9, duration: 0.6 }}
+      >
+        <span aria-hidden="true">↓</span>
+      </motion.a>
     </section>
   );
 }
 
 function PlatformSection() {
   return (
-    <section className="landing-section platform-section" id="platform">
-      <motion.div
-        className="section-heading section-heading--split"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        variants={reveal}
-      >
-        <div>
-          <p className="section-kicker">The platform</p>
-          <h2>Everything that matters, connected around the player.</h2>
-        </div>
-        <p>
-          Gamerie replaces scattered profiles, disconnected communities, and
-          isolated results with a single network that understands how gaming
-          lives actually grow.
-        </p>
-      </motion.div>
+    <section className="platform section-shell" id="platform">
+      <Reveal className="platform__statement">
+        <p className="section-kicker">One network. Every part of play.</p>
+        <h2>
+          More than another place to post.
+          <span>A home for the life you build through games.</span>
+        </h2>
+      </Reveal>
 
-      <div className="platform-grid">
-        {features.map((feature, index) => (
-          <motion.article
-            key={feature.title}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.35 }}
-            transition={{ delay: index * 0.06 }}
-            variants={reveal}
-          >
-            <span>{feature.index}</span>
-            <h3>{feature.title}</h3>
-            <p>{feature.description}</p>
-          </motion.article>
+      <div className="platform-ledger">
+        {platformLayers.map((layer, index) => (
+          <Reveal className="platform-row" key={layer.label}>
+            <span className="platform-row__number">0{index + 1}</span>
+            <strong>{layer.label}</strong>
+            <h3>{layer.title}</h3>
+            <p>{layer.copy}</p>
+          </Reveal>
         ))}
       </div>
     </section>
   );
 }
 
-function RolesSection() {
-  const [activeRole, setActiveRole] = useState(0);
+function IdentitySection() {
+  const recordItems = [
+    ["Games", "The worlds you play in"],
+    ["Roles", "How you show up"],
+    ["Teams", "Who you build with"],
+    ["Results", "What you have earned"],
+  ];
 
   return (
-    <section className="landing-section roles-section" id="network">
-      <div className="roles-section__visual">
-        <img
-          src="/media/player-community.jpg"
-          alt="Players sharing a game together"
-          loading="lazy"
-        />
-        <div>
-          <p className="section-kicker">A network for the whole ecosystem</p>
-          <strong>
-            Different ambitions.
-            <br />
-            One place to move forward.
-          </strong>
-        </div>
-      </div>
-      <div className="roles-list">
-        {roles.map((role, index) => (
-          <motion.button
-            type="button"
-            key={role.label}
-            aria-expanded={activeRole === index}
-            data-active={activeRole === index || undefined}
-            onClick={() => setActiveRole(index)}
-            onMouseEnter={() => setActiveRole(index)}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.05 }}
-            variants={reveal}
-          >
-            <span>0{index + 1}</span>
-            <div>
-              <small>{role.label}</small>
-              <h3>{role.title}</h3>
-              <AnimatePresence initial={false}>
-                {activeRole === index ? (
-                  <motion.p
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                  >
-                    {role.description}
-                  </motion.p>
-                ) : null}
-              </AnimatePresence>
-            </div>
-          </motion.button>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ProductSection() {
-  const [marketingAllowed, setMarketingAllowed] = useState(
-    () => readCookieConsent()?.marketing ?? false,
-  );
-
-  useEffect(() => {
-    const refreshConsent = () =>
-      setMarketingAllowed(readCookieConsent()?.marketing ?? false);
-    window.addEventListener("gamerie:consent-changed", refreshConsent);
-    return () =>
-      window.removeEventListener("gamerie:consent-changed", refreshConsent);
-  }, []);
-
-  return (
-    <section className="landing-section product-section">
-      <div className="product-section__copy">
-        <p className="section-kicker">Your command centre</p>
-        <h2>One calm surface for the work behind your game.</h2>
-        <p>
-          Profiles, teams, hubs, messaging, competition, schedules, rankings,
-          and opportunity work as one system—not another pile of disconnected
-          tools.
-        </p>
-        <div className="product-credentials">
-          <strong>KAMK</strong>
+    <section className="identity" id="identity">
+      <div className="identity__inner section-shell">
+        <Reveal className="identity__copy">
+          <p className="section-kicker">Player identity</p>
+          <h2>Not a bio. A living record of your game life.</h2>
           <p>
-            Grounded in research and real esports experience from Kajaani
-            University of Applied Sciences in Finland.
+            Your Gamerie identity connects the games you play to the roles you
+            take, the people you meet, and the progress you make. It becomes
+            more credible every time you play, contribute, and compete.
           </p>
-          <a href={websiteLinks.kamkProof} target="_blank" rel="noreferrer">
-            View the academic context <span aria-hidden="true">↗</span>
+          <a className="text-link" href={websiteLinks.auth.register}>
+            Start building yours <span aria-hidden="true">↗</span>
           </a>
-        </div>
-      </div>
-      <motion.div
-        className="product-demo"
-        initial={{ opacity: 0, scale: 0.985 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true, amount: 0.25 }}
-      >
-        {marketingAllowed ? (
-          <iframe
-            src={websiteLinks.demoVideo}
-            title="Gamerie platform overview"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-          />
-        ) : (
-          <div className="product-demo__consent">
-            <span aria-hidden="true">▶</span>
-            <h3>See Gamerie in motion.</h3>
-            <p>
-              The product video loads only when marketing cookies are enabled.
-            </p>
-            <button
-              type="button"
-              onClick={() =>
-                window.dispatchEvent(new Event(COOKIE_SETTINGS_EVENT))
-              }
-            >
-              Review cookie choices
-            </button>
-          </div>
-        )}
-      </motion.div>
-    </section>
-  );
-}
+        </Reveal>
 
-function EarlyAccessSection() {
-  return (
-    <section className="landing-section early-section" id="early-access">
-      <div className="early-section__heading">
-        <p className="section-kicker">Why join early</p>
-        <h2>Help shape the network you wish gaming already had.</h2>
-        <p>
-          The first 30,000 members get closer access to the product, the
-          community, and selected launch benefits as Gamerie grows.
-        </p>
-        <a className="text-link" href="#join">
-          Reserve your place <span aria-hidden="true">→</span>
-        </a>
-      </div>
-      <div className="early-benefits">
-        {earlyBenefits.map(([title, description], index) => (
-          <motion.article
-            key={title}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.045 }}
-            variants={reveal}
-          >
-            <span>0{index + 1}</span>
+        <Reveal className="identity-record">
+          <div className="identity-record__masthead">
             <div>
-              <h3>{title}</h3>
-              <p>{description}</p>
+              <p>
+                <small>Gamerie identity</small>
+                <strong>One player. The complete picture.</strong>
+              </p>
             </div>
-          </motion.article>
-        ))}
+            <span>Built over time</span>
+          </div>
+          <div className="identity-record__body">
+            {recordItems.map(([label, description]) => (
+              <div key={label}>
+                <small>{label}</small>
+                <strong>{description}</strong>
+              </div>
+            ))}
+          </div>
+          <p className="identity-record__footnote">
+            A connected record—not a collection of disconnected profiles.
+          </p>
+        </Reveal>
       </div>
     </section>
   );
 }
 
-function IndustrySection() {
+function CommunitySection() {
   return (
-    <section className="industry-section">
-      <div className="industry-section__image">
+    <section className="community section-shell" id="community">
+      <div className="community__image">
         <img
-          src="/media/player-performance.jpg"
-          alt="Competitive gaming performance"
+          src="/media/community-gaming-floor.jpg"
+          alt="Players sharing a gaming experience together"
           loading="lazy"
         />
       </div>
-      <div className="industry-section__content">
-        <p className="section-kicker">
-          A serious industry deserves serious infrastructure
+      <Reveal className="community__copy">
+        <p className="section-kicker">The right people change the game</p>
+        <h2>Find people you would actually play with again.</h2>
+        <p>
+          Discover players through shared games, level, region, ambition, and
+          what they are looking for next. Less follower theatre. More useful
+          connection.
         </p>
-        <h2>Gaming has the scale. Players need the system around it.</h2>
-        <div className="industry-stats">
-          {industryStats.map(([value, label]) => (
-            <div key={label}>
-              <strong>{value}</strong>
-              <span>{label}</span>
-            </div>
+        <div className="community__principles" aria-label="Community principles">
+          <span>Shared games</span>
+          <span>Compatible goals</span>
+          <span>Credible context</span>
+        </div>
+        <a className="text-link" href={websiteLinks.auth.register}>
+          Enter the player network <span aria-hidden="true">↗</span>
+        </a>
+      </Reveal>
+    </section>
+  );
+}
+
+function AudienceSection() {
+  const [active, setActive] = useState(0);
+  const current = audiences[active];
+
+  return (
+    <section className="audience section-shell">
+      <Reveal className="audience__heading">
+        <p className="section-kicker">For every way you play</p>
+        <h2>Start as a player. Build whatever comes next.</h2>
+      </Reveal>
+
+      <div className="audience-composition">
+        <div className="audience-tabs" role="tablist" aria-label="Who Gamerie is for">
+          {audiences.map((item, index) => (
+            <button
+              id={`audience-tab-${index}`}
+              type="button"
+              role="tab"
+              aria-controls="audience-story"
+              aria-selected={active === index}
+              key={item.label}
+              onClick={() => setActive(index)}
+            >
+              <strong>{item.label}</strong>
+            </button>
           ))}
         </div>
-        <small>
-          Industry figures are directional context drawn from publicly reported
-          esports market and event data.
-        </small>
-      </div>
-    </section>
-  );
-}
-
-function ProofSection() {
-  return (
-    <section className="landing-section proof-section">
-      <div className="section-heading section-heading--split">
-        <div>
-          <p className="section-kicker">Built with people inside gaming</p>
-          <h2>Credibility starts with listening.</h2>
+        <div
+          className="audience-story"
+          id="audience-story"
+          role="tabpanel"
+          aria-labelledby={`audience-tab-${active}`}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current.label}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.4, ease }}
+            >
+              <span>{current.label}</span>
+              <h3>{current.title}</h3>
+              <p>{current.copy}</p>
+            </motion.div>
+          </AnimatePresence>
+          <img src="/media/player-arena.jpg" alt="" aria-hidden="true" />
         </div>
-        <p>
-          Players, researchers, media, and technology leaders have all helped
-          sharpen the problem Gamerie is here to solve.
-        </p>
-      </div>
-      <div className="proof-grid">
-        {testimonials.map((item, index) => (
-          <motion.blockquote
-            key={item.name}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.06 }}
-            variants={reveal}
-          >
-            <p>“{item.quote}”</p>
-            <footer>
-              <strong>{item.name}</strong>
-              <span>{item.detail}</span>
-            </footer>
-          </motion.blockquote>
-        ))}
       </div>
     </section>
   );
 }
 
-function FAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+function CompetitionSection() {
   return (
-    <section className="landing-section faq-section" id="faq">
-      <div className="faq-section__heading">
-        <p className="section-kicker">Questions, answered</p>
-        <h2>Before you join.</h2>
+    <section className="competition" id="competition">
+      <div className="competition__image">
+        <img
+          src="/media/competition-focus.jpg"
+          alt="A competitive player preparing at an arena setup"
+          loading="lazy"
+        />
       </div>
-      <div className="faq-list">
+      <div className="competition__inner section-shell">
+        <Reveal className="competition__copy">
+          <p className="section-kicker">From play to proof</p>
+          <h2>The wins matter. So does everything it took to get there.</h2>
+          <p>
+            Challenges, tournaments, rankings, achievements, and match history
+            stay connected to the people and teams behind them.
+          </p>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function QuestionsSection() {
+  const [open, setOpen] = useState<number | null>(null);
+
+  return (
+    <section className="questions section-shell" id="questions">
+      <Reveal className="questions__intro">
+        <p className="section-kicker">The essentials</p>
+        <h2>Start where you are.</h2>
+        <p>
+          Gamerie is for the person finding a first squad and the player
+          building a serious competitive future.
+        </p>
+      </Reveal>
+      <div className="question-list">
         {faqs.map((item, index) => {
-          const open = openIndex === index;
+          const isOpen = open === index;
           return (
-            <article key={item.question} data-open={open || undefined}>
+            <article key={item.question} data-open={isOpen || undefined}>
               <button
                 type="button"
-                aria-expanded={open}
-                onClick={() => setOpenIndex(open ? null : index)}
+                aria-expanded={isOpen}
+                onClick={() => setOpen(isOpen ? null : index)}
               >
                 <span>{item.question}</span>
-                <i aria-hidden="true">{open ? "−" : "+"}</i>
+                <i aria-hidden="true">{isOpen ? "−" : "+"}</i>
               </button>
               <AnimatePresence initial={false}>
-                {open ? (
+                {isOpen ? (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
@@ -462,29 +435,24 @@ function FAQSection() {
 
 function FinalCTA() {
   return (
-    <section className="final-cta" id="join">
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.4 }}
-        variants={reveal}
-      >
-        <p className="section-kicker">Early access</p>
-        <h2>Your next chapter in gaming should not live in fragments.</h2>
-        <p>
-          Reserve your place, meet the community, and help build Gamerie with
-          us.
-        </p>
-        <WaitlistForm compact id="footer-waitlist" />
-        <a
-          href={websiteLinks.discord}
-          target="_blank"
-          rel="noreferrer"
-          className="text-link"
-        >
-          Join the Discord community <span aria-hidden="true">↗</span>
-        </a>
-      </motion.div>
+    <section className="final-cta section-shell">
+      <img src="/media/gamerie-arena-signal.jpg" alt="" aria-hidden="true" />
+      <Reveal>
+        <p className="section-kicker">One identity. One network.</p>
+        <h2>Make your game life more than scattered moments.</h2>
+        <p>Bring the games, people, teams, and progress together.</p>
+        <div className="final-cta__actions">
+          <a
+            className="button button--primary button--large"
+            href={websiteLinks.auth.register}
+          >
+            Create your identity <span aria-hidden="true">↗</span>
+          </a>
+          <a className="button button--quiet button--large" href={websiteLinks.auth.signIn}>
+            Sign in
+          </a>
+        </div>
+      </Reveal>
     </section>
   );
 }
@@ -492,32 +460,35 @@ function FinalCTA() {
 function Footer() {
   const socials = [
     ["Instagram", websiteLinks.social.instagram],
+    ["Facebook", websiteLinks.social.facebook],
     ["YouTube", websiteLinks.social.youtube],
+    ["TikTok", websiteLinks.social.tiktok],
     ["X", websiteLinks.social.x],
     ["LinkedIn", websiteLinks.social.linkedin],
   ].filter(([, href]) => href !== "#");
 
   return (
-    <footer className="marketing-footer" id="partners">
-      <div className="marketing-footer__lead">
+    <footer className="site-footer">
+      <div className="site-footer__brand">
         <Brand />
         <p>Play. Connect. Belong.</p>
       </div>
-      <div className="marketing-footer__links">
+      <div className="site-footer__links">
         <div>
           <strong>Platform</strong>
           <a href="#platform">What Gamerie does</a>
-          <a href="#network">Who it is for</a>
-          <a href="#early-access">Early access</a>
+          <a href="#identity">Player identity</a>
+          <a href="#community">Community</a>
+          <a href="#competition">Competition</a>
         </div>
         <div>
           <strong>Community</strong>
           <a href={websiteLinks.discord} target="_blank" rel="noreferrer">
             Discord
           </a>
-          <a href={websiteLinks.partners}>Founding partners</a>
+          <a href={websiteLinks.partners}>Partners</a>
           {socials.map(([label, href]) => (
-            <a key={label} href={href} target="_blank" rel="noreferrer">
+            <a href={href} key={label} target="_blank" rel="noreferrer">
               {label}
             </a>
           ))}
@@ -526,24 +497,20 @@ function Footer() {
           <strong>Legal</strong>
           <a href={websiteLinks.terms}>Terms</a>
           <a href={websiteLinks.privacy}>Privacy</a>
-          <a href={websiteLinks.cookie}>Cookie policy</a>
+          <a href={websiteLinks.cookie}>Cookies</a>
           <a href={websiteLinks.communityGuidelines}>Community guidelines</a>
           <a href={websiteLinks.minorsPolicy}>Minors policy</a>
           <button
             type="button"
-            onClick={() =>
-              window.dispatchEvent(new Event(COOKIE_SETTINGS_EVENT))
-            }
+            onClick={() => window.dispatchEvent(new Event(COOKIE_SETTINGS_EVENT))}
           >
             Cookie settings
           </button>
         </div>
       </div>
-      <div className="marketing-footer__bottom">
-        <span>© {new Date().getFullYear()} Gamerie. All rights reserved.</span>
-        <a href={`${websiteLinks.app}/login`}>
-          Member sign in <span aria-hidden="true">↗</span>
-        </a>
+      <div className="site-footer__bottom">
+        <span>© {new Date().getFullYear()} Gamerie</span>
+        <span>Made for the people who keep playing.</span>
       </div>
     </footer>
   );
@@ -551,17 +518,16 @@ function Footer() {
 
 export function LandingPage() {
   return (
-    <div className="marketing-shell">
+    <div className="website-shell">
       <Header />
       <main>
         <Hero />
         <PlatformSection />
-        <RolesSection />
-        <ProductSection />
-        <EarlyAccessSection />
-        <IndustrySection />
-        <ProofSection />
-        <FAQSection />
+        <IdentitySection />
+        <CommunitySection />
+        <AudienceSection />
+        <CompetitionSection />
+        <QuestionsSection />
         <FinalCTA />
       </main>
       <Footer />

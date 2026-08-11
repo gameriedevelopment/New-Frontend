@@ -1,138 +1,75 @@
-export const roles = [
+export const platformLayers = [
   {
-    label: "Player",
-    title: "Turn performance into a credible identity.",
-    description:
-      "Bring your games, achievements, rankings, and competitive history into one profile teams and players can understand.",
+    label: "Identity",
+    title: "A player profile with memory.",
+    copy: "Games, roles, skills, milestones, teams, and competitive history—held together as one credible record.",
   },
   {
-    label: "Team manager",
-    title: "Build a roster people can believe in.",
-    description:
-      "Manage your team, discover players, present results, and create a home for the people building alongside you.",
+    label: "Community",
+    title: "People worth playing with.",
+    copy: "Discover players through shared games, ambition, level, and the kind of experience you want next.",
   },
   {
-    label: "Creator",
-    title: "Grow around the work you already do.",
-    description:
-      "Make your community, content, coaching, and competitive presence part of the same recognisable gaming identity.",
+    label: "Teams",
+    title: "A real home for every roster.",
+    copy: "Build teams and hubs with clear membership, communication, roles, posts, and room to grow.",
   },
   {
-    label: "Community gamer",
-    title: "Find the people who play like you do.",
-    description:
-      "Discover players, join hubs, form teams, and stay close to the communities that make every session worth returning to.",
+    label: "Competition",
+    title: "Progress that becomes proof.",
+    copy: "Challenges, tournaments, rankings, achievements, and match history turn play into a visible journey.",
   },
 ];
 
-export const features = [
+export const audiences = [
   {
-    index: "01",
-    title: "A living player profile",
-    description:
-      "One place for your games, skills, milestones, rankings, team roles, and the progress that defines your journey.",
+    label: "Players",
+    title: "Make every game part of your story.",
+    copy: "Carry your identity between games, meet better teammates, and let your progress speak before you enter the lobby.",
   },
   {
-    index: "02",
-    title: "A network built around play",
-    description:
-      "Follow players, join teams and hubs, share updates, message your people, and find the next connection naturally.",
+    label: "Teams",
+    title: "Build beyond the group chat.",
+    copy: "Give your roster a proper identity, organize people and competition, and create a history others can trust.",
   },
   {
-    index: "03",
-    title: "Competition with context",
-    description:
-      "Challenges, tournaments, leaderboards, calendars, and verified results become part of a record that keeps its meaning.",
+    label: "Communities",
+    title: "Give belonging somewhere to live.",
+    copy: "Bring players and teams into a shared hub with a clear culture, useful conversations, and discoverable activity.",
   },
   {
-    index: "04",
-    title: "Real paths to opportunity",
-    description:
-      "Show what you can do, discover open roles, and give teams, organisers, scouts, and partners a clearer view of your work.",
+    label: "Organizers",
+    title: "Run competition with context.",
+    copy: "Connect tournaments, schedules, rankings, participants, and outcomes to the player network around them.",
   },
 ];
 
-export const earlyBenefits = [
-  ["Founder status", "A permanent mark that you helped shape Gamerie early."],
-  ["Reserved identity", "Claim the player name you want before wider access."],
-  [
-    "Product influence",
-    "Direct feedback channels for the workflows that matter.",
-  ],
-  [
-    "Early competition",
-    "Priority access to selected challenges and community events.",
-  ],
-  ["Closer support", "A shorter line to the people building the platform."],
-  [
-    "Launch benefits",
-    "Early-member benefits as eligible features become available.",
-  ],
-];
-
-export const industryStats = [
-  ["$70M", "Major event prize pools"],
-  ["550M", "Global esports viewers"],
-  ["$3.1B", "Projected market scale"],
-  ["One profile", "Your record across the ecosystem"],
-];
-
-export const testimonials = [
-  {
-    quote:
-      "Scouting new talent has always been messy. A credible player profile makes it easier to see rising talent and evaluate potential fairly.",
-    name: "Christiana Thanou",
-    detail: "Reporter · Athens, Greece",
-  },
-  {
-    quote:
-      "What matters is not only the social layer, but the career infrastructure behind it—connecting players with teams, sponsors, and opportunity.",
-    name: "Ilias Avgeropoulos",
-    detail: "Researcher · Kemi, Finland",
-  },
-  {
-    quote:
-      "Gamers deserve a place where their stats, achievements, and growth can be understood as a serious body of work.",
-    name: "Purity Muiruri",
-    detail: "Competitive player · Nairobi, Kenya",
-  },
-  {
-    quote:
-      "Professional gaming needs professional infrastructure. The strongest products make identity, proof, and opportunity work together.",
-    name: "Georgios Mavrelis",
-    detail: "Innovation lead · London, United Kingdom",
-  },
+export const principles = [
+  "One identity across the games you play",
+  "Discovery based on fit, not follower noise",
+  "Teams and communities with real structure",
+  "Competition that strengthens reputation",
 ];
 
 export const faqs = [
   {
     question: "What is Gamerie?",
     answer:
-      "Gamerie is a player network built around credible gaming identity. Your games, teams, achievements, competition history, and community activity live together in one profile that can grow with you.",
+      "Gamerie is a social gaming platform where players build a credible identity, find people and teams, join communities, compete, and keep their gaming progress connected in one place.",
   },
   {
-    question: "Is Gamerie free?",
+    question: "Who is Gamerie for?",
     answer:
-      "The core Gamerie experience is free. Optional premium tools may be introduced later for players, teams, creators, and organisations that need more advanced workflows.",
+      "Players, team managers, gaming communities, creators, organizers, coaches, and anyone who wants their game life to feel more connected and meaningful.",
   },
   {
-    question: "Can Gamerie help me find opportunities?",
+    question: "Do I need to be a professional player?",
     answer:
-      "That is one of the platform's core goals. A complete, credible profile makes it easier for teammates, teams, organisers, communities, and future partners to understand what you do and where you fit.",
+      "No. Gamerie is designed for every level—from someone finding their first regular squad to established competitive players and teams.",
   },
   {
-    question: "When can I join?",
+    question: "How do I get started?",
     answer:
-      "Access is being opened in stages. Join the waitlist and watch your email for product updates, community invitations, and early-access availability.",
-  },
-  {
-    question: "Is a mobile app coming?",
-    answer:
-      "The web experience is designed to work properly across phones and larger screens. Dedicated iOS and Android experiences are part of the longer-term roadmap.",
-  },
-  {
-    question: "Is Gamerie for solo players or teams?",
-    answer:
-      "Both. Solo players can build an identity and find people to play with, while teams and hubs can manage communities, competition, content, and growth in one connected network.",
+      "Open Gamerie, create your player identity, add the games and platforms that matter to you, and start exploring the network.",
   },
 ];
