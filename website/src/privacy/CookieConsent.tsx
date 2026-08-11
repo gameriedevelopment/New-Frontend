@@ -48,6 +48,7 @@ export function CookieConsent() {
     setDraft(next);
     setPreferencesOpen(false);
     applyAnalyticsConsent(stored);
+    window.dispatchEvent(new Event("gamerie:consent-changed"));
     if (stored.analytics) trackPageView();
   };
 

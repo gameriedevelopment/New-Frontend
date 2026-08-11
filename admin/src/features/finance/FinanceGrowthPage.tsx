@@ -1,4 +1,5 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent, type MouseEvent } from "react";
+import { X } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { AdminAvatar } from "../../components/AdminAvatar";
 import { BarChart, LineChart } from "../../components/DataChart";
@@ -423,6 +424,8 @@ function ReferralSignupsDialog({
   record: ReferralCodeRecord;
   onClose: () => void;
 }) {
+  const titleId = useId();
+  const searchRef = useRef<HTMLInputElement>(null);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [term, setTerm] = useState("");
@@ -430,21 +433,56 @@ function ReferralSignupsDialog({
     const timer = window.setTimeout(() => setTerm(search.trim()), 300);
     return () => window.clearTimeout(timer);
   }, [search]);
+
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", closeOnEscape);
+    window.requestAnimationFrame(() => searchRef.current?.focus());
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", closeOnEscape);
+      previouslyFocused?.focus();
+    };
+  }, [onClose]);
+
+  const closeFromBackdrop = (event: MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget) onClose();
+  };
+
   const query = useReferralSignups(record.id, page, term);
   return (
     <div
       className="admin-dialog finance-signups-dialog"
       role="dialog"
       aria-modal="true"
-      aria-label={`${record.code} signups`}
+      aria-labelledby={titleId}
+      onMouseDown={closeFromBackdrop}
     >
       <form onSubmit={(event) => event.preventDefault()}>
-        <header>
-          <span className="admin-eyebrow">Referral attribution</span>
-          <h2>{record.code} signups</h2>
-          <p>Only the identity and reward context needed for programme review is exposed.</p>
+        <header className="finance-signups-dialog__header">
+          <div>
+            <span className="admin-eyebrow">Referral attribution</span>
+            <h2 id={titleId}>{record.code} signups</h2>
+            <p>Only the identity and reward context needed for programme review is exposed.</p>
+          </div>
+          <button
+            type="button"
+            className="finance-signups-dialog__close"
+            aria-label="Close signup list"
+            onClick={onClose}
+          >
+            <X aria-hidden="true" size={16} strokeWidth={1.8} />
+          </button>
         </header>
         <input
+          ref={searchRef}
           type="search"
           value={search}
           onChange={(event) => {
@@ -482,24 +520,30 @@ function ReferralSignupsDialog({
             ))}
           </div>
         )}
-        <footer>
-          <span>{query.data ? `${page} of ${Math.max(query.data.totalPages, 1)}` : ""}</span>
-          <button
-            type="button"
-            className="admin-secondary-button"
-            disabled={page <= 1}
-            onClick={() => setPage((value) => value - 1)}
-          >
-            Previous
-          </button>
-          <button
-            type="button"
-            className="admin-secondary-button"
-            disabled={page >= (query.data?.totalPages ?? 1)}
-            onClick={() => setPage((value) => value + 1)}
-          >
-            Next
-          </button>
+        <footer className="finance-signups-dialog__footer">
+          <span>
+            {query.data
+              ? `Page ${page} of ${Math.max(query.data.totalPages, 1)} · ${query.data.total} signup${query.data.total === 1 ? "" : "s"}`
+              : "Loading signups…"}
+          </span>
+          <div className="finance-signups-dialog__pagination">
+            <button
+              type="button"
+              className="admin-secondary-button"
+              disabled={page <= 1 || query.isFetching}
+              onClick={() => setPage((value) => Math.max(1, value - 1))}
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              className="admin-secondary-button"
+              disabled={page >= (query.data?.totalPages ?? 1) || query.isFetching}
+              onClick={() => setPage((value) => value + 1)}
+            >
+              Next
+            </button>
+          </div>
           <button type="button" className="admin-primary-button" onClick={onClose}>
             Done
           </button>

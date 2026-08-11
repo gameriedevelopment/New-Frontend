@@ -261,7 +261,35 @@
 }
 .finance-signups-dialog > form {
   width: min(100%, 40rem);
-  max-height: min(88dvh, 46rem);
+  max-height: min(calc(100dvh - 2rem), 46rem);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  overflow: hidden;
+}
+.finance-signups-dialog__header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 1rem;
+}
+.finance-signups-dialog__header > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.55rem;
+}
+.finance-signups-dialog__close {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border: 1px solid var(--ao-border);
+  border-radius: var(--ao-radius-sm);
+  background: transparent;
+  color: var(--ao-text-secondary);
+  place-items: center;
+}
+.finance-signups-dialog__close:hover {
+  border-color: var(--ao-border-strong);
+  color: var(--ao-text);
 }
 .finance-signups-dialog input {
   width: 100%;
@@ -275,8 +303,10 @@
   box-shadow: none;
 }
 .finance-signup-list {
-  min-height: 130px;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   border-top: 1px solid var(--ao-border);
 }
 .finance-signup-list > div {
@@ -303,10 +333,20 @@
   color: var(--ao-text-muted);
   font-size: 0.63rem;
 }
-.finance-signups-dialog footer > span {
+.finance-signups-dialog__footer {
+  min-width: 0;
+  align-items: center;
+  border-top: 1px solid var(--ao-border-subtle);
+  padding-top: 1rem;
+}
+.finance-signups-dialog__footer > span {
   margin-right: auto;
   color: var(--ao-text-muted);
   font-size: 0.66rem;
+}
+.finance-signups-dialog__pagination {
+  display: flex;
+  gap: 0.55rem;
 }
 .finance-state {
   display: grid;
@@ -430,6 +470,29 @@
   .finance-toolbar select {
     border-top: 1px solid var(--ao-border);
     border-left: 0;
+  }
+}
+@media (max-width: 560px) {
+  .finance-signups-dialog {
+    padding: 0;
+  }
+  .finance-signups-dialog > form {
+    width: 100%;
+    max-height: min(92dvh, 46rem);
+    padding: 1rem;
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+  }
+  .finance-signups-dialog__footer {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+  .finance-signups-dialog__footer > span {
+    grid-column: 1 / -1;
+  }
+  .finance-signups-dialog__pagination {
+    min-width: 0;
   }
 }
 @media (max-width: 520px) {
