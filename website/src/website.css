@@ -159,6 +159,17 @@ body {
   transform: translateY(-2px);
 }
 
+.directional-icon {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  overflow: visible;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.55;
+}
+
 .button--primary {
   border-color: var(--w-accent);
   background: var(--w-accent);
@@ -353,20 +364,24 @@ body {
   color: var(--w-accent-bright);
 }
 
+.hero__scroll .directional-icon {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
 .platform {
-  padding-top: clamp(8rem, 12vw, 12rem);
-  padding-bottom: clamp(8rem, 12vw, 12rem);
+  padding-top: clamp(6.5rem, 9vw, 9rem);
+  padding-bottom: clamp(6.5rem, 9vw, 9rem);
 }
 
 .platform__statement {
   max-width: 83rem;
-  padding-bottom: clamp(5rem, 8vw, 8rem);
+  padding-bottom: clamp(3.75rem, 6vw, 5.75rem);
 }
 
 .platform__statement h2 {
-  margin-top: 1.5rem;
   font-family: var(--g-font-display);
-  font-size: clamp(3rem, 4.8vw, 5.35rem);
+  font-size: clamp(2.7rem, 4.15vw, 4.7rem);
   font-weight: 500;
   letter-spacing: -0.073em;
   line-height: 0.93;
@@ -388,7 +403,7 @@ body {
   min-height: 11.5rem;
   padding: 2.1rem 0;
   border-bottom: 1px solid var(--w-line);
-  grid-template-columns: 4.5rem 10rem minmax(18rem, 1fr) minmax(18rem, 0.7fr);
+  grid-template-columns: 10rem minmax(18rem, 1fr) minmax(18rem, 0.7fr);
   align-items: center;
   gap: 1.5rem;
   transition:
@@ -402,14 +417,8 @@ body {
   background: rgb(185 155 255 / 0.035);
 }
 
-.platform-row__number {
-  color: var(--w-text-muted);
-  font-size: 0.62rem;
-  font-weight: 700;
-}
-
 .platform-row > strong {
-  color: var(--w-accent);
+  color: var(--w-text-soft);
   font-size: 0.67rem;
   font-weight: 760;
   letter-spacing: 0.1em;
@@ -419,7 +428,7 @@ body {
 .platform-row h3 {
   max-width: 34rem;
   font-family: var(--g-font-display);
-  font-size: clamp(1.8rem, 3vw, 3.1rem);
+  font-size: clamp(1.65rem, 2.55vw, 2.7rem);
   font-weight: 520;
   letter-spacing: -0.055em;
   line-height: 1;
@@ -468,15 +477,14 @@ body {
 
 .identity__copy h2 {
   max-width: 44rem;
-  margin-top: 1.4rem;
   font-family: var(--g-font-display);
-  font-size: clamp(3rem, 4.85vw, 5.2rem);
+  font-size: clamp(2.7rem, 4.2vw, 4.5rem);
   font-weight: 510;
   letter-spacing: -0.068em;
   line-height: 0.94;
 }
 
-.identity__copy > p:not(.section-kicker) {
+.identity__copy > p {
   max-width: 35rem;
   margin-top: 1.8rem !important;
   color: var(--w-text-soft);
@@ -521,7 +529,7 @@ body {
 .identity-record__masthead small {
   display: block;
   margin-bottom: 0.55rem;
-  color: var(--w-accent);
+  color: var(--w-text-soft);
   font-size: 0.6rem;
   font-weight: 760;
   letter-spacing: 0.12em;
@@ -572,13 +580,6 @@ body {
   font-weight: 680;
 }
 
-.identity-record__footnote {
-  padding: 1.2rem 1.5rem;
-  border-top: 1px solid var(--w-line);
-  color: var(--w-text-muted);
-  font-size: 0.66rem;
-}
-
 .community {
   display: grid;
   padding-top: clamp(8rem, 12vw, 12rem);
@@ -622,15 +623,14 @@ body {
 }
 
 .community__copy h2 {
-  margin-top: 1.5rem;
   font-family: var(--g-font-display);
-  font-size: clamp(2.8rem, 4.35vw, 4.8rem);
+  font-size: clamp(2.5rem, 3.8vw, 4.15rem);
   font-weight: 510;
   letter-spacing: -0.068em;
   line-height: 0.95;
 }
 
-.community__copy > p:not(.section-kicker) {
+.community__copy > p {
   max-width: 35rem;
   margin-top: 1.7rem !important;
   color: var(--w-text-soft);
@@ -638,46 +638,24 @@ body {
   line-height: 1.76;
 }
 
-.community__principles {
-  display: flex;
-  margin: 2.6rem 0 2rem;
-  padding: 1.2rem 0;
-  border-top: 1px solid var(--w-line);
-  border-bottom: 1px solid var(--w-line);
-  flex-wrap: wrap;
-  gap: 0.75rem 1.5rem;
-}
-
-.community__principles span {
-  color: var(--w-text-soft);
-  font-size: 0.67rem;
-  font-weight: 680;
-}
-
-.community__principles span::before {
-  margin-right: 0.55rem;
-  color: var(--w-accent);
-  content: "•";
+.community__copy .text-link {
+  margin-top: 2.2rem;
 }
 
 .audience {
-  padding-top: clamp(8rem, 12vw, 12rem);
-  padding-bottom: clamp(8rem, 12vw, 12rem);
+  padding-top: clamp(7rem, 10vw, 10rem);
+  padding-bottom: clamp(7rem, 10vw, 10rem);
   border-top: 1px solid var(--w-line);
 }
 
 .audience__heading {
-  display: grid;
-  padding-bottom: clamp(4rem, 7vw, 6rem);
-  grid-template-columns: minmax(13rem, 0.38fr) minmax(0, 1fr);
-  align-items: start;
-  gap: 5rem;
+  padding-bottom: clamp(3.5rem, 6vw, 5rem);
 }
 
 .audience__heading h2 {
   max-width: 61rem;
   font-family: var(--g-font-display);
-  font-size: clamp(2.9rem, 4.6vw, 5rem);
+  font-size: clamp(2.6rem, 4vw, 4.35rem);
   font-weight: 500;
   letter-spacing: -0.07em;
   line-height: 0.94;
@@ -768,7 +746,7 @@ body {
 }
 
 .audience-story > div > span {
-  color: var(--w-accent);
+  color: var(--w-text-soft);
   font-size: 0.62rem;
   font-weight: 760;
   letter-spacing: 0.12em;
@@ -778,7 +756,7 @@ body {
 .audience-story h3 {
   margin-top: 0.9rem;
   font-family: var(--g-font-display);
-  font-size: clamp(2.45rem, 4.2vw, 4.35rem);
+  font-size: clamp(2.2rem, 3.55vw, 3.75rem);
   font-weight: 510;
   letter-spacing: -0.067em;
   line-height: 0.96;
@@ -836,7 +814,7 @@ body {
 .competition__copy h2 {
   margin-top: 1.5rem;
   font-family: var(--g-font-display);
-  font-size: clamp(3.35rem, 5.7vw, 6.15rem);
+  font-size: clamp(3.05rem, 4.85vw, 5.25rem);
   font-weight: 500;
   letter-spacing: -0.073em;
   line-height: 0.92;
@@ -852,22 +830,21 @@ body {
 
 .questions {
   display: grid;
-  padding-top: clamp(8rem, 12vw, 12rem);
-  padding-bottom: clamp(8rem, 12vw, 12rem);
+  padding-top: clamp(6.5rem, 9vw, 9rem);
+  padding-bottom: clamp(6.5rem, 9vw, 9rem);
   grid-template-columns: minmax(20rem, 0.56fr) minmax(0, 1fr);
   gap: clamp(5rem, 11vw, 11rem);
 }
 
 .questions__intro h2 {
-  margin-top: 1.35rem;
   font-family: var(--g-font-display);
-  font-size: clamp(3rem, 4.8vw, 5.1rem);
+  font-size: clamp(2.7rem, 4.15vw, 4.45rem);
   font-weight: 510;
   letter-spacing: -0.068em;
   line-height: 0.95;
 }
 
-.questions__intro > p:not(.section-kicker) {
+.questions__intro > p {
   max-width: 29rem;
   margin-top: 1.55rem !important;
   color: var(--w-text-soft);
@@ -975,20 +952,15 @@ body {
   width: min(70rem, calc(100% - 3rem));
 }
 
-.final-cta .section-kicker {
-  margin: 0 auto;
-}
-
 .final-cta h2 {
-  margin-top: 1.5rem;
   font-family: var(--g-font-display);
-  font-size: clamp(3.25rem, 5.8vw, 6.25rem);
+  font-size: clamp(2.9rem, 5vw, 5.4rem);
   font-weight: 500;
   letter-spacing: -0.073em;
   line-height: 0.91;
 }
 
-.final-cta > div > p:not(.section-kicker) {
+.final-cta > div > p {
   margin-top: 1.4rem !important;
   color: var(--w-text-soft);
   font-size: 0.94rem;
@@ -1000,6 +972,10 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.9rem;
+}
+
+.final-cta__actions .button {
+  width: 13.25rem;
 }
 
 .site-footer {
@@ -1091,7 +1067,7 @@ body {
   }
 
   .platform-row {
-    grid-template-columns: 3rem 8rem minmax(16rem, 1fr) minmax(16rem, 0.8fr);
+    grid-template-columns: 8rem minmax(16rem, 1fr) minmax(16rem, 0.8fr);
   }
 
   .identity__inner {
@@ -1216,18 +1192,28 @@ body {
 
   .hero__lead {
     max-width: 31rem;
+    color: rgb(248 246 252 / 0.9);
+    text-shadow: 0 2px 24px rgb(0 0 0 / 0.92);
   }
 
   .hero__art {
     top: 20rem;
     width: 100%;
-    opacity: 0.78;
+    opacity: 0.9;
   }
 
   .hero__art::before {
     background:
-      linear-gradient(to bottom, var(--w-canvas), transparent 22%, transparent 65%, var(--w-canvas)),
-      linear-gradient(90deg, rgb(7 8 12 / 0.74), transparent 65%);
+      linear-gradient(
+        180deg,
+        var(--w-canvas) 0%,
+        rgb(7 8 12 / 0.98) 16%,
+        rgb(7 8 12 / 0.9) 38%,
+        rgb(7 8 12 / 0.72) 62%,
+        rgb(7 8 12 / 0.88) 84%,
+        var(--w-canvas) 100%
+      ),
+      linear-gradient(90deg, rgb(7 8 12 / 0.88), rgb(7 8 12 / 0.5));
   }
 
   .hero__scroll {
@@ -1239,15 +1225,18 @@ body {
     bottom: 1.25rem;
   }
 
-  .platform__statement h2,
+  .platform__statement h2 {
+    font-size: clamp(2.45rem, 8.8vw, 3.9rem);
+  }
+
   .audience__heading h2 {
-    font-size: clamp(2.7rem, 10vw, 4.5rem);
+    font-size: clamp(2.4rem, 8.6vw, 3.9rem);
   }
 
   .platform-row {
     min-height: auto;
     padding: 2rem 0;
-    grid-template-columns: 2.5rem 1fr;
+    grid-template-columns: 1fr;
     gap: 0.7rem 1rem;
   }
 
@@ -1255,15 +1244,6 @@ body {
     padding-right: 0;
     padding-left: 0;
     background: transparent;
-  }
-
-  .platform-row > strong {
-    grid-column: 2;
-  }
-
-  .platform-row h3,
-  .platform-row p {
-    grid-column: 2;
   }
 
   .platform-row h3 {
@@ -1289,12 +1269,11 @@ body {
 
   .community__copy h2,
   .identity__copy h2 {
-    font-size: clamp(2.65rem, 9.8vw, 4.4rem);
+    font-size: clamp(2.4rem, 8.6vw, 3.85rem);
   }
 
   .audience__heading {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+    display: block;
   }
 
   .audience-composition {
@@ -1346,7 +1325,7 @@ body {
   }
 
   .competition__copy h2 {
-    font-size: clamp(2.9rem, 10.5vw, 4.8rem);
+    font-size: clamp(2.65rem, 9.2vw, 4.15rem);
   }
 
   .questions {
@@ -1376,7 +1355,7 @@ body {
 
   .hero h1 {
     max-width: 22rem;
-    font-size: clamp(2.75rem, 11.7vw, 3.35rem);
+    font-size: clamp(2.65rem, 10.6vw, 3.1rem);
     letter-spacing: -0.068em;
     line-height: 0.91;
   }
@@ -1405,18 +1384,32 @@ body {
   .platform,
   .audience,
   .questions {
-    padding-top: 7rem;
-    padding-bottom: 7rem;
+    padding-top: 6rem;
+    padding-bottom: 6rem;
   }
 
   .platform__statement {
     padding-bottom: 4rem;
   }
 
+  .platform__statement h2 {
+    font-size: clamp(2.3rem, 8vw, 3.5rem);
+  }
+
+  .platform-row h3 {
+    font-size: clamp(1.55rem, 6vw, 2.2rem);
+  }
+
   .identity,
   .community {
     padding-top: 6.5rem;
     padding-bottom: 6.5rem;
+  }
+
+  .identity__copy h2,
+  .community__copy h2,
+  .audience__heading h2 {
+    font-size: clamp(2.25rem, 8vw, 3.4rem);
   }
 
   .identity-record__masthead {
@@ -1464,12 +1457,24 @@ body {
     padding: 2.3rem 1.35rem;
   }
 
+  .audience-story h3 {
+    font-size: clamp(2.05rem, 7.4vw, 3.1rem);
+  }
+
   .audience-story::after {
     background: linear-gradient(to top, var(--w-canvas-deep) 8%, rgb(4 5 8 / 0.84) 52%, transparent 100%);
   }
 
   .question-list article > div p {
     padding-right: 0;
+  }
+
+  .competition__copy h2 {
+    font-size: clamp(2.45rem, 8.6vw, 3.75rem);
+  }
+
+  .questions__intro h2 {
+    font-size: clamp(2.3rem, 8vw, 3.45rem);
   }
 
   .final-cta {
@@ -1481,7 +1486,7 @@ body {
   }
 
   .final-cta h2 {
-    font-size: clamp(2.8rem, 11.5vw, 4rem);
+    font-size: clamp(2.35rem, 8.5vw, 3.15rem);
   }
 
   .site-footer {

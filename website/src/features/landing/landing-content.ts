@@ -26,21 +26,29 @@ export const audiences = [
     label: "Players",
     title: "Make every game part of your story.",
     copy: "Carry your identity between games, meet better teammates, and let your progress speak before you enter the lobby.",
+    image: "/media/audience-player.jpg",
+    imageAlt: "A competitive player ready at an esports arena",
   },
   {
     label: "Teams",
     title: "Build beyond the group chat.",
     copy: "Give your roster a proper identity, organize people and competition, and create a history others can trust.",
+    image: "/media/audience-team.jpg",
+    imageAlt: "A focused competitive player at a team gaming setup",
   },
   {
     label: "Communities",
     title: "Give belonging somewhere to live.",
     copy: "Bring players and teams into a shared hub with a clear culture, useful conversations, and discoverable activity.",
+    image: "/media/audience-community.jpg",
+    imageAlt: "Friends sharing a game together at home",
   },
   {
     label: "Organizers",
     title: "Run competition with context.",
     copy: "Connect tournaments, schedules, rankings, participants, and outcomes to the player network around them.",
+    image: "/media/audience-organizer.jpg",
+    imageAlt: "A competition organizer reviewing performance dashboards",
   },
 ];
 

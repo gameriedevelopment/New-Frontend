@@ -6,6 +6,34 @@ import { audiences, faqs, platformLayers } from "./landing-content";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
+function ArrowUpRightIcon() {
+  return (
+    <svg
+      className="directional-icon"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M4 12 12 4M6 4h6v6" />
+    </svg>
+  );
+}
+
+function ArrowDownIcon() {
+  return (
+    <svg
+      className="directional-icon"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M8 2.75v10.5M4.5 9.75 8 13.25l3.5-3.5" />
+    </svg>
+  );
+}
+
 function Brand() {
   return (
     <a className="site-brand" href="#top" aria-label="Gamerie home">
@@ -87,7 +115,10 @@ function Header() {
             Sign in
           </a>
           <a className="button button--primary" href={websiteLinks.auth.register}>
-            Create account <span aria-hidden="true">↗</span>
+            Create account
+            <span aria-hidden="true">
+              <ArrowUpRightIcon />
+            </span>
           </a>
         </div>
       </div>
@@ -167,8 +198,9 @@ function Hero() {
           }}
           transition={{ duration: 0.68, ease }}
         >
-          Bring your games, people, teams, and competitive progress into one
-          identity that grows with every match.
+          Gamerie is the social gaming platform that brings your games,
+          people, teams, and competitive progress into one identity—built to
+          grow with every match.
         </motion.p>
         <motion.div
           className="hero__actions"
@@ -182,7 +214,10 @@ function Hero() {
             className="button button--primary button--large"
             href={websiteLinks.auth.register}
           >
-            Create your identity <span aria-hidden="true">↗</span>
+            Create your identity
+            <span aria-hidden="true">
+              <ArrowUpRightIcon />
+            </span>
           </a>
           <a className="button button--quiet button--large" href={websiteLinks.auth.signIn}>
             Sign in
@@ -198,7 +233,7 @@ function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.9, duration: 0.6 }}
       >
-        <span aria-hidden="true">↓</span>
+        <ArrowDownIcon />
       </motion.a>
     </section>
   );
@@ -208,7 +243,6 @@ function PlatformSection() {
   return (
     <section className="platform section-shell" id="platform">
       <Reveal className="platform__statement">
-        <p className="section-kicker">One network. Every part of play.</p>
         <h2>
           More than another place to post.
           <span>A home for the life you build through games.</span>
@@ -216,9 +250,8 @@ function PlatformSection() {
       </Reveal>
 
       <div className="platform-ledger">
-        {platformLayers.map((layer, index) => (
+        {platformLayers.map((layer) => (
           <Reveal className="platform-row" key={layer.label}>
-            <span className="platform-row__number">0{index + 1}</span>
             <strong>{layer.label}</strong>
             <h3>{layer.title}</h3>
             <p>{layer.copy}</p>
@@ -241,7 +274,6 @@ function IdentitySection() {
     <section className="identity" id="identity">
       <div className="identity__inner section-shell">
         <Reveal className="identity__copy">
-          <p className="section-kicker">Player identity</p>
           <h2>Not a bio. A living record of your game life.</h2>
           <p>
             Your Gamerie identity connects the games you play to the roles you
@@ -249,7 +281,10 @@ function IdentitySection() {
             more credible every time you play, contribute, and compete.
           </p>
           <a className="text-link" href={websiteLinks.auth.register}>
-            Start building yours <span aria-hidden="true">↗</span>
+            Start building yours
+            <span aria-hidden="true">
+              <ArrowUpRightIcon />
+            </span>
           </a>
         </Reveal>
 
@@ -271,9 +306,6 @@ function IdentitySection() {
               </div>
             ))}
           </div>
-          <p className="identity-record__footnote">
-            A connected record—not a collection of disconnected profiles.
-          </p>
         </Reveal>
       </div>
     </section>
@@ -291,20 +323,17 @@ function CommunitySection() {
         />
       </div>
       <Reveal className="community__copy">
-        <p className="section-kicker">The right people change the game</p>
         <h2>Find people you would actually play with again.</h2>
         <p>
           Discover players through shared games, level, region, ambition, and
           what they are looking for next. Less follower theatre. More useful
           connection.
         </p>
-        <div className="community__principles" aria-label="Community principles">
-          <span>Shared games</span>
-          <span>Compatible goals</span>
-          <span>Credible context</span>
-        </div>
         <a className="text-link" href={websiteLinks.auth.register}>
-          Enter the player network <span aria-hidden="true">↗</span>
+          Enter the player network
+          <span aria-hidden="true">
+            <ArrowUpRightIcon />
+          </span>
         </a>
       </Reveal>
     </section>
@@ -314,11 +343,11 @@ function CommunitySection() {
 function AudienceSection() {
   const [active, setActive] = useState(0);
   const current = audiences[active];
+  const reducedMotion = useReducedMotion();
 
   return (
     <section className="audience section-shell">
       <Reveal className="audience__heading">
-        <p className="section-kicker">For every way you play</p>
         <h2>Start as a player. Build whatever comes next.</h2>
       </Reveal>
 
@@ -357,7 +386,18 @@ function AudienceSection() {
               <p>{current.copy}</p>
             </motion.div>
           </AnimatePresence>
-          <img src="/media/player-arena.jpg" alt="" aria-hidden="true" />
+          <AnimatePresence initial={false} mode="sync">
+            <motion.img
+              key={current.image}
+              src={current.image}
+              alt={current.imageAlt}
+              loading="lazy"
+              initial={reducedMotion ? false : { opacity: 0, scale: 1.025 }}
+              animate={{ opacity: 0.72, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.55, ease }}
+            />
+          </AnimatePresence>
         </div>
       </div>
     </section>
@@ -394,7 +434,6 @@ function QuestionsSection() {
   return (
     <section className="questions section-shell" id="questions">
       <Reveal className="questions__intro">
-        <p className="section-kicker">The essentials</p>
         <h2>Start where you are.</h2>
         <p>
           Gamerie is for the person finding a first squad and the player
@@ -438,15 +477,17 @@ function FinalCTA() {
     <section className="final-cta section-shell">
       <img src="/media/gamerie-arena-signal.jpg" alt="" aria-hidden="true" />
       <Reveal>
-        <p className="section-kicker">One identity. One network.</p>
-        <h2>Make your game life more than scattered moments.</h2>
-        <p>Bring the games, people, teams, and progress together.</p>
+        <h2>Your player identity starts here.</h2>
+        <p>Bring your games, people, teams, and progress into one place.</p>
         <div className="final-cta__actions">
           <a
             className="button button--primary button--large"
             href={websiteLinks.auth.register}
           >
-            Create your identity <span aria-hidden="true">↗</span>
+            Create your identity
+            <span aria-hidden="true">
+              <ArrowUpRightIcon />
+            </span>
           </a>
           <a className="button button--quiet button--large" href={websiteLinks.auth.signIn}>
             Sign in
