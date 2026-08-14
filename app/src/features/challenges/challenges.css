@@ -482,14 +482,14 @@
   border-top: 1px solid var(--g-border-subtle);
   border-bottom: 1px solid var(--g-border-subtle);
   gap: 12px;
-  color: var(--g-success);
+  color: var(--g-achievement);
 }
 .challenge-result div {
   display: grid;
   gap: 3px;
 }
 .challenge-result strong {
-  color: var(--g-text-primary);
+  color: var(--g-achievement);
   font: 600 21px var(--g-font-display);
 }
 .challenge-result span {

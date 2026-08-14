@@ -201,7 +201,7 @@ export function WalletPage() {
             <dd>{formatToken(reserved)} GLK</dd>
             <small>Held for accepted challenges</small>
           </div>
-          <div>
+          <div data-balance="rewards" data-has-rewards={Number(rewards?.amount ?? 0) > 0}>
             <dt>
               <Activity size={15} />
               Reward points

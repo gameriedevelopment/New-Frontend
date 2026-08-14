@@ -34,6 +34,11 @@ const NotificationsPage = lazy(() =>
 const ProfilePage = lazy(() =>
   import("./features/profile/ProfilePage").then((module) => ({ default: module.ProfilePage })),
 );
+const PlayerCardPage = lazy(() =>
+  import("./features/profile/PlayerCardPage").then((module) => ({
+    default: module.PlayerCardPage,
+  })),
+);
 const SettingsPage = lazy(() =>
   import("./features/settings/SettingsPage").then((module) => ({ default: module.SettingsPage })),
 );
@@ -116,6 +121,22 @@ export function App() {
         <Route path="/confirm-email/:token" element={<ConfirmEmailPage />} />
         <Route path="/confirm-email-change/:token" element={<ConfirmEmailChangePage />} />
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
+        <Route
+          path="/card/:username"
+          element={
+            <DeferredPage>
+              <PlayerCardPage />
+            </DeferredPage>
+          }
+        />
+        <Route
+          path="/s/:username"
+          element={
+            <DeferredPage>
+              <PlayerCardPage />
+            </DeferredPage>
+          }
+        />
         <Route
           path="/steam/connect/callback"
           element={

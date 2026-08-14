@@ -412,7 +412,10 @@ export function SkillsPanel({ own, profile }: { own: boolean; profile: PlayerPro
       <article key={skill.id || index}>
         <div>
           <h3>{skill.name || "Skill"}</h3>
-          {skill.level ? <p>{skill.level}</p> : null}
+          <p>
+            {skill.level ? `${skill.level} · ` : ""}
+            {count > 0 ? "Community endorsed" : "Player listed"}
+          </p>
         </div>
         <button
           type="button"

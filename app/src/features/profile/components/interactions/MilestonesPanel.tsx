@@ -86,7 +86,7 @@ export function MilestonesPanel({ own, profile }: { own: boolean; profile: Playe
         <>
           <div className="profile-milestones__timeline">
             {visible.map((item, index) => (
-              <article key={item.id || index}>
+              <article key={item.id || index} data-type={item.type || "career"}>
                 <time>
                   {new Date(String(item.date || item.createdAt || Date.now())).toLocaleDateString(
                     undefined,

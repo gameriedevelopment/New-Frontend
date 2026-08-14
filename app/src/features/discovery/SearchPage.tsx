@@ -38,7 +38,10 @@ function SearchResult({ item, kind }: { item: SearchEntity; kind: SearchKind }) 
           <span>{item.gamerTitle || item.gameLevel || "Gamerie player"}</span>
         </div>
         <dl>
-          <div>
+          <div
+            data-metric="wins"
+            data-has-wins={Number(item.stats?.tournamentWins ?? item.stats?.wins ?? 0) > 0}
+          >
             <dt>
               <Trophy size={13} />
               Wins
@@ -73,7 +76,7 @@ function SearchResult({ item, kind }: { item: SearchEntity; kind: SearchKind }) 
             </dt>
             <dd>{item.members?.length ?? 0}</dd>
           </div>
-          <div>
+          <div data-metric="wins" data-has-wins={Number(item.stats?.tournamentWins ?? 0) > 0}>
             <dt>
               <Trophy size={13} />
               Wins

@@ -760,6 +760,16 @@
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }
+.profile-milestones__timeline article[data-type="achievement"]::before {
+  background: var(--g-achievement);
+  box-shadow: 0 0 0 1px var(--g-achievement-border);
+}
+.profile-milestones__timeline article[data-type="achievement"] > div {
+  border-color: var(--g-achievement-border);
+}
+.profile-milestones__timeline article[data-type="achievement"] span {
+  color: var(--g-achievement);
+}
 .profile-milestones__timeline h3 {
   margin: 5px 0 4px;
   color: var(--g-text-secondary);
@@ -1471,6 +1481,9 @@
   font: 570 25px var(--g-font-display);
   letter-spacing: -0.04em;
 }
+.profile-achievement-summary > div:nth-child(2) strong {
+  color: var(--g-achievement);
+}
 .profile-achievement-summary small {
   color: var(--g-text-faint);
   font-size: 12px;
@@ -1499,8 +1512,12 @@
   place-items: center;
 }
 .profile-achievement-grid article[data-complete="true"] > span {
-  background: var(--g-accent-faint);
-  color: var(--g-accent);
+  border-color: var(--g-achievement-border);
+  background: var(--g-achievement-soft);
+  color: var(--g-achievement);
+}
+.profile-achievement-grid article[data-complete="true"] > div > p:first-child {
+  color: var(--g-achievement);
 }
 .profile-achievement-grid article > div > p:first-child {
   margin: 16px 0 4px;
@@ -2078,6 +2095,10 @@
 .profile-career-summary svg {
   color: var(--g-accent);
 }
+.profile-career-summary > div[data-summary="victories"][data-has-victories="true"] svg,
+.profile-career-summary > div[data-summary="victories"][data-has-victories="true"] strong {
+  color: var(--g-achievement);
+}
 .profile-career-summary span {
   color: var(--g-text-muted);
   font-size: 11px;
@@ -2235,6 +2256,14 @@
   font-weight: 750;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+.profile-tournament-list article[data-placement="1"] {
+  border-color: var(--g-achievement-border);
+  background: linear-gradient(90deg, var(--g-achievement-soft), var(--g-canvas-deep) 46%);
+}
+.profile-tournament-list article[data-placement="1"] > div:nth-child(2) > span,
+.profile-tournament-list article[data-placement="1"] .profile-tournament-result strong {
+  color: var(--g-achievement);
 }
 .profile-tournament-list h3 {
   overflow: hidden;

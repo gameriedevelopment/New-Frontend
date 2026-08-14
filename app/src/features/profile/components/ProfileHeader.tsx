@@ -1,4 +1,4 @@
-import { MapPin, MessageCircle, Settings, Swords, UserMinus, UserPlus } from "lucide-react";
+import { MapPin, MessageCircle, Settings, Share2, Swords, UserMinus, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button, SafeImage } from "../../../components/ui";
@@ -79,10 +79,19 @@ export function ProfileHeader({ own, profile }: { own: boolean; profile: PlayerP
           </div>
           <div className="profile-hero__actions" data-own={own || undefined}>
             {own ? (
-              <Button variant="quiet" onClick={() => navigate("/settings?section=profile")}>
-                <Settings size={16} />
-                Edit profile
-              </Button>
+              <>
+                <Button
+                  variant="quiet"
+                  onClick={() => navigate(`/card/${encodeURIComponent(profile.username)}`)}
+                >
+                  <Share2 size={16} />
+                  Share card
+                </Button>
+                <Button variant="quiet" onClick={() => navigate("/settings?section=profile")}>
+                  <Settings size={16} />
+                  Edit profile
+                </Button>
+              </>
             ) : (
               <>
                 <Button

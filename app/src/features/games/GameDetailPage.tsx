@@ -90,7 +90,7 @@ function PlayerRow({ entry, position }: { entry: ActiveGameUser; position: numbe
     .slice(0, 3);
   const rank = entry.rankData?.rank || entry.rankData?.tier || entry.skillLevel || "Unranked";
   return (
-    <article className="game-ranking-row game-ranking-row--player">
+    <article className="game-ranking-row game-ranking-row--player" data-rank={position}>
       <span className="game-ranking-row__place">{String(position).padStart(2, "0")}</span>
       <SafeImage src={user.profileImage} alt="" />
       <div className="game-ranking-row__identity">
@@ -152,7 +152,7 @@ function PlayerRow({ entry, position }: { entry: ActiveGameUser; position: numbe
 
 function TeamRow({ team, position }: { team: ActiveGameTeam; position: number }) {
   return (
-    <article className="game-ranking-row game-ranking-row--team">
+    <article className="game-ranking-row game-ranking-row--team" data-rank={position}>
       <span className="game-ranking-row__place">{String(position).padStart(2, "0")}</span>
       <SafeImage src={team.logo} fallback="/avatar-fallback.svg" alt="" />
       <div className="game-ranking-row__identity">

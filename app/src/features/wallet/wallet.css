@@ -177,6 +177,10 @@
   font: 570 clamp(1.15rem, 2vw, 1.55rem) var(--g-font-display);
   letter-spacing: -0.03em;
 }
+.wallet-balance dl > div[data-balance="rewards"][data-has-rewards="true"] dt svg,
+.wallet-balance dl > div[data-balance="rewards"][data-has-rewards="true"] dd {
+  color: var(--g-achievement);
+}
 .wallet-balance dl small {
   color: var(--g-text-faint);
   font-size: 10px;

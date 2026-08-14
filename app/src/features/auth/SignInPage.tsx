@@ -6,7 +6,8 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import { getApiErrorMessage } from "../../lib/errors";
 import { publicLinks } from "../../config/links";
-import { signIn } from "./api";
+import { beginSocialAuth, signIn, type SocialProvider } from "./api";
+import { getRequiredSocialProvider } from "./authError";
 import { SocialAuthOptions } from "./components/SocialAuthOptions";
 
 const schema = z.object({
@@ -22,6 +23,7 @@ export function SignInPage() {
   const [searchParams] = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [requiredProvider, setRequiredProvider] = useState<SocialProvider | null>(null);
   const {
     register,
     handleSubmit,
@@ -41,10 +43,12 @@ export function SignInPage() {
 
   const onSubmit = handleSubmit(async (values) => {
     setSubmitError(null);
+    setRequiredProvider(null);
     try {
       const result = await signIn(values.email, values.password, values.remember);
       navigate(result.next === "verify-phone" ? "/verify-phone" : "/feed", { replace: true });
     } catch (error) {
+      setRequiredProvider(getRequiredSocialProvider(error));
       setSubmitError(
         getApiErrorMessage(error, "We couldn't sign you in. Check your details and try again."),
       );
@@ -89,11 +93,24 @@ export function SignInPage() {
 
           <form className="auth-form" onSubmit={onSubmit} noValidate>
             {submitError && (
-              <div className="auth-error" role="alert">
+              <div
+                className={`auth-error${requiredProvider ? " auth-error--guidance" : ""}`}
+                role="alert"
+              >
                 <AlertCircle size={17} />
                 <p>
-                  <strong>Sign in unsuccessful</strong>
+                  <strong>
+                    {requiredProvider
+                      ? `Use ${requiredProvider.charAt(0).toUpperCase() + requiredProvider.slice(1)} to sign in`
+                      : "Sign in unsuccessful"}
+                  </strong>
                   {submitError}
+                  {requiredProvider && requiredProvider !== "apple" ? (
+                    <button type="button" onClick={() => beginSocialAuth(requiredProvider)}>
+                      Continue with{" "}
+                      {requiredProvider.charAt(0).toUpperCase() + requiredProvider.slice(1)}
+                    </button>
+                  ) : null}
                 </p>
               </div>
             )}

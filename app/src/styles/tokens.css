@@ -1,7 +1,7 @@
 :root {
   color-scheme: dark;
 
-  /* Primitive brand ramp — retains Gamarie's lavender identity. */
+  /* Primitive brand ramp — retains Gamerie's lavender identity. */
   --g-color-lavender-100: #eee6ff;
   --g-color-lavender-200: #dfd0ff;
   --g-color-lavender-300: #cbbcff;
@@ -27,6 +27,10 @@
 
   --g-color-cyan-400: #73dcf2;
   --g-color-green-400: #77d7a1;
+  /* Antique gold is reserved for earned or exceptional moments. */
+  --g-color-gold-300: #dbc48a;
+  --g-color-gold-400: #c7a662;
+  --g-color-gold-500: #a98643;
   --g-color-amber-400: #edbd70;
   --g-color-red-400: #f18a96;
 
@@ -50,6 +54,11 @@
   --g-accent-soft: rgb(183 161 255 / 0.1);
   --g-accent-faint: rgb(183 161 255 / 0.055);
   --g-success: var(--g-color-green-400);
+  /* Earned competitive recognition and rewards only; never generic completion or interaction. */
+  --g-achievement: var(--g-color-gold-300);
+  --g-achievement-strong: var(--g-color-gold-400);
+  --g-achievement-soft: rgb(199 166 98 / 0.1);
+  --g-achievement-border: rgb(219 196 138 / 0.24);
   --g-warning: var(--g-color-amber-400);
   --g-danger: var(--g-color-red-400);
   --g-info: var(--g-color-cyan-400);

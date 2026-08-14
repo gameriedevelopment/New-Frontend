@@ -82,7 +82,7 @@ export function PlayerCard({ player }: { player: PlayerProfile }) {
           <Users size={13} />
           {Number(player.followersCount ?? 0).toLocaleString()} followers
         </span>
-        <span>
+        <span className="player-card__wins" data-has-wins={Number(player.stats?.wins ?? 0) > 0}>
           <Trophy size={13} />
           {Number(player.stats?.wins ?? 0).toLocaleString()} wins
         </span>

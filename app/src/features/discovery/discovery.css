@@ -323,6 +323,9 @@
   font-size: 10px;
   white-space: nowrap;
 }
+.player-card footer > .player-card__wins[data-has-wins="true"] {
+  color: var(--g-achievement);
+}
 .player-card footer > span:first-child {
   margin-right: auto;
   overflow: hidden;
@@ -565,6 +568,10 @@
   color: var(--g-text-secondary);
   font-size: 10px;
   font-weight: 700;
+}
+.search-result--person [data-metric="wins"][data-has-wins="true"] dt,
+.search-result--person [data-metric="wins"][data-has-wins="true"] dd {
+  color: var(--g-achievement);
 }
 .search-result > svg {
   color: var(--g-text-faint);

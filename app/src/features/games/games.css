@@ -665,6 +665,16 @@
 .game-ranking-row:hover {
   background: rgb(255 255 255 / 0.018);
 }
+.game-ranking-row[data-rank="1"] {
+  background: linear-gradient(90deg, var(--g-achievement-soft), transparent 52%);
+}
+.game-ranking-row[data-rank="1"] .game-ranking-row__place {
+  color: var(--g-achievement);
+  font-weight: 720;
+}
+.game-ranking-row[data-rank="1"] > img {
+  border-color: var(--g-achievement-border);
+}
 .game-ranking-row__place {
   color: var(--g-text-faint);
   font-family: var(--g-font-display);
@@ -743,10 +753,10 @@
   display: grid;
   width: 25px;
   height: 25px;
-  border: 1px solid var(--g-border-subtle);
+  border: 1px solid var(--g-achievement-border);
   border-radius: 50%;
-  background: var(--g-accent-faint);
-  color: var(--g-accent);
+  background: var(--g-achievement-soft);
+  color: var(--g-achievement);
   place-items: center;
 }
 .game-ranking-row__achievements img {

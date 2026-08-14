@@ -320,9 +320,12 @@
   display: grid;
   min-width: max-content;
   justify-items: end;
-  color: var(--g-accent);
+  color: var(--g-text-muted);
   font-size: 13px;
   line-height: 1.2;
+}
+.tournament-card__body > header > strong[data-has-prize="true"] {
+  color: var(--g-achievement);
 }
 .tournament-card__body > header > strong svg {
   display: none;

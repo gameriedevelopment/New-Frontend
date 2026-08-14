@@ -2,9 +2,10 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { api } from "../../lib/api";
 import { useAuthStore } from "./authStore";
+import type { SocialProvider } from "./authError";
 import type { AuthUser, LoginResult } from "./types";
 
-export type SocialProvider = "google" | "facebook" | "discord" | "apple";
+export type { SocialProvider } from "./authError";
 
 export interface RegistrationPayload {
   email: string;

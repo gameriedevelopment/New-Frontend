@@ -184,11 +184,21 @@
   content: "";
 }
 .leaderboard-top-card[data-rank="1"]::before {
-  background: var(--g-accent);
+  background: var(--g-achievement);
+}
+.leaderboard-top-card[data-rank="1"] {
+  border-color: var(--g-achievement-border);
+}
+.leaderboard-top-card[data-rank="1"] .leaderboard-top-card__rank,
+.leaderboard-top-card[data-rank="1"] .leaderboard-top-card__metric strong {
+  color: var(--g-achievement);
 }
 .leaderboard-top-card:hover {
   border-color: var(--g-border-default);
   transform: translateY(-2px);
+}
+.leaderboard-top-card[data-rank="1"]:hover {
+  border-color: var(--g-achievement-border);
 }
 .leaderboard-top-card__rank {
   position: absolute;

@@ -34,7 +34,7 @@ export function TournamentCard({ tournament }: { tournament: Tournament }) {
             <p>{tournament.organizer || tournament.platform || "Tournament organizer"}</p>
             <h2>{tournament.name}</h2>
           </div>
-          <strong>
+          <strong data-has-prize={Boolean(tournament.prizePool)}>
             <Trophy size={14} />
             {formatPrize(tournament.prizePool)}
             <small>Prize pool</small>

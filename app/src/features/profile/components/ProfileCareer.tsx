@@ -271,7 +271,11 @@ function TournamentsPanel({ own, profile }: { own: boolean; profile: PlayerProfi
               const upcoming =
                 item.status === "upcoming" || Boolean(date && date.getTime() > Date.now());
               return (
-                <article key={item.id || index}>
+                <article
+                  key={item.id || index}
+                  data-placement={item.placement ?? undefined}
+                  data-status={upcoming ? "upcoming" : "completed"}
+                >
                   <div className="profile-tournament-date">
                     <CalendarDays size={15} />
                     <time dateTime={item.date}>
@@ -568,7 +572,10 @@ export function ProfileCareer({ own, profile }: { own: boolean; profile: PlayerP
           <span>Current teams</span>
           <strong>{teams.data?.length ?? "—"}</strong>
         </div>
-        <div>
+        <div
+          data-summary="victories"
+          data-has-victories={Number(profile.stats?.tournamentWins ?? 0) > 0}
+        >
           <Trophy size={15} />
           <span>Tournament victories</span>
           <strong>{profile.stats?.tournamentWins ?? 0}</strong>

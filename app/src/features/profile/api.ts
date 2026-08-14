@@ -27,6 +27,13 @@ export async function getPlayerProfile(identity: string): Promise<PlayerProfile>
   return data.data;
 }
 
+export async function getPublicPlayerCard(username: string): Promise<PlayerProfile> {
+  const { data } = await api.get<ApiEnvelope<PlayerProfile>>(
+    `/users/public-card/${encodeURIComponent(username)}`,
+  );
+  return data.data;
+}
+
 export async function getProfileTeams(userId: string): Promise<ProfileTeam[]> {
   const { data } = await api.get<ApiEnvelope<ProfileTeam[]>>(`/teams/user/${userId}`);
   return data.data ?? [];

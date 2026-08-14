@@ -81,7 +81,7 @@ function Members({ members = [] }: { members?: CommunityMember[] }) {
 }
 function CompetitionList({ title, items = [] }: { title: string; items?: CompetitionItem[] }) {
   return (
-    <section className="community-section">
+    <section className="community-section" data-record-kind={title.toLowerCase()}>
       <header>
         <h2>{title}</h2>
         <span>{items.length ? `${items.length} recorded` : "No entries yet"}</span>

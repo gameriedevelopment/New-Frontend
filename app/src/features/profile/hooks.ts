@@ -8,6 +8,7 @@ import {
   getPlayerMatches,
   getPlayerPosts,
   getPlayerProfile,
+  getPublicPlayerCard,
   getPlayerRankings,
   getProfileTeams,
   getSalaryEstimation,
@@ -30,6 +31,16 @@ export function usePlayerProfile(identity?: string) {
     queryFn: () => getPlayerProfile(identity!),
     enabled: Boolean(identity),
     retry: 2,
+    staleTime: 60_000,
+  });
+}
+
+export function usePublicPlayerCard(username?: string) {
+  return useQuery({
+    queryKey: ["public-player-card", username],
+    queryFn: () => getPublicPlayerCard(username!),
+    enabled: Boolean(username),
+    retry: 1,
     staleTime: 60_000,
   });
 }

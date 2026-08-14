@@ -25,6 +25,7 @@ export interface ProfileSkill extends Record<string, unknown> {
 
 export interface PlayerProfile extends AuthUser {
   username: string;
+  shareable?: boolean;
   profileVisibility?: "public" | "private" | "friends" | string;
   backgroundImage?: string;
   gamerTitle?: string;
@@ -77,6 +78,7 @@ export interface PlayerProfile extends AuthUser {
     points?: number;
     isCompleted?: boolean;
     category?: string;
+    achievementId?: string;
   }>;
   milestones?: Array<{
     id?: string;

@@ -786,6 +786,14 @@
 .community-records svg {
   color: var(--g-accent);
 }
+.community-section[data-record-kind="achievements"] .community-records svg,
+.community-section[data-record-kind="milestones"] .community-records svg {
+  color: var(--g-achievement);
+}
+.community-section[data-record-kind="achievements"] .community-records article,
+.community-section[data-record-kind="milestones"] .community-records article {
+  border-bottom-color: var(--g-achievement-border);
+}
 .community-records strong {
   font-size: 12px;
 }

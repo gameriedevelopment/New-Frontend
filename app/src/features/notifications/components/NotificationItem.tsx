@@ -60,6 +60,7 @@ export function NotificationItem({
     <button
       className="notification-item"
       data-compact={compact || undefined}
+      data-type={notification.type}
       data-unread={!notification.isRead || undefined}
       type="button"
       onClick={() => onOpen(notification)}
