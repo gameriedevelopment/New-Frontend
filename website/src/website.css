@@ -14,6 +14,7 @@
   --w-accent-deep: #7657b8;
   --w-blue: #7693ff;
   --w-container: min(90rem, calc(100vw - 6rem));
+  --w-mobile-display-leading: 1.04;
 }
 
 html {
@@ -511,19 +512,10 @@ body {
   padding: 2.35rem;
   border-bottom: 1px solid var(--w-line);
   align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
 }
 
 .identity-record__masthead > div {
   display: block;
-}
-
-.identity-record__masthead > span {
-  align-self: flex-start;
-  color: var(--w-text-muted);
-  font-size: 0.62rem;
-  font-weight: 700;
 }
 
 .identity-record__masthead small {
@@ -1254,15 +1246,6 @@ body {
     gap: 3.5rem;
   }
 
-  .identity-record__masthead {
-    align-items: flex-start;
-    flex-direction: column-reverse;
-  }
-
-  .identity-record__masthead > span {
-    align-self: auto;
-  }
-
   .community__image {
     min-height: 32rem;
   }
@@ -1357,7 +1340,19 @@ body {
     max-width: 22rem;
     font-size: clamp(2.65rem, 10.6vw, 3.1rem);
     letter-spacing: -0.068em;
-    line-height: 0.91;
+    line-height: var(--w-mobile-display-leading);
+  }
+
+  .platform__statement h2,
+  .platform-row h3,
+  .identity__copy h2,
+  .community__copy h2,
+  .audience__heading h2,
+  .audience-story h3,
+  .competition__copy h2,
+  .questions__intro h2,
+  .final-cta h2 {
+    line-height: var(--w-mobile-display-leading);
   }
 
   .hero__lead {

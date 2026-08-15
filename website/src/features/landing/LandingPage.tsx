@@ -296,7 +296,6 @@ function IdentitySection() {
                 <strong>One player. The complete picture.</strong>
               </p>
             </div>
-            <span>Built over time</span>
           </div>
           <div className="identity-record__body">
             {recordItems.map(([label, description]) => (
