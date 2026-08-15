@@ -1,5 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "mvp.gamerie.gg" }],
+      "destination": "https://app.gamerie.gg/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/s/:username", "destination": "/api/share?username=:username" },
     { "source": "/(.*)", "destination": "/index.html" }
