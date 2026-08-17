@@ -14,6 +14,8 @@
   --ao-accent: #b7a1ff;
   --ao-accent-hover: #cbbcff;
   --ao-accent-soft: rgb(183 161 255 / 0.1);
+  --ao-identity: #dbc48a;
+  --ao-identity-soft: rgb(219 196 138 / 0.1);
   --ao-danger: #f18a96;
   --ao-font-body: "Manrope Variable", "Manrope", sans-serif;
   --ao-font-display: "Instrument Sans Variable", "Instrument Sans", sans-serif;

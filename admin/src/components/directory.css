@@ -127,6 +127,25 @@
   display: grid;
   gap: 0.27rem;
 }
+.admin-directory-primary {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.admin-directory-primary > strong {
+  min-width: 0;
+}
+.admin-player-id {
+  flex: 0 0 auto;
+  padding-left: 0.5rem;
+  border-left: 1px solid var(--ao-border-strong);
+  color: var(--ao-identity);
+  font-size: 0.59rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 760;
+  letter-spacing: 0.055em;
+}
 .admin-directory-identity strong,
 .admin-directory-meta strong {
   overflow: hidden;

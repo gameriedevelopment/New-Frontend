@@ -8,6 +8,7 @@ export interface AdminUserQuery extends DirectoryQuery {
 
 export interface AdminUserRecord {
   id: string;
+  gamerieId?: string | null;
   username: string;
   email: string;
   gamerTitle?: string | null;

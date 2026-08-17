@@ -39,7 +39,7 @@ export function UsersPage() {
         title="Users"
         description="Review account state and apply traceable access decisions without exposing private profile data."
         search={search}
-        searchPlaceholder="Search username or email"
+        searchPlaceholder="Search username, email, or player ID"
         onSearch={setSearch}
         filters={
           <select
@@ -83,7 +83,12 @@ export function UsersPage() {
             <div className="admin-directory-identity">
               <AdminAvatar name={record.username} src={record.profileImage} />
               <div>
-                <strong>{record.username}</strong>
+                <div className="admin-directory-primary">
+                  <strong>{record.username}</strong>
+                  {record.gamerieId ? (
+                    <small className="admin-player-id">{record.gamerieId}</small>
+                  ) : null}
+                </div>
                 <span>{record.email}</span>
               </div>
             </div>
@@ -136,6 +141,7 @@ export function UsersPage() {
         {selected ? (
           <DetailList
             items={[
+              { label: "Player ID", value: selected.gamerieId },
               { label: "Account state", value: selected.isBanned ? "Restricted" : "Active" },
               { label: "Role", value: selected.role },
               { label: "Email verified", value: selected.emailVerified ? "Yes" : "No" },
