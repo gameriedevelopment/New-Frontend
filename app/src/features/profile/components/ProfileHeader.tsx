@@ -56,16 +56,19 @@ export function ProfileHeader({ own, profile }: { own: boolean; profile: PlayerP
             loading="eager"
           />
           <div className="profile-hero__name">
-            <span>
-              {profile.isOnline ? (
-                <>
-                  <i />
-                  Online now
-                </>
-              ) : (
-                "Player profile"
-              )}
-            </span>
+            <div className="profile-hero__eyebrow">
+              <span>
+                {profile.isOnline ? (
+                  <>
+                    <i />
+                    Online now
+                  </>
+                ) : (
+                  "Player profile"
+                )}
+              </span>
+              {profile.gamerieId ? <strong>{profile.gamerieId}</strong> : null}
+            </div>
             <h1>{profile.username}</h1>
             <p>
               {profile.gamerTitle || profile.bio || "Building a place in the Gamerie community."}

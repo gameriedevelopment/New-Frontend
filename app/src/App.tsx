@@ -11,7 +11,6 @@ import { AuthCallbackPage } from "./features/auth/AuthCallbackPage";
 import { ProtectedRoute } from "./features/auth/components/ProtectedRoute";
 import { AppShell } from "./app/shell/AppShell";
 import { FeatureFoundationPage } from "./app/shell/FeatureFoundationPage";
-import { AdminHandoffPage } from "./app/shell/AdminHandoffPage";
 import { PageLoader } from "./components/ui";
 import { AnalyticsRouteTracker } from "./features/privacy/CookieConsent";
 
@@ -342,14 +341,6 @@ export function App() {
               <DeferredPage>
                 <SettingsPage />
               </DeferredPage>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <AdminHandoffPage />
-              </ProtectedRoute>
             }
           />
           <Route

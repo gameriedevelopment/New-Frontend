@@ -25,6 +25,7 @@ export interface ProfileSkill extends Record<string, unknown> {
 
 export interface PlayerProfile extends AuthUser {
   username: string;
+  gamerieId?: string | null;
   shareable?: boolean;
   profileVisibility?: "public" | "private" | "friends" | string;
   backgroundImage?: string;

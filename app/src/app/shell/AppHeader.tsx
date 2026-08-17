@@ -1,4 +1,4 @@
-import { ChevronDown, LogOut, MessageSquare, Search, Settings, Shield } from "lucide-react";
+import { ChevronDown, LogOut, MessageSquare, Search, Settings } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "../../features/auth/api";
@@ -18,8 +18,6 @@ export function AppHeader() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-  const isAdmin = String(user?.role ?? "").toLowerCase() === "admin";
-  const adminUrl = import.meta.env.VITE_ADMIN_URL || "http://localhost:5175";
   const unreadQuery = useTotalUnread();
   const unread = Number(unreadQuery.data ?? 0);
 
@@ -74,11 +72,6 @@ export function AppHeader() {
         <kbd>/</kbd>
       </Link>
       <div className="app-header__actions">
-        {isAdmin && (
-          <a className="app-header__icon" href={adminUrl} aria-label="Open Gamerie Operations">
-            <Shield size={18} />
-          </a>
-        )}
         <Link
           className="app-header__icon app-header__messages"
           to="/messages"

@@ -6,6 +6,7 @@ describe("buildPlayerCardModel", () => {
     const model = buildPlayerCardModel({
       id: "player-1",
       username: "nova",
+      gamerieId: "GMR42",
       gamerTitle: "In-game leader",
       gamesPlayed: [
         {
@@ -26,6 +27,7 @@ describe("buildPlayerCardModel", () => {
       identity: "nova#EU",
       standing: "Immortal",
     });
+    expect(model.gamerieId).toBe("GMR42");
     expect(model.stats.map((stat) => stat.key)).toEqual(["ranking-score", "win-rate"]);
     expect(model.strengths).toEqual([
       { name: "Leadership", endorsementCount: 4, provenance: "Community endorsed" },

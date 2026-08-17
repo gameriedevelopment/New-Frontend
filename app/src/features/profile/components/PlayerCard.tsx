@@ -12,7 +12,10 @@ export function PlayerCard({ model }: { model: PlayerCardModel }) {
       <div className="player-card__identity">
         <SafeImage src={model.profileImage} alt="" loading="eager" />
         <div>
-          <p>Player identity</p>
+          <p>
+            Player identity
+            {model.gamerieId ? <span>{model.gamerieId}</span> : null}
+          </p>
           <h1>{model.username}</h1>
           <strong>{model.title}</strong>
         </div>

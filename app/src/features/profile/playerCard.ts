@@ -18,6 +18,7 @@ export interface PlayerCardStrength {
 
 export interface PlayerCardModel {
   username: string;
+  gamerieId?: string;
   title: string;
   region?: string;
   profileImage?: string;
@@ -130,6 +131,7 @@ export function buildPlayerCardModel(profile: PlayerProfile): PlayerCardModel {
 
   return {
     username: profile.username,
+    gamerieId: profile.gamerieId?.trim() || undefined,
     title: profile.gamerTitle?.trim() || profile.gameLevel?.trim() || "Gamerie player",
     region: profile.region?.trim() || undefined,
     profileImage: profile.profileImage,

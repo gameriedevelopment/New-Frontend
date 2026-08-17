@@ -88,12 +88,20 @@
   object-fit: cover;
 }
 .player-card__identity p {
+  display: flex;
   margin: 0 0 3px;
+  align-items: center;
+  gap: 8px;
   color: var(--g-text-faint);
   font-size: 8px;
   font-weight: 760;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+.player-card__identity p span {
+  padding-left: 8px;
+  border-left: 1px solid var(--g-border-strong);
+  color: var(--g-achievement);
 }
 .player-card__identity h1 {
   margin: 0;

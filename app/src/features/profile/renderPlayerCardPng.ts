@@ -229,6 +229,11 @@ export async function renderPlayerCardPng(model: PlayerCardModel): Promise<Blob>
   context.fillStyle = palette.muted;
   context.font = '700 17px "Manrope", sans-serif';
   context.fillText("PLAYER IDENTITY", 302, 204);
+  if (model.gamerieId) {
+    const identityLabelWidth = context.measureText("PLAYER IDENTITY").width;
+    context.fillStyle = palette.achievement;
+    context.fillText(`·  ${model.gamerieId}`, 302 + identityLabelWidth + 10, 204);
+  }
   context.fillStyle = palette.text;
   fitText(context, model.username, 690, 66, 720);
   context.fillText(model.username, 302, 276);

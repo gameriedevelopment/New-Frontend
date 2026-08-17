@@ -106,10 +106,11 @@ export default async function handler(request: Request) {
           </div>
         )}
         <div style={{ display: "flex", minWidth: 0, marginLeft: 34, flexDirection: "column" }}>
-          <span
-            style={{ color: "#686473", fontSize: 14, fontWeight: 700, letterSpacing: "0.12em" }}
-          >
-            PLAYER IDENTITY
+          <span style={{ display: "flex", fontSize: 14, fontWeight: 700, letterSpacing: "0.12em" }}>
+            <span style={{ color: "#686473" }}>PLAYER IDENTITY</span>
+            {model.gamerieId ? (
+              <span style={{ marginLeft: 10, color: "#dbc48a" }}>· {model.gamerieId}</span>
+            ) : null}
           </span>
           <span style={{ marginTop: 5, fontSize: 62, fontWeight: 720, letterSpacing: "-0.055em" }}>
             {model.username}
