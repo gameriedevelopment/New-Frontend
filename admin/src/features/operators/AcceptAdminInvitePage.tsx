@@ -58,19 +58,31 @@ export function AcceptAdminInvitePage() {
             <form className="admin-sign-in__form" onSubmit={submit}>
               {details.data.requiresPassword ? (
                 <>
-                  <label>
-                    <span>Display name</span>
-                    <input value={fullName} onChange={(event) => setFullName(event.target.value)} />
-                  </label>
-                  <label>
-                    <span>Username</span>
-                    <input
-                      required
-                      minLength={3}
-                      value={username}
-                      onChange={(event) => setUsername(event.target.value)}
-                    />
-                  </label>
+                  {details.data.requiresProfile ? (
+                    <>
+                      <label>
+                        <span>Display name</span>
+                        <input
+                          value={fullName}
+                          onChange={(event) => setFullName(event.target.value)}
+                        />
+                      </label>
+                      <label>
+                        <span>Username</span>
+                        <input
+                          required
+                          minLength={3}
+                          value={username}
+                          onChange={(event) => setUsername(event.target.value)}
+                        />
+                      </label>
+                    </>
+                  ) : (
+                    <p className="admin-invite-note">
+                      Create a password for the administrator interface. Your existing sign-in
+                      method for the Gamerie player app will not change.
+                    </p>
+                  )}
                   <label>
                     <span>Password</span>
                     <input
@@ -120,7 +132,7 @@ export function AcceptAdminInvitePage() {
           {accept.isSuccess ? (
             <div className="admin-state-panel">
               <h2>Access is ready</h2>
-              <p>Sign in with your Gamerie account to enter operations.</p>
+              <p>Sign in with your administrator credentials to enter operations.</p>
               <Link className="admin-primary-button admin-invite-link" to="/sign-in">
                 Continue to sign in
               </Link>

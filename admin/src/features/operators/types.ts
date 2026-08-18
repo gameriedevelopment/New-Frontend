@@ -29,5 +29,6 @@ export interface PlatformAdminInvite {
 export interface AdminInviteDetails {
   email: string;
   requiresPassword: boolean;
+  requiresProfile: boolean;
   invitedByEmail?: string | null;
 }

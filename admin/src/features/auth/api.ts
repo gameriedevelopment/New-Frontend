@@ -12,7 +12,10 @@ interface LoginResponse {
 }
 
 export async function signInAdmin(email: string, password: string): Promise<AdminUser> {
-  const { data } = await api.post<Envelope<LoginResponse>>("/auth/login", { email, password });
+  const { data } = await api.post<Envelope<LoginResponse>>("/admin-auth/login", {
+    email,
+    password,
+  });
   const { token, user } = data.data;
 
   if (!token || !user?.id) throw new Error("The server returned an incomplete sign-in response.");
