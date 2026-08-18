@@ -198,9 +198,21 @@ export interface GameRanking {
 }
 export interface MatchHistoryEntry extends Record<string, unknown> {
   id?: string;
+  type?: "user" | "team";
   game?: string | { name?: string };
   opponent?: string;
-  result?: string;
+  challengerId?: string;
+  challengerName?: string;
+  challengedId?: string;
+  challengedName?: string;
+  result?:
+    | string
+    | {
+        winnerId?: string;
+        score?: string;
+        notes?: string;
+      }
+    | null;
   score?: string;
   status?: string;
   scheduledDate?: string;

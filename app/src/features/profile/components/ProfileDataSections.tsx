@@ -32,6 +32,7 @@ import {
   useUpdatePlayerProfile,
 } from "../hooks";
 import type { PlayerProfile, ProfileGame, ProfileSkill } from "../types";
+import { getMatchPresentation } from "../matchHistory";
 import { ProfileDialog } from "./interactions/ProfileDialog";
 import { GameIdentityDialog } from "./interactions/GameIdentityDialog";
 import { GameConnectionsPanel } from "../../games/connections/GameConnectionsPanel";
@@ -259,24 +260,23 @@ export function MatchHistory({ profile }: { profile: PlayerProfile }) {
         <div>
           {matches.map((match, index) => {
             const date = match.scheduledDate || match.date || match.createdAt;
+            const presentation = getMatchPresentation(match, profile.id);
             return (
               <article key={match.id || index}>
-                <span
-                  data-result={String(match.result || match.status || "scheduled").toLowerCase()}
-                >
+                <span data-result={presentation.state}>
                   <Swords size={15} />
                 </span>
                 <div>
                   <h3>{gameName(match.game)}</h3>
                   <p>
-                    {match.opponent ? `Against ${match.opponent}` : "Gamerie match"}
+                    {presentation.opponent ? `Against ${presentation.opponent}` : "Gamerie match"}
                     {date
                       ? ` · ${new Date(date).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}`
                       : ""}
                   </p>
                 </div>
                 <div>
-                  <strong>{match.score || match.result || match.status || "Scheduled"}</strong>
+                  <strong>{presentation.label}</strong>
                 </div>
               </article>
             );
