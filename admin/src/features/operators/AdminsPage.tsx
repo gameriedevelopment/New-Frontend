@@ -142,6 +142,11 @@ export function AdminsPage() {
               className="admin-operator-row"
               key={member.id}
               onClick={() => setSelected(member)}
+              aria-label={
+                !member.isProtected && member.userId !== user.id
+                  ? `Manage administrator access for ${member.username || member.email}`
+                  : `View administrator ${member.username || member.email}`
+              }
             >
               <span className="admin-directory-avatar">
                 {(member.username || member.email).slice(0, 2).toUpperCase()}
@@ -159,7 +164,11 @@ export function AdminsPage() {
               >
                 {member.status}
               </span>
-              <small>{member.isSuperAdmin ? "Protected super admin" : "Administrator"}</small>
+              {!member.isProtected && member.userId !== user.id ? (
+                <span className="admin-operator-manage">Manage access&nbsp; →</span>
+              ) : (
+                <small>{member.isSuperAdmin ? "Protected super admin" : "Your account"}</small>
+              )}
             </button>
           ))}
           {!members.data?.data.length ? (

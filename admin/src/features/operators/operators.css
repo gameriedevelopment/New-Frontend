@@ -103,6 +103,25 @@
   color: var(--ao-text-muted);
   font-size: 0.66rem;
 }
+.admin-operator-manage {
+  justify-self: start;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--ao-accent) 32%, var(--ao-border));
+  border-radius: var(--ao-radius-sm);
+  color: var(--ao-accent);
+  font: 700 0.64rem var(--ao-font-body);
+  letter-spacing: 0.01em;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+.admin-operator-row:hover .admin-operator-manage,
+.admin-operator-row:focus-visible .admin-operator-manage {
+  border-color: color-mix(in srgb, var(--ao-accent) 58%, var(--ao-border));
+  background: color-mix(in srgb, var(--ao-accent) 8%, transparent);
+  color: var(--ao-text);
+}
 .admin-invite-row {
   grid-template-columns: minmax(200px, 1fr) auto minmax(140px, 0.4fr) auto;
 }
@@ -169,6 +188,7 @@
     grid-template-columns: auto minmax(0, 1fr) auto;
   }
   .admin-operator-row > small:last-child,
+  .admin-operator-row > .admin-operator-manage,
   .admin-invite-row > small {
     grid-column: 2;
   }
