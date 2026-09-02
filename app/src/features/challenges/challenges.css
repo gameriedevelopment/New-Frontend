@@ -691,6 +691,13 @@
   color: var(--g-danger) !important;
   font-size: 10px;
 }
+.challenge-field-hint {
+  display: block;
+  color: var(--g-text-faint);
+  font-size: 9px;
+  font-weight: 500;
+  margin-top: 4px;
+}
 .challenge-form-pair {
   display: grid;
   grid-template-columns: 1fr 1fr;

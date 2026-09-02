@@ -116,12 +116,16 @@ export function CalendarComposer({
     }
     onClose();
   }, [onClose]);
+  // Stable ref so the mount-only effect never re-runs on re-render (which would
+  // steal focus from the form's inputs on every keystroke).
+  const closeRef = useRef(close);
+  closeRef.current = close;
   useEffect(() => {
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const frame = requestAnimationFrame(() => titleInput.current?.focus());
     const key = (event: KeyboardEvent) => {
-      if (event.key === "Escape") close();
+      if (event.key === "Escape") closeRef.current();
       if (event.key !== "Tab" || !panel.current) return;
       const nodes = [
         ...panel.current.querySelectorAll<HTMLElement>(
@@ -150,7 +154,7 @@ export function CalendarComposer({
       document.removeEventListener("keydown", key);
       window.removeEventListener("beforeunload", unload);
     };
-  }, [close]);
+  }, []);
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     const next: Record<string, string> = {};

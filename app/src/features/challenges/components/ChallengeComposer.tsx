@@ -2,6 +2,8 @@ import { CalendarDays, Coins, Search, ShieldCheck, Swords, X } from "lucide-reac
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Button, SearchSelect } from "../../../components/ui";
 import { getApiErrorMessage } from "../../../lib/errors";
+import { zonedDateTimeToIso } from "../../calendar/utils";
+import { getTimezoneOptions } from "../../communities/options";
 import { useUnifiedSearch } from "../../discovery/hooks";
 import type { PlayerProfile } from "../../profile/types";
 import { useGameOptions } from "../../profile/hooks";
@@ -44,6 +46,10 @@ export function ChallengeComposer({
   const [game, setGame] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [timeZone, setTimeZone] = useState(
+    () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+  );
+  const [timezoneSearch, setTimezoneSearch] = useState("");
   const [format, setFormat] = useState("Best of 3");
   const [teamSize, setTeamSize] = useState("5");
   const [tokenAmount, setTokenAmount] = useState("0");
@@ -53,6 +59,10 @@ export function ChallengeComposer({
   const closeRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLElement>(null);
   const pendingRef = useRef(false);
+  // Stable ref so the mount-only effect never re-runs on re-render (an unstable
+  // onClose would steal focus from the form's inputs on every keystroke).
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   const search = useUnifiedSearch(type === "user" ? "players" : "teams", targetTerm);
   const games = useGameOptions(gameTerm, true);
   const create = useCreateChallenge();
@@ -81,6 +91,18 @@ export function ChallengeComposer({
     games.data?.pages
       .flatMap((page) => page.data)
       .map((item) => ({ value: item.name, label: item.name, description: item.gameType })) ?? [];
+  const allTimezones = useMemo(() => getTimezoneOptions(), []);
+  const timezoneOptions = useMemo(() => {
+    const query = timezoneSearch.toLowerCase().trim();
+    return (
+      query
+        ? allTimezones.filter(
+            (item) =>
+              item.label.toLowerCase().includes(query) || item.value.toLowerCase().includes(query),
+          )
+        : allTimezones
+    ).slice(0, 80);
+  }, [allTimezones, timezoneSearch]);
   useEffect(() => {
     pendingRef.current = create.isPending;
   }, [create.isPending]);
@@ -91,7 +113,7 @@ export function ChallengeComposer({
     document.body.style.overflow = "hidden";
     const key = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !pendingRef.current) {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (event.key !== "Tab") return;
@@ -117,7 +139,7 @@ export function ChallengeComposer({
       document.removeEventListener("keydown", key);
       previousFocus?.focus();
     };
-  }, [onClose]);
+  }, []);
   const chooseTarget = (value: string) => {
     setTargetId(value);
     setTargetName(targetOptions.find((item) => item.value === value)?.label || "");
@@ -137,12 +159,22 @@ export function ChallengeComposer({
       nextErrors.source = "Choose the team sending this challenge";
     if (!game) nextErrors.game = "Choose a game";
     if (!date || !time) nextErrors.schedule = "Choose a date and time";
-    const scheduled = date && time ? new Date(`${date}T${time}`) : null;
-    if (scheduled && scheduled.getTime() <= Date.now())
+    // Interpret the chosen date/time as wall-clock time in the selected timezone,
+    // then convert to a UTC instant — so the schedule stays consistent regardless
+    // of the creator's or recipient's browser timezone.
+    let scheduledIso: string | null = null;
+    if (date && time) {
+      try {
+        scheduledIso = zonedDateTimeToIso(`${date}T${time}`, timeZone);
+      } catch {
+        nextErrors.schedule = "This time is not valid in the selected timezone";
+      }
+    }
+    if (scheduledIso && new Date(scheduledIso).getTime() <= Date.now())
       nextErrors.schedule = "Schedule the challenge for a future time";
     if (Number(tokenAmount) < 0) nextErrors.token = "Stake cannot be negative";
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length || !scheduled) return;
+    if (Object.keys(nextErrors).length || !scheduledIso) return;
     try {
       const challenge = await create.mutateAsync({
         type,
@@ -150,7 +182,7 @@ export function ChallengeComposer({
         challengedTeamId: type === "team" ? targetId : undefined,
         challengerTeamId: type === "team" ? sourceTeamId : undefined,
         game,
-        scheduledDate: scheduled.toISOString(),
+        scheduledDate: scheduledIso,
         format,
         teamSize: type === "team" ? Number(teamSize) : undefined,
         tokenAmount: Number(tokenAmount) || 0,
@@ -317,6 +349,19 @@ export function ChallengeComposer({
                 <input type="time" value={time} onChange={(event) => setTime(event.target.value)} />
               </label>
             </div>
+            <SearchSelect
+              label="Timezone"
+              value={timeZone}
+              onChange={setTimeZone}
+              onSearch={setTimezoneSearch}
+              options={timezoneOptions}
+              placeholder="Choose timezone"
+              searchPlaceholder="Search city or timezone"
+              emptyText="No matching timezones"
+            />
+            <small className="challenge-field-hint">
+              The date and time are saved in this timezone.
+            </small>
             {errors.schedule ? (
               <small className="challenge-field-error" role="alert">
                 {errors.schedule}

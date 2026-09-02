@@ -1,5 +1,5 @@
 import { RotateCcw, Search, SlidersHorizontal, Users } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button, SearchSelect, Skeleton, SkeletonText, StatePanel } from "../../components/ui";
 import { getApiErrorMessage } from "../../lib/errors";
@@ -50,19 +50,39 @@ export function PlayersPage() {
   const onGameSearch = useCallback((value: string) => setGameSearch(value), []);
   const change = useCallback(
     (key: string, value?: string) => {
-      const next = new URLSearchParams(params);
-      value ? next.set(key, value) : next.delete(key);
-      setParams(next, { replace: true });
+      setParams(
+        (current) => {
+          const next = new URLSearchParams(current);
+          value ? next.set(key, value) : next.delete(key);
+          return next;
+        },
+        { replace: true },
+      );
     },
-    [params, setParams],
+    [setParams],
   );
+  const externalQuery = params.get("q") || "";
+  const lastSyncedQuery = useRef(externalQuery);
+  const pendingExternalQuery = useRef<string | null>(null);
+  // Push the debounced local search into the URL without feeding the URL change
+  // back into the input. Using a functional setParams keeps `change` stable, and
+  // the refs stop the two effects from ping-ponging (which caused the flicker).
   useEffect(() => {
-    if ((params.get("q") || "") !== debounced) change("q", debounced || undefined);
-  }, [change, debounced, params]);
+    if (debounced === lastSyncedQuery.current) return;
+    if (pendingExternalQuery.current !== null) {
+      if (debounced !== pendingExternalQuery.current) return;
+      pendingExternalQuery.current = null;
+    }
+    lastSyncedQuery.current = debounced;
+    change("q", debounced || undefined);
+  }, [change, debounced]);
+  // Adopt URL-driven query changes (back/forward, links) into the input.
   useEffect(() => {
-    const value = params.get("q") || "";
-    if (value !== search && value !== debounced) setSearch(value);
-  }, [debounced, params, search]);
+    if (externalQuery === lastSyncedQuery.current) return;
+    lastSyncedQuery.current = externalQuery;
+    pendingExternalQuery.current = externalQuery;
+    setSearch(externalQuery);
+  }, [externalQuery]);
   const filters = useMemo<PlayerFilters>(
     () => ({
       search: params.get("q") || undefined,
@@ -80,6 +100,8 @@ export function PlayersPage() {
     Boolean,
   ).length;
   const clear = () => {
+    lastSyncedQuery.current = "";
+    pendingExternalQuery.current = null;
     setSearch("");
     setFiltersOpen(false);
     setParams(new URLSearchParams(), { replace: true });

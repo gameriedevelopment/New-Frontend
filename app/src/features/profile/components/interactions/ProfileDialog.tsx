@@ -17,11 +17,15 @@ export function ProfileDialog({
   const returnFocus = useRef(
     document.activeElement instanceof HTMLElement ? document.activeElement : null,
   );
+  // Stable ref so the mount-only effect never re-runs when callers pass an
+  // inline onClose (which would steal focus from inputs on every keystroke).
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   useEffect(() => {
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const keyboard = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape") onCloseRef.current();
       if (event.key !== "Tab") return;
       const focusable = panel.current?.querySelectorAll<HTMLElement>(
         'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
@@ -44,7 +48,7 @@ export function ProfileDialog({
       document.removeEventListener("keydown", keyboard);
       if (returnFocus.current?.isConnected) returnFocus.current.focus({ preventScroll: true });
     };
-  }, [onClose]);
+  }, []);
   return createPortal(
     <div
       className="profile-dialog"
