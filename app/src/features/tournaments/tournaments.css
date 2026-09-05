@@ -4,8 +4,7 @@
 }
 .tournaments-heading {
   display: flex;
-  min-height: 154px;
-  padding: 16px 0 30px;
+  padding: 16px 0 28px;
   border-bottom: 1px solid var(--g-border-subtle);
   align-items: end;
 }

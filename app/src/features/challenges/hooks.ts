@@ -4,7 +4,9 @@ import {
   deleteChallenge,
   getChallenge,
   getMyChallenges,
+  proposeReschedule,
   refreshChallenge,
+  respondReschedule,
   updateChallenge,
 } from "./api";
 import type { ChallengeFilters, ChallengeType, CreateChallengePayload } from "./types";
@@ -15,6 +17,7 @@ function reconcile(client: ReturnType<typeof useQueryClient>) {
   void client.invalidateQueries({ queryKey: ["user-events"] });
   void client.invalidateQueries({ queryKey: ["team-wallet"] });
   void client.invalidateQueries({ queryKey: ["player-rankings"] });
+  void client.invalidateQueries({ queryKey: ["leaderboard"] });
 }
 
 export function useMyChallenges(filters: ChallengeFilters) {
@@ -75,6 +78,37 @@ export function useRefreshChallenge() {
       type: ChallengeType;
       scheduledDate: string;
     }) => refreshChallenge(id, type, scheduledDate),
+    onSuccess: (challenge) => {
+      client.setQueryData(["challenges", "detail", challenge.id], challenge);
+      reconcile(client);
+    },
+  });
+}
+
+export function useProposeReschedule() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      type,
+      scheduledDate,
+    }: {
+      id: string;
+      type: ChallengeType;
+      scheduledDate: string;
+    }) => proposeReschedule(id, type, scheduledDate),
+    onSuccess: (challenge) => {
+      client.setQueryData(["challenges", "detail", challenge.id], challenge);
+      reconcile(client);
+    },
+  });
+}
+
+export function useRespondReschedule() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, type, accept }: { id: string; type: ChallengeType; accept: boolean }) =>
+      respondReschedule(id, type, accept),
     onSuccess: (challenge) => {
       client.setQueryData(["challenges", "detail", challenge.id], challenge);
       reconcile(client);

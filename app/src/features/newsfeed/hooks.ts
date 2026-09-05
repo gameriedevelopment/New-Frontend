@@ -35,6 +35,7 @@ import type {
   PostOwnerType,
 } from "./types";
 import { patchPostCaches, restorePostCaches, snapshotPostCaches } from "./cache";
+import { withPostEngagement } from "./metrics";
 
 const feedKey = ["feed-posts"] as const;
 
@@ -107,12 +108,12 @@ export function useTogglePostLike(post: FeedPost) {
       const snapshots = snapshotPostCaches(client);
       patchPostCaches(client, post.id, (current) => {
         const liked = Boolean(current.hasLiked ?? current.userReaction);
-        return {
+        return withPostEngagement({
           ...current,
           hasLiked: !liked,
           userReaction: liked ? null : "LIKE",
           likesCount: Math.max(0, Number(current.likesCount ?? 0) + (liked ? -1 : 1)),
-        };
+        });
       });
       return { snapshots };
     },
@@ -307,14 +308,15 @@ export function useToggleRepost(post: FeedPost) {
       await client.cancelQueries({ queryKey: feedKey });
       const feedSnapshots = client.getQueriesData<InfiniteData<FeedPage>>({ queryKey: feedKey });
       const postSnapshot = client.getQueryData<FeedPost>(["post", post.id]);
-      const update = (current: FeedPost) => ({
-        ...current,
-        hasReposted: !current.hasReposted,
-        repostsCount: Math.max(
-          0,
-          Number(current.repostsCount ?? 0) + (current.hasReposted ? -1 : 1),
-        ),
-      });
+      const update = (current: FeedPost) =>
+        withPostEngagement({
+          ...current,
+          hasReposted: !current.hasReposted,
+          repostsCount: Math.max(
+            0,
+            Number(current.repostsCount ?? 0) + (current.hasReposted ? -1 : 1),
+          ),
+        });
       feedSnapshots.forEach(([key, data]) =>
         client.setQueryData(key, patchPost(data, post.id, update)),
       );

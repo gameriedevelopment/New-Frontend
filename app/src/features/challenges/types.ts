@@ -1,12 +1,27 @@
 export type ChallengeType = "user" | "team";
-export type ChallengeStatus = "pending" | "accepted" | "rejected" | "completed" | "expired";
+export type ChallengeStatus =
+  | "pending"
+  | "accepted"
+  | "reschedule_pending"
+  | "rejected"
+  | "cancelled"
+  | "completed"
+  | "expired";
 export type ChallengeScope = "for-you" | "team" | "history";
 export type ChallengeDirection = "all" | "received" | "sent";
 
 export interface ChallengeResult {
   winnerId: string;
   score: string;
+  p1Score?: number;
+  p2Score?: number;
   notes?: string;
+}
+
+export interface ChallengeReschedule {
+  proposedDate: string;
+  proposedBy: string;
+  previousDate: string;
 }
 
 export interface Challenge {
@@ -29,6 +44,7 @@ export interface Challenge {
   message?: string;
   status: ChallengeStatus;
   result?: ChallengeResult;
+  reschedule?: ChallengeReschedule | null;
   initiatedBy?: string;
   createdAt?: string;
 }

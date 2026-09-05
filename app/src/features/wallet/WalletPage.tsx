@@ -143,7 +143,6 @@ export function WalletPage() {
     <main className="wallet-page">
       <header className="wallet-heading">
         <div>
-          <p>Personal wallet</p>
           <h1>Your GLK, clearly accounted for.</h1>
           <span>
             Review available funds, reserved challenge stakes, rewards, and every ledger movement in

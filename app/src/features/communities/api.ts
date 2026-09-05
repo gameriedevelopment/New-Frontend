@@ -93,6 +93,10 @@ export async function getHubInvites() {
   const { data } = await api.get<Envelope<CommunityInvite<HubSummary>[]>>("/hubs/invites/mine");
   return data.data;
 }
+export async function getHubMembershipRequest(requestId: string) {
+  const { data } = await api.get<Envelope<HubRequestSummary>>(`/hubs/request/${requestId}`);
+  return data.data;
+}
 export async function respondToInvite(kind: "team" | "hub", id: string, accept: boolean) {
   const path =
     kind === "team"

@@ -101,7 +101,9 @@ export function PlayersPage() {
   ).length;
   const clear = () => {
     lastSyncedQuery.current = "";
-    pendingExternalQuery.current = null;
+    // Mark "" as the pending target so the push effect ignores the still-stale
+    // debounced value instead of writing the old query back into the URL.
+    pendingExternalQuery.current = "";
     setSearch("");
     setFiltersOpen(false);
     setParams(new URLSearchParams(), { replace: true });
@@ -111,7 +113,6 @@ export function PlayersPage() {
     <main className="discovery-page">
       <header className="discovery-heading">
         <div>
-          <p>Player network</p>
           <h1>Find your next connection.</h1>
           <span>
             Meet players through the games, platforms, and level of play you already share.

@@ -1,6 +1,8 @@
 import {
   ArrowLeft,
+  Ban,
   CalendarDays,
+  CalendarClock,
   Coins,
   RefreshCw,
   Swords,
@@ -15,10 +17,22 @@ import { getApiErrorMessage } from "../../../lib/errors";
 import {
   useChallenge,
   useDeleteChallenge,
+  useProposeReschedule,
   useRefreshChallenge,
+  useRespondReschedule,
   useUpdateChallenge,
 } from "../hooks";
+import {
+  canCancel,
+  canPropose,
+  canSubmitScore,
+  challengePhaseLabel,
+  formatChallengeDateTime,
+} from "../lifecycle";
 import type { Challenge } from "../types";
+import { ChallengeConfirmDialog } from "./ChallengeConfirmDialog";
+import { ChallengeRescheduleDialog } from "./ChallengeRescheduleDialog";
+import { ChallengeScoreDialog } from "./ChallengeScoreDialog";
 
 function participantNames(challenge: Challenge) {
   return challenge.type === "team"
@@ -40,11 +54,16 @@ export function ChallengeDetailSheet({
   const query = useChallenge(id);
   const update = useUpdateChallenge();
   const refresh = useRefreshChallenge();
+  const propose = useProposeReschedule();
+  const respond = useRespondReschedule();
   const remove = useDeleteChallenge();
   const closeRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLElement>(null);
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [schedule, setSchedule] = useState("");
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const [confirming, setConfirming] = useState<"cancel" | "delete" | null>(null);
+  const [scoreOpen, setScoreOpen] = useState(false);
+  const [rescheduleOpen, setRescheduleOpen] = useState(false);
   useEffect(() => {
     const previousFocus = document.activeElement as HTMLElement | null;
     closeRef.current?.focus();
@@ -52,7 +71,7 @@ export function ChallengeDetailSheet({
     document.body.style.overflow = "hidden";
     const key = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (event.key !== "Tab") return;
@@ -78,7 +97,7 @@ export function ChallengeDetailSheet({
       document.removeEventListener("keydown", key);
       previousFocus?.focus();
     };
-  }, [onClose]);
+  }, []);
   const challenge = query.data;
   const incoming = challenge
     ? challenge.type === "team"
@@ -90,27 +109,36 @@ export function ChallengeDetailSheet({
       ? ownedTeamIds.includes(challenge.challengerTeamId || "")
       : challenge.initiatedBy === currentUserId || challenge.challengerId === currentUserId
     : false;
-  const mutateError = update.error || refresh.error || remove.error;
-  const respond = async (status: "accepted" | "rejected") => {
+  const mutateError =
+    update.error || refresh.error || propose.error || respond.error || remove.error;
+  const isParticipant = incoming || initiated;
+  const proposedByMe = challenge?.reschedule?.proposedBy === currentUserId;
+  const respondInvite = async (status: "accepted" | "rejected") => {
     if (!challenge) return;
     await update.mutateAsync({ id, type: challenge.type, updates: { status } });
   };
-  const reschedule = async () => {
-    if (!challenge || !schedule) return;
-    await refresh.mutateAsync({
-      id,
-      type: challenge.type,
-      scheduledDate: new Date(schedule).toISOString(),
-    });
-    setSchedule("");
+  const submitReschedule = async (scheduledDate: string) => {
+    if (!challenge) return;
+    if (challenge.status === "expired") {
+      await refresh.mutateAsync({ id, type: challenge.type, scheduledDate });
+    } else {
+      await propose.mutateAsync({ id, type: challenge.type, scheduledDate });
+    }
+    setRescheduleOpen(false);
+  };
+  const answerReschedule = async (accept: boolean) => {
+    if (!challenge) return;
+    await respond.mutateAsync({ id, type: challenge.type, accept });
+  };
+  const cancel = async () => {
+    if (!challenge) return;
+    await update.mutateAsync({ id, type: challenge.type, updates: { status: "cancelled" } });
+    setConfirming(null);
   };
   const destroy = async () => {
     if (!challenge) return;
-    if (!confirmDelete) {
-      setConfirmDelete(true);
-      return;
-    }
     await remove.mutateAsync({ id, type: challenge.type });
+    setConfirming(null);
     onClose();
   };
   return (
@@ -159,7 +187,7 @@ export function ChallengeDetailSheet({
         ) : (
           <div className="challenge-sheet__content">
             <section className="challenge-versus">
-              <span>{challenge.status}</span>
+              <span>{challengePhaseLabel(challenge)}</span>
               <div>
                 <strong>{participantNames(challenge)[0] || "Challenger"}</strong>
                 <i>versus</i>
@@ -186,7 +214,7 @@ export function ChallengeDetailSheet({
                   <CalendarDays size={14} />
                   Schedule
                 </dt>
-                <dd>{new Date(challenge.scheduledDate).toLocaleString()}</dd>
+                <dd>{formatChallengeDateTime(challenge.scheduledDate)}</dd>
               </div>
               {challenge.teamSize ? (
                 <div>
@@ -239,50 +267,93 @@ export function ChallengeDetailSheet({
                 <Button
                   variant="secondary"
                   disabled={update.isPending}
-                  onClick={() => void respond("rejected")}
+                  onClick={() => void respondInvite("rejected")}
                 >
                   Decline
                 </Button>
-                <Button disabled={update.isPending} onClick={() => void respond("accepted")}>
+                <Button disabled={update.isPending} onClick={() => void respondInvite("accepted")}>
                   {update.isPending ? "Updating…" : "Accept challenge"}
                 </Button>
               </div>
             ) : null}
-            {challenge.status === "expired" && initiated ? (
-              <section className="challenge-reschedule">
-                <label htmlFor="challenge-reschedule">New date and time</label>
+            {canSubmitScore(challenge) && isParticipant ? (
+              <div className="challenge-sheet__actions">
+                <Button onClick={() => setScoreOpen(true)}>
+                  <Trophy size={14} />
+                  Submit result
+                </Button>
+              </div>
+            ) : null}
+            {challenge.status === "reschedule_pending" && isParticipant ? (
+              <section className="challenge-reschedule-banner">
+                <CalendarClock size={16} />
                 <div>
-                  <input
-                    id="challenge-reschedule"
-                    type="datetime-local"
-                    value={schedule}
-                    onChange={(event) => setSchedule(event.target.value)}
-                  />
-                  <Button
-                    disabled={!schedule || refresh.isPending}
-                    onClick={() => void reschedule()}
-                  >
-                    <RefreshCw size={14} />
-                    {refresh.isPending ? "Sending…" : "Send again"}
-                  </Button>
+                  <p>
+                    {proposedByMe ? "You proposed a new time" : "New time proposed"}
+                    <strong>
+                      {" "}
+                      {formatChallengeDateTime(
+                        challenge.reschedule?.proposedDate ?? challenge.scheduledDate,
+                      )}
+                    </strong>
+                  </p>
+                  {proposedByMe ? (
+                    <span>Waiting for the other player to respond.</span>
+                  ) : (
+                    <div className="challenge-sheet__actions">
+                      <Button
+                        variant="secondary"
+                        disabled={respond.isPending}
+                        onClick={() => void answerReschedule(false)}
+                      >
+                        Decline
+                      </Button>
+                      <Button
+                        disabled={respond.isPending}
+                        onClick={() => void answerReschedule(true)}
+                      >
+                        {respond.isPending ? "Updating…" : "Accept new time"}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </section>
             ) : null}
+            {(canPropose(challenge) || challenge.status === "expired") && isParticipant ? (
+              <div className="challenge-sheet__actions">
+                <Button variant="secondary" onClick={() => setRescheduleOpen(true)}>
+                  {challenge.status === "expired" ? (
+                    <RefreshCw size={14} />
+                  ) : (
+                    <CalendarClock size={14} />
+                  )}
+                  {challenge.status === "expired" ? "Reschedule" : "Propose new time"}
+                </Button>
+              </div>
+            ) : null}
+            {canCancel(challenge.status) && isParticipant ? (
+              <button
+                className="challenge-cancel"
+                type="button"
+                disabled={update.isPending}
+                onClick={() => setConfirming("cancel")}
+              >
+                <Ban size={14} />
+                Cancel challenge
+              </button>
+            ) : null}
             {initiated &&
-            ["pending", "rejected", "completed", "expired"].includes(challenge.status) ? (
+            ["pending", "rejected", "cancelled", "completed", "expired"].includes(
+              challenge.status,
+            ) ? (
               <button
                 className="challenge-delete"
                 type="button"
-                data-confirm={confirmDelete}
                 disabled={remove.isPending}
-                onClick={() => void destroy()}
+                onClick={() => setConfirming("delete")}
               >
                 <Trash2 size={14} />
-                {remove.isPending
-                  ? "Deleting…"
-                  : confirmDelete
-                    ? "Confirm deletion"
-                    : "Delete challenge"}
+                Delete challenge
               </button>
             ) : null}
             {mutateError ? (
@@ -293,6 +364,44 @@ export function ChallengeDetailSheet({
           </div>
         )}
       </aside>
+      {scoreOpen && challenge ? (
+        <ChallengeScoreDialog challenge={challenge} onClose={() => setScoreOpen(false)} />
+      ) : null}
+      {rescheduleOpen && challenge ? (
+        <ChallengeRescheduleDialog
+          mode={challenge.status === "expired" ? "refresh" : "propose"}
+          pending={refresh.isPending || propose.isPending}
+          error={
+            refresh.error || propose.error
+              ? getApiErrorMessage(refresh.error || propose.error, "Could not reschedule.")
+              : undefined
+          }
+          onSubmit={(iso) => void submitReschedule(iso)}
+          onClose={() => setRescheduleOpen(false)}
+        />
+      ) : null}
+      {confirming === "cancel" ? (
+        <ChallengeConfirmDialog
+          title="Cancel this challenge?"
+          description="Both players will be notified and any reserved GLK stake is released. This cannot be undone."
+          confirmLabel="Cancel challenge"
+          confirmingLabel="Cancelling…"
+          pending={update.isPending}
+          onConfirm={() => void cancel()}
+          onClose={() => setConfirming(null)}
+        />
+      ) : null}
+      {confirming === "delete" ? (
+        <ChallengeConfirmDialog
+          title="Delete this challenge?"
+          description="The challenge and its record will be permanently removed. This cannot be undone."
+          confirmLabel="Delete challenge"
+          confirmingLabel="Deleting…"
+          pending={remove.isPending}
+          onConfirm={() => void destroy()}
+          onClose={() => setConfirming(null)}
+        />
+      ) : null}
     </div>
   );
 }

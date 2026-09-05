@@ -6,8 +6,7 @@
 
 .games-heading {
   display: block;
-  min-height: 154px;
-  padding: 12px 0 32px;
+  padding: 12px 0 28px;
   border-bottom: 1px solid var(--g-border-subtle);
 }
 

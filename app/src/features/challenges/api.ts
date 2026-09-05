@@ -51,6 +51,29 @@ export async function refreshChallenge(
   return data.data;
 }
 
+export async function proposeReschedule(
+  id: string,
+  type: ChallengeType,
+  scheduledDate: string,
+): Promise<Challenge> {
+  const { data } = await api.patch<Envelope<Challenge>>(`/challenges/${id}/${type}/reschedule`, {
+    scheduledDate,
+  });
+  return data.data;
+}
+
+export async function respondReschedule(
+  id: string,
+  type: ChallengeType,
+  accept: boolean,
+): Promise<Challenge> {
+  const { data } = await api.patch<Envelope<Challenge>>(
+    `/challenges/${id}/${type}/reschedule/respond`,
+    { accept },
+  );
+  return data.data;
+}
+
 export async function deleteChallenge(id: string, type: ChallengeType): Promise<void> {
   await api.delete(`/challenges/${id}/${type}`);
 }

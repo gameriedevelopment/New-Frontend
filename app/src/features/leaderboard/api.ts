@@ -8,7 +8,7 @@ interface Envelope<T> {
 export async function getLeaderboard(
   filters: LeaderboardFilters,
   page = 1,
-  limit = 15,
+  limit = 20,
 ): Promise<LeaderboardPageData> {
   const { data } = await api.get<Envelope<LeaderboardPageData>>("/leaderboard", {
     params: { ...filters, game: filters.game || undefined, page, limit },

@@ -1,4 +1,5 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "../auth/authStore";
 import {
   cancelHubTeamInvite,
   cancelHubUserInvite,
@@ -11,6 +12,7 @@ import {
   getHub,
   getHubDashboard,
   getHubInvites,
+  getHubMembershipRequest,
   getHubPendingInvites,
   getHubRequests,
   getHubs,
@@ -81,10 +83,11 @@ export function useUserHubs(userId?: string, enabled = true) {
     staleTime: 45_000,
   });
 }
-export function useCommunityInvites(kind: "teams" | "hubs") {
+export function useCommunityInvites(kind: "teams" | "hubs", enabled = true) {
   return useQuery({
     queryKey: [kind, "invites", "mine"],
     queryFn: kind === "teams" ? getTeamInvites : getHubInvites,
+    enabled,
     staleTime: 30_000,
   });
 }
@@ -96,12 +99,19 @@ export function useRespondInvite(kind: "team" | "hub") {
     onSuccess: () => {
       client.invalidateQueries({ queryKey: [`${kind}s`, "invites", "mine"] });
       refreshMembershipCaches(client);
+      void client.invalidateQueries({ queryKey: [kind] });
+      void client.invalidateQueries({ queryKey: [kind === "hub" ? "hubs" : "teams"] });
+      void client.invalidateQueries({ queryKey: [kind, "detail"] });
+      void client.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 }
 export function useCommunityDetail(kind: "team" | "hub", slug?: string) {
+  const viewerId = useAuthStore((state) => state.user?.id);
+
   return useQuery({
-    queryKey: [kind, "detail", slug],
+    // Relationship fields are viewer-specific and must never be reused across accounts.
+    queryKey: [kind, "detail", slug, viewerId || "guest"],
     queryFn: () => (kind === "team" ? getTeam(slug!) : getHub(slug!)),
     enabled: Boolean(slug),
     staleTime: 60_000,
@@ -280,7 +290,16 @@ const refreshHub = (client: ReturnType<typeof useQueryClient>, hubId: string, sl
   void client.invalidateQueries({ queryKey: ["hub-operations", hubId] });
   void client.invalidateQueries({ queryKey: ["hubs", "directory"] });
   refreshMembershipCaches(client);
+  void client.invalidateQueries({ queryKey: ["notifications"] });
 };
+export function useHubMembershipRequest(requestId?: string) {
+  return useQuery({
+    queryKey: ["hub-membership-request", requestId],
+    queryFn: () => getHubMembershipRequest(requestId!),
+    enabled: Boolean(requestId),
+    retry: false,
+  });
+}
 export function useHubRequests(hubId: string, enabled: boolean) {
   return useQuery({
     queryKey: ["hub-operations", hubId, "user-requests"],

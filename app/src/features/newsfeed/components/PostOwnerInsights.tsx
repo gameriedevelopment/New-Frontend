@@ -1,4 +1,5 @@
 import { Eye, TrendingUp, Users } from "lucide-react";
+import { getPostEngagementRate, getPostReach, getPostViews } from "../metrics";
 import type { FeedPost } from "../types";
 
 function formatMetric(value: number) {
@@ -9,9 +10,9 @@ function formatMetric(value: number) {
 }
 
 export function PostOwnerInsights({ post }: { post: FeedPost }) {
-  const views = Number(post.analytics?.views ?? post.viewCount ?? 0);
-  const reach = Array.isArray(post.analytics?.uniqueViews) ? post.analytics.uniqueViews.length : 0;
-  const engagement = Number(post.analytics?.engagementRate ?? 0);
+  const views = getPostViews(post);
+  const reach = getPostReach(post);
+  const engagement = getPostEngagementRate(post);
   if (!views && !reach && !engagement) return null;
 
   return (

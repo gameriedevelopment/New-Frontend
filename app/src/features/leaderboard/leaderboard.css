@@ -4,7 +4,6 @@
 }
 .leaderboard-heading {
   display: flex;
-  min-height: 132px;
   padding: 14px 0 25px;
   border-bottom: 1px solid var(--g-border-subtle);
   align-items: end;
@@ -144,6 +143,59 @@
   font-size: 11px;
 }
 .leaderboard-result-line small {
+  color: var(--g-text-faint);
+  font-size: 10px;
+}
+
+.leaderboard-pagination {
+  display: flex;
+  min-height: 76px;
+  padding: 18px 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.leaderboard-pagination > span {
+  color: var(--g-text-faint);
+  font-size: 10px;
+}
+.leaderboard-pagination > div {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.leaderboard-pagination button,
+.leaderboard-pagination__ellipsis {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  border-radius: 7px;
+  place-items: center;
+}
+.leaderboard-pagination button {
+  border: 1px solid var(--g-border-subtle);
+  background: var(--g-canvas-deep);
+  color: var(--g-text-muted);
+  font: 680 10px var(--g-font-body);
+  transition:
+    border-color var(--g-duration-base),
+    background var(--g-duration-base),
+    color var(--g-duration-base);
+}
+.leaderboard-pagination button:hover:not(:disabled) {
+  border-color: var(--g-border-default);
+  background: var(--g-surface-2);
+  color: var(--g-text-primary);
+}
+.leaderboard-pagination button[aria-current="page"] {
+  border-color: var(--g-border-strong);
+  background: var(--g-accent-soft);
+  color: var(--g-accent);
+}
+.leaderboard-pagination button:disabled {
+  opacity: 0.38;
+}
+.leaderboard-pagination__ellipsis {
   color: var(--g-text-faint);
   font-size: 10px;
 }
@@ -510,6 +562,25 @@
   }
   .leaderboard-loading > section article {
     padding-inline: 16px;
+  }
+  .leaderboard-pagination {
+    padding: 18px 16px 24px;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .leaderboard-pagination > div {
+    width: 100%;
+    padding-bottom: 2px;
+    justify-content: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .leaderboard-pagination button,
+  .leaderboard-pagination__ellipsis {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
   }
 }
 @media (max-width: 420px) {

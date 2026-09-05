@@ -133,6 +133,7 @@ export interface HubRequestSummary {
   direction?: "request" | "invite";
   createdAt?: string;
   user?: CommunityUser;
+  hub?: HubSummary;
 }
 export interface HubTeamRequestSummary {
   id: string;

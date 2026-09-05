@@ -34,13 +34,15 @@ export function CalendarEventDetail({
 }) {
   const panel = useRef<HTMLElement>(null);
   const close = useRef<HTMLButtonElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   const update = useUpdateCalendarEventStatus();
   useEffect(() => {
     const overflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const frame = requestAnimationFrame(() => close.current?.focus());
     const key = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
       if (e.key !== "Tab" || !panel.current) return;
       const nodes = [
         ...panel.current.querySelectorAll<HTMLElement>("button:not(:disabled),a[href]"),
@@ -62,7 +64,7 @@ export function CalendarEventDetail({
       document.body.style.overflow = overflow;
       document.removeEventListener("keydown", key);
     };
-  }, [onClose]);
+  }, []);
   const contextPath = eventContextPath(event);
   const transition = async (status: CalendarEventStatus) => {
     await update.mutateAsync({ id: event.id, status });

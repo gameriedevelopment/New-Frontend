@@ -1,4 +1,5 @@
 import { CalendarDays, Coins } from "lucide-react";
+import { challengePhase, challengePhaseLabel } from "../lifecycle";
 import type { Challenge } from "../types";
 
 const names = (challenge: Challenge) =>
@@ -29,21 +30,24 @@ export function ChallengeCard({
     challenge.type === "team"
       ? ownedTeamIds.includes(challenge.challengedTeamId || "")
       : challenge.challengedId === currentUserId;
+  const initiated =
+    challenge.type === "team"
+      ? ownedTeamIds.includes(challenge.challengerTeamId || "")
+      : challenge.initiatedBy === currentUserId || challenge.challengerId === currentUserId;
+  const isParticipant = incoming || initiated;
   const scheduled = new Date(challenge.scheduledDate);
-  const nextLabel =
-    challenge.status === "accepted"
-      ? "Scheduled"
-      : challenge.status === "completed"
-        ? "Completed"
-        : challenge.status === "rejected"
-          ? "Declined"
-          : challenge.status === "expired"
-            ? "Expired"
-            : incoming
-              ? "Your response"
-              : "Awaiting response";
+  const phase = challengePhase(challenge);
+  const phaseLabel = challengePhaseLabel(challenge);
+  const nextHint =
+    phase === "pending" && incoming
+      ? "Your response"
+      : phase === "played" && isParticipant
+        ? "Submit your score"
+        : phase === "reschedule_pending" && isParticipant
+          ? "Reschedule proposed"
+          : null;
   return (
-    <article className="challenge-card" data-status={challenge.status}>
+    <article className="challenge-card" data-status={phase}>
       <button
         className="challenge-card__body"
         type="button"
@@ -51,7 +55,7 @@ export function ChallengeCard({
         aria-label={`Open ${challenger} versus ${challenged} challenge`}
       >
         <div className="challenge-card__identity">
-          <span className="challenge-card__status">{challenge.status}</span>
+          <span className="challenge-card__status">{phaseLabel}</span>
           <div className="challenge-card__matchup">
             <span>{challenger}</span>
             <i>vs</i>
@@ -75,6 +79,7 @@ export function ChallengeCard({
                 month: "short",
                 hour: "numeric",
                 minute: "2-digit",
+                timeZoneName: "short",
               })}
             </time>
           </span>
@@ -96,8 +101,8 @@ export function ChallengeCard({
           </button>
         </footer>
       ) : (
-        <footer className="challenge-card__next">
-          <span>{nextLabel}</span>
+        <footer className="challenge-card__next" data-hint={nextHint ? "true" : "false"}>
+          {nextHint ? <span>{nextHint}</span> : null}
           <button type="button" onClick={onOpen}>
             View details
           </button>

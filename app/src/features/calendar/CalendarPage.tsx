@@ -190,7 +190,6 @@ export function CalendarPage() {
     <main className="calendar-page">
       <header className="calendar-heading">
         <div>
-          <p>Personal schedule</p>
           <h1>Calendar</h1>
           <span>One calm view of your plans, challenges, and competitive commitments.</span>
         </div>

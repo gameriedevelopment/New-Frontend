@@ -88,18 +88,28 @@ export function ChallengesPage() {
   const activeFilters = Number(direction !== "all") + Number(status !== "all");
   const change = useCallback(
     (key: string, value?: string) => {
-      const next = new URLSearchParams(params);
-      value ? next.set(key, value) : next.delete(key);
-      setParams(next, { replace: true });
+      setParams(
+        (current) => {
+          const next = new URLSearchParams(current);
+          value ? next.set(key, value) : next.delete(key);
+          return next;
+        },
+        { replace: true },
+      );
     },
-    [params, setParams],
+    [setParams],
   );
   useEffect(() => {
-    if ((params.get("q") || "") === debounced) return;
-    const next = new URLSearchParams(params);
-    debounced ? next.set("q", debounced) : next.delete("q");
-    setParams(next, { replace: true });
-  }, [debounced, params, setParams]);
+    setParams(
+      (current) => {
+        if ((current.get("q") || "") === debounced) return current;
+        const next = new URLSearchParams(current);
+        debounced ? next.set("q", debounced) : next.delete("q");
+        return next;
+      },
+      { replace: true },
+    );
+  }, [debounced, setParams]);
   const changeView = (view: ChallengeScope) => {
     const next = new URLSearchParams(params);
     view === "for-you" ? next.delete("view") : next.set("view", view);
@@ -140,7 +150,6 @@ export function ChallengesPage() {
     <main className="challenges-page">
       <header className="challenges-heading">
         <div>
-          <p>Competition</p>
           <h1>Challenges</h1>
           <span>Review invitations and scheduled matches.</span>
         </div>

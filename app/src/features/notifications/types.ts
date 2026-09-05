@@ -39,7 +39,18 @@ export interface GamerieNotification {
   image?: string | null;
   isRead: boolean;
   createdAt: string;
-  data?: Record<string, unknown> | null;
+  data?: NotificationData | null;
+}
+
+export interface NotificationData extends Record<string, unknown> {
+  actorId?: string;
+  actorUsername?: string;
+  hubId?: string;
+  hubName?: string;
+  hubSlug?: string;
+  requestId?: string;
+  postId?: string;
+  challengeId?: string;
 }
 
 export interface NotificationsPageData {

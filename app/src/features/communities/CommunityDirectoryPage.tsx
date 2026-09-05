@@ -197,11 +197,16 @@ export function CommunityDirectoryPage({ kind }: { kind: "teams" | "hubs" }) {
   const view = kind === "hubs" && params.get("view") === "mine" ? "mine" : "discover";
   const update = useCallback(
     (key: string, value?: string) => {
-      const next = new URLSearchParams(params);
-      value ? next.set(key, value) : next.delete(key);
-      setParams(next, { replace: true });
+      setParams(
+        (current) => {
+          const next = new URLSearchParams(current);
+          value ? next.set(key, value) : next.delete(key);
+          return next;
+        },
+        { replace: true },
+      );
     },
-    [params, setParams],
+    [setParams],
   );
 
   useEffect(() => {
@@ -258,7 +263,6 @@ export function CommunityDirectoryPage({ kind }: { kind: "teams" | "hubs" }) {
     <main className="community-page">
       <header className="community-heading">
         <div>
-          <p>{kind === "teams" ? "Team network" : "Community network"}</p>
           <h1>
             {kind === "teams"
               ? "Find the right team to grow with."

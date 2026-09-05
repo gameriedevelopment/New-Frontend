@@ -1,11 +1,11 @@
 import { RotateCcw, Trophy } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button, SearchSelect, Skeleton, SkeletonText, StatePanel } from "../../components/ui";
 import { getApiErrorMessage } from "../../lib/errors";
-import { InfiniteLoadTrigger } from "../discovery/components/InfiniteLoadTrigger";
 import { useDebouncedValue } from "../discovery/hooks";
 import { useGames } from "../games/hooks";
+import { LeaderboardPagination } from "./components/LeaderboardPagination";
 import { LeaderboardRow } from "./components/LeaderboardRow";
 import { LeaderboardTop } from "./components/LeaderboardTop";
 import { useLeaderboard } from "./hooks";
@@ -53,17 +53,23 @@ export function LeaderboardPage() {
     ? (params.get("metric") as LeaderboardMetric)
     : "ranking";
   const game = params.get("game") || "";
+  const requestedPage = Number(params.get("page") || 1);
+  const page = Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
   const [gameSearch, setGameSearch] = useState("");
   const debouncedGameSearch = useDebouncedValue(gameSearch, 240);
   const filters = useMemo<LeaderboardFilters>(
     () => ({ type, metric, game: game || undefined }),
     [game, metric, type],
   );
-  const query = useLeaderboard(filters);
+  const query = useLeaderboard(filters, page);
   const gamesQuery = useGames({ search: debouncedGameSearch || undefined });
-  const entities = query.data?.pages.flatMap((page) => page.data) ?? [];
-  const top = entities.slice(0, 3);
-  const rows = entities.slice(3);
+  const entities = query.data?.data ?? [];
+  const top = page === 1 ? entities.slice(0, 3) : [];
+  const rows = page === 1 ? entities.slice(3) : entities;
+  const firstRank = (page - 1) * (query.data?.limit ?? 20) + 1;
+  const rowRankOffset = firstRank - 1 + top.length;
+  const total = query.data?.total ?? 0;
+  const totalPages = query.data?.totalPages ?? 1;
   const gameOptions = useMemo(() => {
     const options = new Map(
       (gamesQuery.data?.pages.flatMap((page) => page.data) ?? []).map((item) => [item.name, item]),
@@ -72,24 +78,45 @@ export function LeaderboardPage() {
     return Array.from(options.values());
   }, [game, gamesQuery.data]);
   const onGameSearch = useCallback((value: string) => setGameSearch(value), []);
-  const change = useCallback(
+  const changeFilter = useCallback(
     (key: string, value?: string) => {
-      const next = new URLSearchParams(params);
-      value ? next.set(key, value) : next.delete(key);
-      setParams(next, { replace: true });
+      setParams((current) => {
+        const next = new URLSearchParams(current);
+        value ? next.set(key, value) : next.delete(key);
+        next.delete("page");
+        return next;
+      });
     },
-    [params, setParams],
+    [setParams],
   );
+  const changePage = useCallback(
+    (nextPage: number, replace = false) => {
+      setParams(
+        (current) => {
+          const next = new URLSearchParams(current);
+          nextPage === 1 ? next.delete("page") : next.set("page", String(nextPage));
+          return next;
+        },
+        { replace },
+      );
+      requestAnimationFrame(() => {
+        document.querySelector(".leaderboard-context")?.scrollIntoView({ block: "start" });
+      });
+    },
+    [setParams],
+  );
+  useEffect(() => {
+    if (query.data && page > query.data.totalPages) changePage(query.data.totalPages, true);
+  }, [changePage, page, query.data]);
   const selectType = (value: LeaderboardEntityType) =>
-    change("type", value === "users" ? undefined : value);
+    changeFilter("type", value === "users" ? undefined : value);
   const selectMetric = (value: LeaderboardMetric) =>
-    change("metric", value === "ranking" ? undefined : value);
+    changeFilter("metric", value === "ranking" ? undefined : value);
 
   return (
     <main className="leaderboard-page">
       <header className="leaderboard-heading">
         <div>
-          <p>Competitive standing</p>
           <h1>Leaderboard</h1>
           <span>Compare verified competitive records across Gamerie.</span>
         </div>
@@ -119,14 +146,14 @@ export function LeaderboardPage() {
           <p>Game context</p>
           <span>
             {game
-              ? `Showing ${entityTypeLabel(type)} connected to ${game}. Rankings use their overall verified competitive record.`
-              : `Showing all ranked ${entityTypeLabel(type)} across Gamerie.`}
+              ? `Showing ${entityTypeLabel(type)} connected to ${game}, including competitors with no recorded results yet.`
+              : `Showing all eligible ${entityTypeLabel(type)} across Gamerie, including competitors with a starting score of 0.`}
           </span>
         </div>
         <SearchSelect
           label="Filter by game"
           value={game}
-          onChange={(value) => change("game", value || undefined)}
+          onChange={(value) => changeFilter("game", value || undefined)}
           onSearch={onGameSearch}
           loading={gamesQuery.isLoading}
           loadingMore={gamesQuery.isFetchingNextPage}
@@ -147,7 +174,7 @@ export function LeaderboardPage() {
             type="button"
             onClick={() => {
               setGameSearch("");
-              change("game", undefined);
+              changeFilter("game", undefined);
             }}
           >
             <RotateCcw size={13} />
@@ -173,35 +200,45 @@ export function LeaderboardPage() {
         />
       ) : entities.length ? (
         <>
+          <div className="leaderboard-result-line" aria-live="polite">
+            <span>
+              Showing {firstRank}–{Math.min(firstRank + entities.length - 1, total)} of {total}{" "}
+              {entityTypeLabel(type)}
+            </span>
+            <small>{query.isFetching ? "Updating standings" : "Ordered by verified results"}</small>
+          </div>
           {top.length ? <LeaderboardTop entities={top} metric={metric} /> : null}
           {rows.length ? (
             <section className="leaderboard-list" aria-label="Leaderboard rankings">
               {rows.map((entity, index) => (
-                <LeaderboardRow entity={entity} metric={metric} rank={index + 4} key={entity.id} />
+                <LeaderboardRow
+                  entity={entity}
+                  metric={metric}
+                  rank={rowRankOffset + index + 1}
+                  key={entity.id}
+                />
               ))}
             </section>
           ) : null}
-          <InfiniteLoadTrigger
-            fetching={query.isFetchingNextPage}
-            hasMore={Boolean(query.hasNextPage)}
-            label={`Load more ${entityTypeLabel(type)}`}
-            onLoad={() => {
-              if (!query.isFetchingNextPage) void query.fetchNextPage();
-            }}
+          <LeaderboardPagination
+            currentPage={page}
+            totalPages={totalPages}
+            disabled={query.isFetching}
+            onPageChange={changePage}
           />
         </>
       ) : (
         <StatePanel
           icon={<Trophy size={20} />}
-          title="No competitive records in this view"
+          title="No competitors in this view"
           description={
             game
-              ? `No ranked ${entityTypeLabel(type)} are connected to ${game} yet.`
-              : `Ranked ${entityTypeLabel(type)} will appear here as verified match results are recorded.`
+              ? `No eligible ${entityTypeLabel(type)} are connected to ${game} yet.`
+              : `No eligible ${entityTypeLabel(type)} are available yet.`
           }
           action={
             game ? (
-              <Button variant="quiet" onClick={() => change("game", undefined)}>
+              <Button variant="quiet" onClick={() => changeFilter("game", undefined)}>
                 <RotateCcw size={14} />
                 Show all games
               </Button>

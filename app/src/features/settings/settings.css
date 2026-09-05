@@ -7,8 +7,42 @@
   min-height: 118px;
   padding: 7px 0 27px;
   border-bottom: 1px solid var(--g-border-subtle);
+  display: grid;
+  align-content: start;
+  gap: 14px;
 }
-.settings-page__header p,
+.settings-page__back {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--g-border-subtle);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--g-surface-1) 82%, transparent);
+  color: var(--g-text-secondary);
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 680;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background 160ms ease;
+}
+.settings-page__back:hover {
+  border-color: var(--g-border-strong);
+  background: var(--g-surface-2);
+  color: var(--g-text-primary);
+}
+.settings-page__back:focus-visible {
+  outline: none;
+  box-shadow: var(--g-focus-ring);
+}
+.settings-page__header-copy {
+  min-width: 0;
+}
+.settings-page__header-copy p,
 .settings-section-heading > p {
   margin: 0 0 5px;
   color: var(--g-text-faint);
@@ -17,12 +51,12 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
-.settings-page__header h1 {
+.settings-page__header-copy h1 {
   margin: 0;
   font: 570 clamp(30px, 4vw, 42px) var(--g-font-display);
   letter-spacing: -0.05em;
 }
-.settings-page__header > span {
+.settings-page__header-copy > span {
   display: block;
   margin-top: 7px;
   color: var(--g-text-muted);
@@ -669,6 +703,11 @@
   }
   .settings-page__header {
     min-width: 0;
+    min-height: auto;
+  }
+  .settings-page__back {
+    min-height: 40px;
+    padding-inline: 14px;
   }
   .settings-workspace {
     width: 100%;

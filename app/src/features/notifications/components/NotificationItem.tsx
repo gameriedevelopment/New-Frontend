@@ -14,8 +14,17 @@ import { SafeImage } from "../../../components/ui";
 import type { GamerieNotification } from "../types";
 
 export function notificationTarget(notification: GamerieNotification) {
-  if (notification.link?.startsWith("/")) return notification.link;
   const data = notification.data ?? {};
+  if (notification.type === "hub-invite" || notification.type === "hub-join-request") {
+    const hub = data.hubSlug || data.hubId;
+    if (typeof hub === "string") {
+      const params = new URLSearchParams({ membershipAction: notification.type });
+      if (typeof data.requestId === "string") params.set("requestId", data.requestId);
+      if (typeof data.actorId === "string") params.set("actorId", data.actorId);
+      return `/hubs/${encodeURIComponent(hub)}?${params.toString()}`;
+    }
+  }
+  if (notification.link?.startsWith("/")) return notification.link;
   if (typeof data.postId === "string") return `/post/${data.postId}`;
   if (typeof data.challengeId === "string") return `/challenges/${data.challengeId}`;
   if (typeof data.actorUsername === "string") return `/profile/${data.actorUsername}`;

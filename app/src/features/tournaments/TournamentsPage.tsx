@@ -52,11 +52,16 @@ export function TournamentsPage() {
   );
   const change = useCallback(
     (key: string, value?: string) => {
-      const next = new URLSearchParams(params);
-      value ? next.set(key, value) : next.delete(key);
-      setParams(next, { replace: true });
+      setParams(
+        (current) => {
+          const next = new URLSearchParams(current);
+          value ? next.set(key, value) : next.delete(key);
+          return next;
+        },
+        { replace: true },
+      );
     },
-    [params, setParams],
+    [setParams],
   );
   useEffect(() => {
     if ((params.get("q") || "") === debouncedSearch) return;
@@ -118,7 +123,6 @@ export function TournamentsPage() {
     <main className="tournaments-page">
       <header className="tournaments-heading">
         <div>
-          <p>Competition directory</p>
           <h1>Find your next tournament.</h1>
           <span>
             Browse open competitions, understand the entry requirements, and register with the

@@ -35,11 +35,16 @@ export function GamesPage() {
   const debounced = useDebouncedGameValue(search);
   const change = useCallback(
     (key: string, value?: string) => {
-      const next = new URLSearchParams(params);
-      value ? next.set(key, value) : next.delete(key);
-      setParams(next, { replace: true });
+      setParams(
+        (current) => {
+          const next = new URLSearchParams(current);
+          value ? next.set(key, value) : next.delete(key);
+          return next;
+        },
+        { replace: true },
+      );
     },
-    [params, setParams],
+    [setParams],
   );
   useEffect(() => {
     if ((params.get("q") || "") !== debounced) change("q", debounced || undefined);
@@ -89,7 +94,6 @@ export function GamesPage() {
     <main className="games-page">
       <header className="games-heading">
         <div>
-          <p>Games directory</p>
           <h1>Games your network plays.</h1>
           <span>
             Explore player communities, teams, rankings, achievements, and competitive activity

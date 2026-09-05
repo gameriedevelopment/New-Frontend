@@ -1,5 +1,5 @@
-import { AlertCircle, RefreshCw } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
+import { AlertCircle, ArrowLeft, RefreshCw } from "lucide-react";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, SafeImage, Skeleton, SkeletonText, StatePanel } from "../../components/ui";
 import { useAuthStore } from "../auth/authStore";
 import { usePlayerProfile } from "../profile/hooks";
@@ -94,6 +94,8 @@ function SettingsSkeleton() {
 
 export function SettingsPage() {
   const user = useAuthStore((state) => state.user);
+  const navigate = useNavigate();
+  const location = useLocation();
   const [params, setParams] = useSearchParams();
   const requested = params.get("section") as SettingsSection | null;
   const section = sections.some((item) => item.id === requested) ? requested! : "profile";
@@ -124,12 +126,28 @@ export function SettingsPage() {
   const grouped = ["Profile", "Identity", "Account"];
   const editable =
     section === "profile" || section === "personal" || section === "skills" || section === "social";
+  const profileReturnPath = `/profile/${profile.data.username || user?.username || user?.id}`;
+  const handleBack = () => {
+    if (location.key !== "default") {
+      navigate(-1);
+      return;
+    }
+
+    navigate(profileReturnPath, { replace: true });
+  };
+
   return (
     <main className="settings-page">
       <header className="settings-page__header">
-        <p>Account workspace</p>
-        <h1>Settings</h1>
-        <span>Manage your public player identity and the private controls behind it.</span>
+        <button type="button" className="settings-page__back" onClick={handleBack}>
+          <ArrowLeft size={16} aria-hidden="true" />
+          <span>{location.key === "default" ? "Back to profile" : "Back"}</span>
+        </button>
+        <div className="settings-page__header-copy">
+          <p>Account workspace</p>
+          <h1>Settings</h1>
+          <span>Manage your public player identity and the private controls behind it.</span>
+        </div>
       </header>
       <div className="settings-workspace">
         <aside>

@@ -9,7 +9,6 @@ import {
   Shield,
   Swords,
   Trophy,
-  Wallet,
 } from "lucide-react";
 
 export const primaryNavigation = [
@@ -26,7 +25,6 @@ export const secondaryNavigation = [
   { label: "Tournaments", href: "/tournaments", icon: Trophy },
   { label: "Leaderboard", href: "/leaderboard", icon: Medal },
   { label: "Calendar", href: "/calendar", icon: CalendarDays },
-  { label: "Wallet", href: "/wallet", icon: Wallet },
 ];
 
 export const mobileNavigation = [

@@ -4,7 +4,6 @@
 }
 .wallet-heading {
   display: flex;
-  min-height: 146px;
   padding: 16px 0 26px;
   border-bottom: 1px solid var(--g-border-subtle);
   align-items: end;

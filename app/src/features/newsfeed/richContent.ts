@@ -85,6 +85,21 @@ export function renderRichContent(content: unknown) {
   });
 }
 
+export function plainTextPreview(content: unknown): string {
+  const source = String(content ?? "");
+  if (!source.trim()) return "";
+  // Content can mix raw HTML (legacy mention anchors) and markdown. For a compact
+  // preview we only want readable text: unwrap anchors to their label, drop any
+  // other tags, and remove markdown hard-break backslashes before decoding.
+  const withoutTags = source
+    .replace(/<a\b[^>]*>(.*?)<\/a>/gis, "$1")
+    .replace(/<\/?[^>]+>/g, "")
+    .replace(/\\(\r?\n)/g, "$1")
+    .replace(/\\(?=[\s!-/:-@[-`{-~]|$)/g, "");
+  const decoded = new DOMParser().parseFromString(withoutTags, "text/html").body.textContent ?? "";
+  return decoded.replace(/\s+/g, " ").trim();
+}
+
 export function firstContentUrl(content: string) {
   const match = content.match(/https?:\/\/[^\s<>"']+/i)?.[0];
   return match?.replace(/[.,!?\])]+$/, "") ?? null;

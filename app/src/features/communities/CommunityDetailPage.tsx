@@ -19,6 +19,10 @@ import { useAuthStore } from "../auth/authStore";
 import "../newsfeed/newsfeed.css";
 import { CommunityActions } from "./components/CommunityActions";
 import { HubOperations } from "./components/HubOperations";
+import {
+  HubMembershipActionDialog,
+  type HubMembershipAction,
+} from "./components/HubMembershipActionDialog";
 import { TeamFollowers } from "./components/TeamFollowers";
 import { TeamOperations } from "./components/TeamOperations";
 import { useCommunityDetail, useCommunityPosts } from "./hooks";
@@ -184,6 +188,9 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
   const { communitySlug } = useParams();
   const [params, setParams] = useSearchParams();
   const query = useCommunityDetail(kind, communitySlug);
+  const hubMember = Boolean(
+    query.data?.viewerRelationship?.isMember || query.data?.viewerRelationship?.isOwner,
+  );
   const tabs =
     kind === "team"
       ? [
@@ -193,7 +200,7 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
             : []),
         ]
       : [
-          ...hubTabs,
+          ...(hubMember ? hubTabs : hubTabs.filter((tab) => tab.value === "overview")),
           ...(query.data?.viewerRelationship?.canManage
             ? [{ value: "manage" as HubTab, label: "Manage" }]
             : []),
@@ -223,33 +230,60 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
   const relationship = item.viewerRelationship;
   const memberCount = amount(item.membersCount, item.members);
   const followerCount = amount(item.followersCount, item.followers);
+  const requestedMembershipAction = params.get("membershipAction");
+  const membershipAction =
+    kind === "hub" &&
+    (requestedMembershipAction === "hub-invite" || requestedMembershipAction === "hub-join-request")
+      ? (requestedMembershipAction as HubMembershipAction)
+      : null;
+  const closeMembershipAction = () => {
+    const next = new URLSearchParams(params);
+    next.delete("membershipAction");
+    next.delete("requestId");
+    next.delete("actorId");
+    setParams(next, { replace: true });
+  };
+  const membershipDialog =
+    membershipAction && kind === "hub" ? (
+      <HubMembershipActionDialog
+        action={membershipAction}
+        actorId={params.get("actorId") || undefined}
+        hub={hub}
+        requestId={params.get("requestId") || undefined}
+        slug={slug}
+        onClose={closeMembershipAction}
+      />
+    ) : null;
   if (kind === "hub" && hub.restricted)
     return (
-      <main className="community-detail community-detail--restricted">
-        <Link className="community-detail__back" to="/hubs">
-          <ArrowLeft size={15} />
-          <span>Back to hubs</span>
-        </Link>
-        <section className="community-restricted">
-          <div className="community-restricted__visual">
-            <SafeImage src={hub.backgroundImage} fallback="/profile-cover-fallback.jpg" alt="" />
-          </div>
-          <SafeImage
-            className="community-restricted__logo"
-            src={hub.logo}
-            fallback="/avatar-fallback.svg"
-            alt=""
-          />
-          <LockKeyhole size={18} />
-          <p>Private hub</p>
-          <h1>{hub.name}</h1>
-          <span>
-            {hub.description ||
-              "Membership keeps this community’s teams, people, and conversations private."}
-          </span>
-          <CommunityActions kind="hub" item={hub} slug={slug} />
-        </section>
-      </main>
+      <>
+        <main className="community-detail community-detail--restricted">
+          <Link className="community-detail__back" to="/hubs">
+            <ArrowLeft size={15} />
+            <span>Back to hubs</span>
+          </Link>
+          <section className="community-restricted">
+            <div className="community-restricted__visual">
+              <SafeImage src={hub.backgroundImage} fallback="/profile-cover-fallback.jpg" alt="" />
+            </div>
+            <SafeImage
+              className="community-restricted__logo"
+              src={hub.logo}
+              fallback="/avatar-fallback.svg"
+              alt=""
+            />
+            <LockKeyhole size={18} />
+            <p>Private hub</p>
+            <h1>{hub.name}</h1>
+            <span>
+              {hub.description ||
+                "Membership keeps this community’s teams, people, and conversations private."}
+            </span>
+            <CommunityActions kind="hub" item={hub} slug={slug} />
+          </section>
+        </main>
+        {membershipDialog}
+      </>
     );
   return (
     <main className="community-detail">
@@ -489,6 +523,7 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
         ) : null}
         {active === "posts" ? <CommunityPosts kind={kind} id={item.id} /> : null}
       </div>
+      {membershipDialog}
     </main>
   );
 }

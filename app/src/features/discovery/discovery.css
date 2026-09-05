@@ -6,8 +6,7 @@
 }
 .discovery-heading {
   display: flex;
-  min-height: 154px;
-  padding: 12px 2px 32px;
+  padding: 12px 2px 28px;
   border-bottom: 1px solid var(--g-border-subtle);
   align-items: flex-end;
 }

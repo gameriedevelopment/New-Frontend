@@ -2,8 +2,6 @@ import { CalendarDays, Coins, Search, ShieldCheck, Swords, X } from "lucide-reac
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Button, SearchSelect } from "../../../components/ui";
 import { getApiErrorMessage } from "../../../lib/errors";
-import { zonedDateTimeToIso } from "../../calendar/utils";
-import { getTimezoneOptions } from "../../communities/options";
 import { useUnifiedSearch } from "../../discovery/hooks";
 import type { PlayerProfile } from "../../profile/types";
 import { useGameOptions } from "../../profile/hooks";
@@ -46,10 +44,6 @@ export function ChallengeComposer({
   const [game, setGame] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [timeZone, setTimeZone] = useState(
-    () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
-  );
-  const [timezoneSearch, setTimezoneSearch] = useState("");
   const [format, setFormat] = useState("Best of 3");
   const [teamSize, setTeamSize] = useState("5");
   const [tokenAmount, setTokenAmount] = useState("0");
@@ -91,18 +85,12 @@ export function ChallengeComposer({
     games.data?.pages
       .flatMap((page) => page.data)
       .map((item) => ({ value: item.name, label: item.name, description: item.gameType })) ?? [];
-  const allTimezones = useMemo(() => getTimezoneOptions(), []);
-  const timezoneOptions = useMemo(() => {
-    const query = timezoneSearch.toLowerCase().trim();
-    return (
-      query
-        ? allTimezones.filter(
-            (item) =>
-              item.label.toLowerCase().includes(query) || item.value.toLowerCase().includes(query),
-          )
-        : allTimezones
-    ).slice(0, 80);
-  }, [allTimezones, timezoneSearch]);
+  const timeZoneLabel =
+    new Intl.DateTimeFormat(undefined, { timeZoneName: "short" })
+      .formatToParts(new Date())
+      .find((part) => part.type === "timeZoneName")?.value ||
+    Intl.DateTimeFormat().resolvedOptions().timeZone ||
+    "UTC";
   useEffect(() => {
     pendingRef.current = create.isPending;
   }, [create.isPending]);
@@ -159,17 +147,10 @@ export function ChallengeComposer({
       nextErrors.source = "Choose the team sending this challenge";
     if (!game) nextErrors.game = "Choose a game";
     if (!date || !time) nextErrors.schedule = "Choose a date and time";
-    // Interpret the chosen date/time as wall-clock time in the selected timezone,
-    // then convert to a UTC instant — so the schedule stays consistent regardless
-    // of the creator's or recipient's browser timezone.
-    let scheduledIso: string | null = null;
-    if (date && time) {
-      try {
-        scheduledIso = zonedDateTimeToIso(`${date}T${time}`, timeZone);
-      } catch {
-        nextErrors.schedule = "This time is not valid in the selected timezone";
-      }
-    }
+    const scheduledDate = date && time ? new Date(`${date}T${time}`) : null;
+    const scheduledIso =
+      scheduledDate && !Number.isNaN(scheduledDate.getTime()) ? scheduledDate.toISOString() : null;
+    if (date && time && !scheduledIso) nextErrors.schedule = "Choose a valid date and time";
     if (scheduledIso && new Date(scheduledIso).getTime() <= Date.now())
       nextErrors.schedule = "Schedule the challenge for a future time";
     if (Number(tokenAmount) < 0) nextErrors.token = "Stake cannot be negative";
@@ -349,18 +330,9 @@ export function ChallengeComposer({
                 <input type="time" value={time} onChange={(event) => setTime(event.target.value)} />
               </label>
             </div>
-            <SearchSelect
-              label="Timezone"
-              value={timeZone}
-              onChange={setTimeZone}
-              onSearch={setTimezoneSearch}
-              options={timezoneOptions}
-              placeholder="Choose timezone"
-              searchPlaceholder="Search city or timezone"
-              emptyText="No matching timezones"
-            />
             <small className="challenge-field-hint">
-              The date and time are saved in this timezone.
+              Times use your timezone ({timeZoneLabel}). Each player sees the match in their own
+              local time.
             </small>
             {errors.schedule ? (
               <small className="challenge-field-error" role="alert">

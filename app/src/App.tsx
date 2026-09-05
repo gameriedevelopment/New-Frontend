@@ -96,9 +96,10 @@ const LeaderboardPage = lazy(() =>
 const CalendarPage = lazy(() =>
   import("./features/calendar/CalendarPage").then((module) => ({ default: module.CalendarPage })),
 );
-const WalletPage = lazy(() =>
-  import("./features/wallet/WalletPage").then((module) => ({ default: module.WalletPage })),
-);
+// Wallet temporarily disabled — restore this import and its route/nav entry to re-enable.
+// const WalletPage = lazy(() =>
+//   import("./features/wallet/WalletPage").then((module) => ({ default: module.WalletPage })),
+// );
 
 function DeferredPage({ children }: { children: ReactNode }) {
   return <Suspense fallback={<PageLoader label="Loading content" />}>{children}</Suspense>;
@@ -311,14 +312,9 @@ export function App() {
               </DeferredPage>
             }
           />
-          <Route
-            path="/wallet"
-            element={
-              <DeferredPage>
-                <WalletPage />
-              </DeferredPage>
-            }
-          />
+          {/* Wallet is temporarily disabled — route removed so it is not publicly
+              accessible (manual URLs fall through to the catch-all). Code kept intact;
+              restore this route and the nav entry in navigation.ts to re-enable. */}
           <Route
             path="/search"
             element={

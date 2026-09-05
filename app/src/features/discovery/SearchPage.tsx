@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button, SafeImage, SkeletonAvatar, SkeletonText, StatePanel } from "../../components/ui";
 import { getApiErrorMessage } from "../../lib/errors";
+import { plainTextPreview } from "../newsfeed/richContent";
 import { InfiniteLoadTrigger } from "./components/InfiniteLoadTrigger";
 import { useDebouncedValue, useUnifiedSearch } from "./hooks";
 import type { SearchEntity, SearchGame, SearchKind, SearchPost, SearchTeam } from "./types";
@@ -126,7 +127,7 @@ function SearchResult({ item, kind }: { item: SearchEntity; kind: SearchKind }) 
         </div>
         <ArrowUpRight size={16} />
       </header>
-      <p>{post.content || "Open this post to view the full conversation."}</p>
+      <p>{plainTextPreview(post.content) || "Open this post to view the full conversation."}</p>
       {post.tags?.length ? (
         <footer>
           {post.tags.slice(0, 4).map((tag) => (
@@ -212,7 +213,6 @@ export function SearchPage() {
   return (
     <main className="search-page">
       <header className="search-heading">
-        <p>Across Gamerie</p>
         <h1>Search the player network.</h1>
         <span>
           One focused search across conversations, people, teams, and the games connecting them.
