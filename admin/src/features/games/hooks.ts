@@ -2,11 +2,12 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { createAdminGame, deleteAdminGame, getAdminGames, updateAdminGame } from "./api";
 import type { AdminGameInput, AdminGameQuery } from "./types";
 
-export function useAdminGames(query: AdminGameQuery) {
+export function useAdminGames(query: AdminGameQuery, enabled = true) {
   return useQuery({
     queryKey: ["admin", "games", query],
     queryFn: () => getAdminGames(query),
     placeholderData: keepPreviousData,
+    enabled,
   });
 }
 

@@ -4,10 +4,36 @@ import type {
   AdminAchievementInput,
   AdminAchievementQuery,
   AdminAchievementRecord,
+  AdminChallengeQuery,
+  AdminChallengeRecord,
+  CreateAdminChallengeInput,
   AdminTournamentInput,
   AdminTournamentQuery,
   AdminTournamentRecord,
+  UpdateAdminChallengeInput,
 } from "./types";
+
+export async function getAdminChallenges(query: AdminChallengeQuery) {
+  const { data } = await api.get<ApiEnvelope<AdminPage<AdminChallengeRecord>>>(
+    "/admin/challenges",
+    { params: query },
+  );
+  return data.data;
+}
+
+export async function saveAdminChallenge(
+  id: string | undefined,
+  input: CreateAdminChallengeInput | UpdateAdminChallengeInput,
+) {
+  const request = id
+    ? api.patch<ApiEnvelope<AdminChallengeRecord>>(`/admin/challenges/${id}`, input)
+    : api.post<ApiEnvelope<AdminChallengeRecord>>("/admin/challenges", input);
+  return (await request).data.data;
+}
+
+export async function deleteAdminChallenge(id: string, reason: string) {
+  await api.delete(`/admin/challenges/${id}`, { data: { reason } });
+}
 
 export async function getAdminTournaments(query: AdminTournamentQuery) {
   const { data } = await api.get<ApiEnvelope<AdminPage<AdminTournamentRecord>>>(

@@ -54,11 +54,22 @@
   padding: 0 0.9rem;
   font-size: 0.78rem;
   font-weight: 700;
+  color: inherit;
+  text-decoration: none;
 }
 .admin-icon-button:hover,
 .admin-secondary-button:hover {
   border-color: var(--ao-border-strong);
   background: var(--ao-accent-soft);
+}
+.admin-player-app-link {
+  color: var(--ao-text);
+  font-weight: 750;
+  text-decoration-color: var(--ao-accent);
+  text-underline-offset: 0.2em;
+}
+.admin-player-app-link:hover {
+  color: var(--ao-accent);
 }
 button:disabled {
   cursor: wait;

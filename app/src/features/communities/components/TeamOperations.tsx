@@ -28,6 +28,7 @@ import {
   useTeamPendingInvites,
   useTeamRequests,
 } from "../hooks";
+import { formatMemberRole } from "../options";
 import type { CommunityMember, TeamRequestSummary, TeamSummary } from "../types";
 import { CommunityDialog } from "./CommunityDialog";
 import { SensitiveCommunityOperations } from "./SensitiveCommunityOperations";
@@ -382,7 +383,7 @@ export function TeamOperations({ team, slug }: { team: TeamSummary; slug: string
                         <strong>
                           {member.user?.displayName || member.user?.username || "Gamerie player"}
                         </strong>
-                        <span>{member.title || member.role || "Member"}</span>
+                        <span>{formatMemberRole(member.role, member.title)}</span>
                       </div>
                     </div>
                     {!isCreator ? (

@@ -2,6 +2,17 @@ import type { DirectoryQuery } from "../../lib/contracts";
 
 export type AdminUserStatus = "active" | "banned";
 
+export type ProfileCompletionField =
+  "avatar" | "bio" | "title" | "game" | "skill" | "platform" | "social" | "cover";
+
+export interface ProfileCompletion {
+  complete: boolean;
+  score: number;
+  completed: number;
+  total: number;
+  missing: ProfileCompletionField[];
+}
+
 export interface AdminUserQuery extends DirectoryQuery {
   status?: AdminUserStatus;
 }
@@ -26,4 +37,5 @@ export interface AdminUserRecord {
   createdAt: string;
   updatedAt: string;
   followersCount?: number;
+  profileCompletion?: ProfileCompletion;
 }

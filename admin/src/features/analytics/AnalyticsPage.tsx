@@ -32,7 +32,6 @@ export function AnalyticsPage() {
     <main className="analytics-page">
       <header className="analytics-heading">
         <div>
-          <span className="admin-eyebrow">Content intelligence</span>
           <h1>Platform analytics</h1>
           <p>
             Measured publishing, interaction, audience, and moderation signals—without synthetic

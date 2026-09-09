@@ -6,8 +6,10 @@ import {
   getMyChallenges,
   proposeReschedule,
   refreshChallenge,
+  reportChallengeScore,
   respondReschedule,
   updateChallenge,
+  type ReportScorePayload,
 } from "./api";
 import type { ChallengeFilters, ChallengeType, CreateChallengePayload } from "./types";
 
@@ -113,6 +115,12 @@ export function useRespondReschedule() {
       client.setQueryData(["challenges", "detail", challenge.id], challenge);
       reconcile(client);
     },
+  });
+}
+
+export function useReportChallengeScore() {
+  return useMutation({
+    mutationFn: (payload: ReportScorePayload) => reportChallengeScore(payload),
   });
 }
 

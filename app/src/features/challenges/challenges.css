@@ -814,6 +814,57 @@
   font-size: 12px;
   line-height: 1.5;
 }
+.challenge-report {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 6px;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--g-text-muted);
+  font-size: 10px;
+  cursor: pointer;
+}
+.challenge-report:not(:disabled):hover {
+  color: var(--g-danger);
+}
+.challenge-report:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+.challenge-report__field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.challenge-report__field span {
+  font-size: 11px;
+  font-weight: 640;
+  color: var(--g-text-secondary);
+}
+.challenge-report__field select,
+.challenge-report__field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--g-border-default);
+  border-radius: 8px;
+  background: var(--g-canvas-deep);
+  color: var(--g-text-primary);
+  outline: 0;
+  box-sizing: border-box;
+}
+.challenge-report__field textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+.challenge-report__field small {
+  justify-self: end;
+  color: var(--g-text-faint);
+  font-size: 10px;
+}
 
 .challenge-compose {
   display: grid;

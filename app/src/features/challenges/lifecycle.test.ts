@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   canCancel,
+  canDelete,
   canPropose,
   canSubmitScore,
   challengePhase,
@@ -59,5 +60,15 @@ describe("labels and capabilities", () => {
     expect(canPropose(base({ status: "accepted", scheduledDate: future }))).toBe(true);
     expect(canPropose(base({ status: "accepted", scheduledDate: past }))).toBe(false);
     expect(canPropose(base({ status: "reschedule_pending" }))).toBe(false);
+  });
+
+  it("allows delete only for non-completed, non-active statuses", () => {
+    expect(canDelete("pending")).toBe(true);
+    expect(canDelete("cancelled")).toBe(true);
+    expect(canDelete("rejected")).toBe(true);
+    expect(canDelete("expired")).toBe(true);
+    expect(canDelete("completed")).toBe(false);
+    expect(canDelete("accepted")).toBe(false);
+    expect(canDelete("reschedule_pending")).toBe(false);
   });
 });

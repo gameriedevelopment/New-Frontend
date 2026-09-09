@@ -38,6 +38,10 @@ export function canCancel(status: ChallengeStatus): boolean {
   return status === "accepted" || status === "reschedule_pending";
 }
 
+export function canDelete(status: ChallengeStatus): boolean {
+  return ["pending", "rejected", "cancelled", "expired"].includes(status);
+}
+
 export function canPropose(challenge: Challenge, now = Date.now()): boolean {
   return challengePhase(challenge, now) === "scheduled";
 }

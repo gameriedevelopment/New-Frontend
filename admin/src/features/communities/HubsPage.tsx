@@ -6,6 +6,7 @@ import { getErrorMessage } from "../../lib/errors";
 import { useAdminHubs, useSetAdminHubBan } from "./hooks";
 import type { AdminHubRecord } from "./types";
 import { AdminAvatar } from "../../components/AdminAvatar";
+import { PlayerAppLink } from "../../components/PlayerAppLink";
 
 export function HubsPage() {
   const [search, setSearch] = useState("");
@@ -121,15 +122,20 @@ export function HubsPage() {
         onClose={() => setSelected(null)}
         actions={
           selected ? (
-            <button
-              className="admin-row-action"
-              onClick={() => {
-                moderation.reset();
-                setTarget(selected);
-              }}
-            >
-              {selected.isBanned ? "Restore hub" : "Restrict hub"}
-            </button>
+            <>
+              <PlayerAppLink segments={["hubs", selected.slug || selected.id]}>
+                Open hub
+              </PlayerAppLink>
+              <button
+                className="admin-row-action"
+                onClick={() => {
+                  moderation.reset();
+                  setTarget(selected);
+                }}
+              >
+                {selected.isBanned ? "Restore hub" : "Restrict hub"}
+              </button>
+            </>
           ) : null
         }
       >

@@ -3,8 +3,9 @@ import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useFieldArray, useForm, type UseFormRegister } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "../../../components/ui";
+import { Button, SearchSelect } from "../../../components/ui";
 import { getApiErrorMessage } from "../../../lib/errors";
+import { COMMUNITY_REGIONS } from "../../communities/options";
 import { useUpdatePlayerProfile } from "../../profile/hooks";
 import type { PlayerProfile } from "../../profile/types";
 import type { SettingsSection } from "../types";
@@ -94,6 +95,7 @@ export function ProfileEditor({
 }) {
   const update = useUpdatePlayerProfile(profile.id);
   const [saved, setSaved] = useState(false);
+  const [regionSearch, setRegionSearch] = useState("");
   const form = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -181,9 +183,27 @@ export function ProfileEditor({
                 ))}
               </select>
             </Field>
-            <Field label="Region">
-              <input placeholder="West Africa" {...form.register("region")} />
-            </Field>
+            <div className="settings-field settings-field--select">
+              <SearchSelect
+                label="Region"
+                value={form.watch("region") || ""}
+                onChange={(value) =>
+                  form.setValue("region", value, { shouldDirty: true, shouldValidate: true })
+                }
+                onSearch={setRegionSearch}
+                options={COMMUNITY_REGIONS.filter((region) =>
+                  region.toLowerCase().includes(regionSearch.toLowerCase().trim()),
+                ).map((region) => ({ value: region, label: region }))}
+                placeholder="Select your region"
+                searchPlaceholder="Search regions"
+                emptyText="No matching regions"
+              />
+              {form.formState.errors.region?.message ? (
+                <small className="settings-field__error">
+                  {form.formState.errors.region.message}
+                </small>
+              ) : null}
+            </div>
             <Field
               label="Bio"
               error={form.formState.errors.bio?.message}

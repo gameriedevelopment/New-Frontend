@@ -74,7 +74,6 @@ export function AdminsPage() {
     <main className="admin-operators-page">
       <header className="admin-operators-heading">
         <div>
-          <span className="admin-eyebrow">Access governance</span>
           <h1>Administrators</h1>
           <p>
             Invite trusted operators and review their access without mixing platform permissions

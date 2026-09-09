@@ -3,6 +3,8 @@ import { X } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { AdminAvatar } from "../../components/AdminAvatar";
 import { BarChart, LineChart } from "../../components/DataChart";
+import { ProfileCompletionBadge } from "../../components/ProfileCompletionBadge";
+import { PlayerAppLink } from "../../components/PlayerAppLink";
 import { getErrorMessage } from "../../lib/errors";
 import {
   useCreateReferralCode,
@@ -76,7 +78,6 @@ export function FinanceGrowthPage() {
     <main className="finance-page">
       <header className="finance-heading">
         <div>
-          <span className="admin-eyebrow">Finance and growth</span>
           <h1>{view === "finance" ? "Financial operations" : "Referral programmes"}</h1>
           <p>
             {view === "finance"
@@ -509,9 +510,16 @@ function ReferralSignupsDialog({
               <div key={signup.id}>
                 <AdminAvatar name={signup.username} src={signup.profileImage} />
                 <span>
-                  <strong>{signup.username}</strong>
+                  <PlayerAppLink
+                    segments={["profile", signup.username]}
+                    variant="text"
+                    className="finance-signup-profile-link"
+                  >
+                    {signup.username}
+                  </PlayerAppLink>
                   <small>{signup.email}</small>
                 </span>
+                <ProfileCompletionBadge completion={signup.profileCompletion} />
                 <span>
                   <strong>{signup.status}</strong>
                   <small>{signup.rewardPoints} reward points</small>

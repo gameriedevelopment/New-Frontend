@@ -4,6 +4,7 @@ import {
   CalendarDays,
   CalendarClock,
   Coins,
+  Flag,
   RefreshCw,
   Swords,
   Trash2,
@@ -24,6 +25,7 @@ import {
 } from "../hooks";
 import {
   canCancel,
+  canDelete,
   canPropose,
   canSubmitScore,
   challengePhaseLabel,
@@ -31,6 +33,7 @@ import {
 } from "../lifecycle";
 import type { Challenge } from "../types";
 import { ChallengeConfirmDialog } from "./ChallengeConfirmDialog";
+import { ChallengeReportDialog } from "./ChallengeReportDialog";
 import { ChallengeRescheduleDialog } from "./ChallengeRescheduleDialog";
 import { ChallengeScoreDialog } from "./ChallengeScoreDialog";
 
@@ -64,6 +67,8 @@ export function ChallengeDetailSheet({
   const [confirming, setConfirming] = useState<"cancel" | "delete" | null>(null);
   const [scoreOpen, setScoreOpen] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reported, setReported] = useState(false);
   useEffect(() => {
     const previousFocus = document.activeElement as HTMLElement | null;
     closeRef.current?.focus();
@@ -262,6 +267,17 @@ export function ChallengeDetailSheet({
                 </div>
               </section>
             ) : null}
+            {challenge.status === "completed" && isParticipant ? (
+              <button
+                className="challenge-report"
+                type="button"
+                disabled={reported}
+                onClick={() => setReportOpen(true)}
+              >
+                <Flag size={14} />
+                {reported ? "Result reported" : "Report result"}
+              </button>
+            ) : null}
             {challenge.status === "pending" && incoming ? (
               <div className="challenge-sheet__actions">
                 <Button
@@ -342,10 +358,7 @@ export function ChallengeDetailSheet({
                 Cancel challenge
               </button>
             ) : null}
-            {initiated &&
-            ["pending", "rejected", "cancelled", "completed", "expired"].includes(
-              challenge.status,
-            ) ? (
+            {initiated && canDelete(challenge.status) ? (
               <button
                 className="challenge-delete"
                 type="button"
@@ -366,6 +379,16 @@ export function ChallengeDetailSheet({
       </aside>
       {scoreOpen && challenge ? (
         <ChallengeScoreDialog challenge={challenge} onClose={() => setScoreOpen(false)} />
+      ) : null}
+      {reportOpen && challenge ? (
+        <ChallengeReportDialog
+          challenge={challenge}
+          onReported={() => {
+            setReported(true);
+            setReportOpen(false);
+          }}
+          onClose={() => setReportOpen(false)}
+        />
       ) : null}
       {rescheduleOpen && challenge ? (
         <ChallengeRescheduleDialog

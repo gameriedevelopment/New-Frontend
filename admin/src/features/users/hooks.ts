@@ -2,11 +2,12 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { getAdminUsers, setAdminUserBan } from "./api";
 import type { AdminUserQuery } from "./types";
 
-export function useAdminUsers(query: AdminUserQuery) {
+export function useAdminUsers(query: AdminUserQuery, enabled = true) {
   return useQuery({
     queryKey: ["admin", "users", query],
     queryFn: () => getAdminUsers(query),
     placeholderData: keepPreviousData,
+    enabled,
   });
 }
 

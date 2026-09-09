@@ -8,6 +8,7 @@ import { GameEditorDialog } from "./GameEditorDialog";
 import { useAdminGames, useDeleteAdminGame, useSaveAdminGame } from "./hooks";
 import type { AdminGameInput, AdminGameRecord } from "./types";
 import "./games.css";
+import { PlayerAppLink } from "../../components/PlayerAppLink";
 
 export function GamesPage() {
   const [search, setSearch] = useState("");
@@ -155,6 +156,7 @@ export function GamesPage() {
         actions={
           selected ? (
             <>
+              <PlayerAppLink segments={["games", selected.id]}>Open game</PlayerAppLink>
               <button
                 className="admin-secondary-button"
                 onClick={() => {

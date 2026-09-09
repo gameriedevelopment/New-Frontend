@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import "./directory.css";
 
 interface DirectoryViewProps {
-  eyebrow: string;
+  /** @deprecated Page eyebrows were removed; retained so callers don't break. */
+  eyebrow?: string;
   title: string;
   description: string;
   search: string;
@@ -22,7 +23,6 @@ interface DirectoryViewProps {
 }
 
 export function DirectoryView({
-  eyebrow,
   title,
   description,
   search,
@@ -44,7 +44,6 @@ export function DirectoryView({
     <main className="admin-directory-page">
       <header className="admin-directory-heading-row">
         <div className="admin-directory-heading">
-          <span className="admin-eyebrow">{eyebrow}</span>
           <h1>{title}</h1>
           <p>{description}</p>
         </div>

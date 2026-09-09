@@ -1,24 +1,31 @@
 import { Camera, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { SafeImage } from "../../../components/ui";
+import { ImageCropperDialog, SafeImage } from "../../../components/ui";
 import { getApiErrorMessage } from "../../../lib/errors";
 import { useUploadPlayerImage } from "../../profile/hooks";
 import type { PlayerProfile } from "../../profile/types";
 
+type MediaType = "profileImage" | "backgroundImage";
+
 export function MediaEditor({ profile }: { profile: PlayerProfile }) {
   const upload = useUploadPlayerImage(profile.id);
   const [validationError, setValidationError] = useState("");
-  const [preview, setPreview] = useState<
-    Partial<Record<"profileImage" | "backgroundImage", string>>
-  >({});
+  const [cropping, setCropping] = useState<{ file: File; type: MediaType } | null>(null);
+  const [preview, setPreview] = useState<Partial<Record<MediaType, string>>>({});
   const urls = useRef<string[]>([]);
   useEffect(() => () => urls.current.forEach(URL.revokeObjectURL), []);
-  const choose = (type: "profileImage" | "backgroundImage", file?: File) => {
+  const choose = (type: MediaType, file?: File) => {
     if (!file) return;
     if (!file.type.startsWith("image/")) return setValidationError("Choose an image file.");
     if (file.size > 5 * 1024 * 1024)
       return setValidationError("Choose an image smaller than 5 MB.");
     setValidationError("");
+    setCropping({ file, type });
+  };
+  const applyCrop = (file: File) => {
+    if (!cropping) return;
+    const type = cropping.type;
+    setCropping(null);
     const url = URL.createObjectURL(file);
     urls.current.push(url);
     setPreview((current) => ({ ...current, [type]: url }));
@@ -52,7 +59,10 @@ export function MediaEditor({ profile }: { profile: PlayerProfile }) {
             type="file"
             accept="image/*"
             disabled={upload.isPending}
-            onChange={(event) => choose("backgroundImage", event.target.files?.[0])}
+            onChange={(event) => {
+              choose("backgroundImage", event.target.files?.[0]);
+              event.target.value = "";
+            }}
           />
         </label>
       </div>
@@ -72,7 +82,10 @@ export function MediaEditor({ profile }: { profile: PlayerProfile }) {
               type="file"
               accept="image/*"
               disabled={upload.isPending}
-              onChange={(event) => choose("profileImage", event.target.files?.[0])}
+              onChange={(event) => {
+                choose("profileImage", event.target.files?.[0]);
+                event.target.value = "";
+              }}
             />
           </label>
         </div>
@@ -90,6 +103,16 @@ export function MediaEditor({ profile }: { profile: PlayerProfile }) {
         <p className="settings-success" role="status">
           Profile media updated.
         </p>
+      ) : null}
+      {cropping ? (
+        <ImageCropperDialog
+          file={cropping.file}
+          aspect={cropping.type === "profileImage" ? 1 : 16 / 6}
+          shape={cropping.type === "profileImage" ? "round" : "rect"}
+          title={cropping.type === "profileImage" ? "Adjust profile image" : "Adjust cover image"}
+          onCancel={() => setCropping(null)}
+          onCropped={applyCrop}
+        />
       ) : null}
     </section>
   );

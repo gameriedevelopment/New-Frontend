@@ -9,8 +9,16 @@ import {
   Trophy,
   Users,
 } from "lucide-react";
+import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { Button, SafeImage, Skeleton, SkeletonText, StatePanel } from "../../components/ui";
+import {
+  Button,
+  ImageViewer,
+  SafeImage,
+  Skeleton,
+  SkeletonText,
+  StatePanel,
+} from "../../components/ui";
 import { getApiErrorMessage } from "../../lib/errors";
 import { FeedPostCard } from "../newsfeed/components/FeedPostCard";
 import { FeedComposer } from "../newsfeed/components/FeedComposer";
@@ -26,6 +34,7 @@ import {
 import { TeamFollowers } from "./components/TeamFollowers";
 import { TeamOperations } from "./components/TeamOperations";
 import { useCommunityDetail, useCommunityPosts } from "./hooks";
+import { formatMemberRole } from "./options";
 import type { CommunityMember, CompetitionItem, HubSummary, TeamSummary } from "./types";
 import "./communities.css";
 
@@ -71,7 +80,7 @@ function Members({ members = [] }: { members?: CommunityMember[] }) {
           </span>
           <div>
             <strong>{member.user?.displayName || member.user?.username || "Gamerie player"}</strong>
-            <small>{member.title || member.role || member.user?.gamerTitle || "Member"}</small>
+            <small>{formatMemberRole(member.role, member.title || member.user?.gamerTitle)}</small>
           </div>
         </Link>
       ))}
@@ -224,6 +233,7 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
       </main>
     );
   const item = query.data;
+  const [viewing, setViewing] = useState<"logo" | "cover" | null>(null);
   const hub = item as HubSummary;
   const team = item as TeamSummary;
   const slug = communitySlug || item.slug || item.id;
@@ -254,6 +264,15 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
         onClose={closeMembershipAction}
       />
     ) : null;
+  const imageViewer = viewing ? (
+    <ImageViewer
+      src={viewing === "logo" ? item.logo : item.backgroundImage}
+      alt={viewing === "logo" ? `${item.name} logo` : `${item.name} banner`}
+      fallback={viewing === "logo" ? "/avatar-fallback.svg" : "/profile-cover-fallback.jpg"}
+      shape="rect"
+      onClose={() => setViewing(null)}
+    />
+  ) : null;
   if (kind === "hub" && hub.restricted)
     return (
       <>
@@ -283,6 +302,7 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
           </section>
         </main>
         {membershipDialog}
+        {imageViewer}
       </>
     );
   return (
@@ -292,16 +312,23 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
         <span>Back to {kind}s</span>
       </Link>
       <section className={`community-identity community-identity--${kind}`}>
-        <div className="community-identity__cover">
+        <button
+          type="button"
+          className="community-identity__cover community-identity__cover--view"
+          onClick={() => setViewing("cover")}
+          aria-label={`View ${kind} banner`}
+        >
           <SafeImage src={item.backgroundImage} fallback="/profile-cover-fallback.jpg" alt="" />
-        </div>
+        </button>
         <div className="community-identity__main">
-          <SafeImage
-            className="community-identity__logo"
-            src={item.logo}
-            fallback="/avatar-fallback.svg"
-            alt=""
-          />
+          <button
+            type="button"
+            className="community-identity__logo community-identity__logo--view"
+            onClick={() => setViewing("logo")}
+            aria-label={`View ${kind} logo`}
+          >
+            <SafeImage src={item.logo} fallback="/avatar-fallback.svg" alt="" />
+          </button>
           <div className="community-identity__copy">
             <span className="community-identity__eyebrow">
               {kind === "team" ? (
@@ -364,9 +391,13 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
             <strong>{followerCount.toLocaleString()}</strong>
             <span>Followers</span>
           </div>
-          {relationship?.role || relationship?.title ? (
+          {relationship?.isOwner || relationship?.role || relationship?.title ? (
             <div className="community-identity__role">
-              <strong>{relationship.title || relationship.role}</strong>
+              <strong>
+                {relationship?.isOwner
+                  ? "Owner"
+                  : formatMemberRole(relationship?.role, relationship?.title)}
+              </strong>
               <span>Your role</span>
             </div>
           ) : null}
@@ -524,6 +555,7 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
         {active === "posts" ? <CommunityPosts kind={kind} id={item.id} /> : null}
       </div>
       {membershipDialog}
+      {imageViewer}
     </main>
   );
 }

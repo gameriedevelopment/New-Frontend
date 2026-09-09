@@ -42,7 +42,6 @@ export function DashboardPage() {
     <main className="admin-dashboard">
       <header className="admin-page-heading">
         <div>
-          <span className="admin-eyebrow">Platform operations</span>
           <h1>Overview</h1>
           <p>Current platform scale and the operational areas that need attention.</p>
         </div>

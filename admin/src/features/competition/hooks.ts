@@ -1,31 +1,47 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   deleteAdminAchievement,
+  deleteAdminChallenge,
   deleteAdminTournament,
   getAdminAchievements,
+  getAdminChallenges,
   getAdminTournaments,
   saveAdminAchievement,
+  saveAdminChallenge,
   saveAdminTournament,
 } from "./api";
 import type {
   AdminAchievementInput,
   AdminAchievementQuery,
+  AdminChallengeQuery,
+  CreateAdminChallengeInput,
   AdminTournamentInput,
   AdminTournamentQuery,
+  UpdateAdminChallengeInput,
 } from "./types";
 
-export const useAdminTournaments = (query: AdminTournamentQuery) =>
+export const useAdminChallenges = (query: AdminChallengeQuery, enabled = true) =>
+  useQuery({
+    queryKey: ["admin", "challenges", query],
+    queryFn: () => getAdminChallenges(query),
+    placeholderData: keepPreviousData,
+    enabled,
+  });
+
+export const useAdminTournaments = (query: AdminTournamentQuery, enabled = true) =>
   useQuery({
     queryKey: ["admin", "tournaments", query],
     queryFn: () => getAdminTournaments(query),
     placeholderData: keepPreviousData,
+    enabled,
   });
 
-export const useAdminAchievements = (query: AdminAchievementQuery) =>
+export const useAdminAchievements = (query: AdminAchievementQuery, enabled = true) =>
   useQuery({
     queryKey: ["admin", "achievements", query],
     queryFn: () => getAdminAchievements(query),
     placeholderData: keepPreviousData,
+    enabled,
   });
 
 export function useSaveTournament() {
@@ -46,6 +62,20 @@ export function useSaveAchievement() {
   });
 }
 
+export function useSaveChallenge() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      input,
+    }: {
+      id?: string;
+      input: CreateAdminChallengeInput | UpdateAdminChallengeInput;
+    }) => saveAdminChallenge(id, input),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["admin", "challenges"] }),
+  });
+}
+
 export function useDeleteCompetition() {
   const client = useQueryClient();
   return useMutation({
@@ -54,13 +84,15 @@ export function useDeleteCompetition() {
       id,
       reason,
     }: {
-      kind: "tournament" | "achievement";
+      kind: "tournament" | "challenge" | "achievement";
       id: string;
       reason: string;
     }) =>
       kind === "tournament"
         ? deleteAdminTournament(id, reason)
-        : deleteAdminAchievement(id, reason),
+        : kind === "challenge"
+          ? deleteAdminChallenge(id, reason)
+          : deleteAdminAchievement(id, reason),
     onSuccess: () => client.invalidateQueries({ queryKey: ["admin"] }),
   });
 }

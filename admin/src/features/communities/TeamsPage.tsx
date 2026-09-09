@@ -6,6 +6,7 @@ import { getErrorMessage } from "../../lib/errors";
 import { useAdminTeams, useSetAdminTeamBan } from "./hooks";
 import type { AdminTeamRecord } from "./types";
 import { AdminAvatar } from "../../components/AdminAvatar";
+import { PlayerAppLink } from "../../components/PlayerAppLink";
 
 const levels = ["Hobbyist", "Amateur", "Advanced", "Competitor", "Pro"];
 
@@ -124,15 +125,20 @@ export function TeamsPage() {
         onClose={() => setSelected(null)}
         actions={
           selected ? (
-            <button
-              className="admin-row-action"
-              onClick={() => {
-                moderation.reset();
-                setTarget(selected);
-              }}
-            >
-              {selected.isBanned ? "Restore team" : "Restrict team"}
-            </button>
+            <>
+              <PlayerAppLink segments={["teams", selected.slug || selected.name]}>
+                Open team
+              </PlayerAppLink>
+              <button
+                className="admin-row-action"
+                onClick={() => {
+                  moderation.reset();
+                  setTarget(selected);
+                }}
+              >
+                {selected.isBanned ? "Restore team" : "Restrict team"}
+              </button>
+            </>
           ) : null
         }
       >

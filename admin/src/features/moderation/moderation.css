@@ -123,6 +123,9 @@
   padding: 1.25rem 0;
   border-bottom: 1px solid var(--ao-border-subtle);
 }
+.report-context__view {
+  justify-self: start;
+}
 .report-context p,
 .report-audit p,
 .moderation-safety-note {

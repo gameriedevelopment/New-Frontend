@@ -48,7 +48,6 @@ export function CommunicationsPage() {
     <main className="communications-page">
       <header className="admin-page-heading">
         <div>
-          <span className="admin-eyebrow">Platform communication</span>
           <h1>Communications</h1>
           <p>Publish official updates and run controlled audience synchronization.</p>
         </div>
@@ -106,14 +105,16 @@ export function CommunicationsPage() {
         <section className="communications-panel brevo-runbook" aria-labelledby="brevo-heading">
           <header>
             <div>
-              <span className="admin-eyebrow">Audience operations</span>
-              <h2 id="brevo-heading">Brevo synchronization</h2>
+              <h2 id="brevo-heading">CRM synchronization</h2>
             </div>
             <small>Dry run required first</small>
           </header>
           <p>
-            Review the pending audience before sending any live synchronization request. No email
-            addresses are returned to this workspace or written to the audit record.
+            Adds Gamerie members who are not yet in the CRM email audience (name, username and
+            signup date — no email content leaves Gamerie beyond the address itself). Run a dry
+            check first to see how many members are pending; the live sync then uploads them to the
+            CRM audience. Only counts are shown here or written to the audit record — no email
+            addresses are returned to this workspace.
           </p>
           <label>
             Operational reason
@@ -146,7 +147,7 @@ export function CommunicationsPage() {
                 </div>
               </dl>
               <label>
-                Type RESYNC BREVO to continue
+                Type CONFIRM CRM SYNC to continue
                 <input
                   value={confirmation}
                   onChange={(event) => setConfirmation(event.target.value)}
@@ -173,7 +174,7 @@ export function CommunicationsPage() {
               <button
                 className="admin-primary-button"
                 type="button"
-                disabled={brevo.isPending || confirmation !== "RESYNC BREVO"}
+                disabled={brevo.isPending || confirmation !== "CONFIRM CRM SYNC"}
                 onClick={() => void run(false)}
               >
                 Run live sync

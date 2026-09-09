@@ -4,6 +4,7 @@ import {
   getFlaggedPosts,
   getModerationReports,
   getReportAudit,
+  getReportContext,
   removeFlaggedContent,
   updateReportStatus,
 } from "./api";
@@ -51,6 +52,14 @@ export function useReportAudit(reportId?: string) {
   return useQuery({
     queryKey: ["admin", "moderation", "report-audit", reportId],
     queryFn: () => getReportAudit(reportId!),
+    enabled: Boolean(reportId),
+  });
+}
+
+export function useReportContext(reportId?: string) {
+  return useQuery({
+    queryKey: ["admin", "moderation", "report-context", reportId],
+    queryFn: () => getReportContext(reportId!),
     enabled: Boolean(reportId),
   });
 }

@@ -7,6 +7,11 @@ import { useAdminAuth } from "../auth/AuthProvider";
 import { useAdminUsers, useSetAdminUserBan } from "./hooks";
 import type { AdminUserRecord, AdminUserStatus } from "./types";
 import { AdminAvatar } from "../../components/AdminAvatar";
+import {
+  ProfileCompletionBadge,
+  ProfileCompletionBreakdown,
+} from "../../components/ProfileCompletionBadge";
+import { PlayerAppLink } from "../../components/PlayerAppLink";
 
 export function UsersPage() {
   const { user } = useAdminAuth();
@@ -96,6 +101,10 @@ export function UsersPage() {
               <span>Role</span>
               <strong>{record.role}</strong>
             </div>
+            <div className="admin-directory-meta">
+              <span>Profile</span>
+              <ProfileCompletionBadge completion={record.profileCompletion} />
+            </div>
             <span
               className={
                 record.isBanned ? "admin-record-state is-restricted" : "admin-record-state"
@@ -125,38 +134,55 @@ export function UsersPage() {
         onClose={() => setSelected(null)}
         actions={
           selected ? (
-            <button
-              className="admin-row-action"
-              disabled={selected.id === user?.id}
-              onClick={() => {
-                moderation.reset();
-                setTarget(selected);
-              }}
-            >
-              {selected.isBanned ? "Restore account" : "Restrict account"}
-            </button>
+            <>
+              <PlayerAppLink segments={["profile", selected.username]}>Open profile</PlayerAppLink>
+              <button
+                className="admin-row-action"
+                disabled={selected.id === user?.id}
+                onClick={() => {
+                  moderation.reset();
+                  setTarget(selected);
+                }}
+              >
+                {selected.isBanned ? "Restore account" : "Restrict account"}
+              </button>
+            </>
           ) : null
         }
       >
         {selected ? (
-          <DetailList
-            items={[
-              { label: "Player ID", value: selected.gamerieId },
-              { label: "Account state", value: selected.isBanned ? "Restricted" : "Active" },
-              { label: "Role", value: selected.role },
-              { label: "Email verified", value: selected.emailVerified ? "Yes" : "No" },
-              { label: "Phone verified", value: selected.phoneVerified ? "Yes" : "No" },
-              { label: "Sign-in provider", value: selected.provider },
-              { label: "Region", value: selected.region },
-              { label: "Followers", value: selected.followersCount ?? 0 },
-              { label: "Reports", value: selected.reportCount },
-              {
-                label: "Last login",
-                value: selected.lastLogin ? new Date(selected.lastLogin).toLocaleString() : null,
-              },
-              { label: "Joined", value: new Date(selected.createdAt).toLocaleDateString() },
-            ]}
-          />
+          <>
+            <DetailList
+              items={[
+                { label: "Player ID", value: selected.gamerieId },
+                {
+                  label: "Profile complete",
+                  value: selected.profileCompletion
+                    ? `${selected.profileCompletion.complete ? "Yes" : "No"} (${selected.profileCompletion.score}%)`
+                    : "—",
+                },
+                { label: "Account state", value: selected.isBanned ? "Restricted" : "Active" },
+                { label: "Role", value: selected.role },
+                { label: "Email verified", value: selected.emailVerified ? "Yes" : "No" },
+                { label: "Phone verified", value: selected.phoneVerified ? "Yes" : "No" },
+                { label: "Sign-in provider", value: selected.provider },
+                { label: "Region", value: selected.region },
+                { label: "Followers", value: selected.followersCount ?? 0 },
+                { label: "Reports", value: selected.reportCount },
+                {
+                  label: "Last login",
+                  value: selected.lastLogin ? new Date(selected.lastLogin).toLocaleString() : null,
+                },
+                { label: "Joined", value: new Date(selected.createdAt).toLocaleDateString() },
+              ]}
+            />
+            {selected.profileCompletion ? (
+              <div className="admin-drawer-section">
+                <h3>Profile completeness</h3>
+                <ProfileCompletionBreakdown completion={selected.profileCompletion} />
+              </div>
+            ) : null}
+          </>
         ) : null}
       </DetailDrawer>
       <ModerationDialog

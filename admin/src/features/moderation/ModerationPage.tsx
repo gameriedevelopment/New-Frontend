@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { DetailDrawer, DetailList } from "../../components/DetailDrawer";
 import { getErrorMessage } from "../../lib/errors";
+import { readablePostText } from "../../lib/postContent";
 import {
   useFlaggedComments,
   useFlaggedPosts,
@@ -12,6 +13,7 @@ import {
 } from "./hooks";
 import { ReviewReportDialog } from "./ReviewReportDialog";
 import { RemoveContentDialog } from "./RemoveContentDialog";
+import { ReportPostPreview } from "./ReportPostPreview";
 import type {
   FlaggedComment,
   FlaggedPost,
@@ -60,6 +62,7 @@ export function ModerationPage() {
     null,
   );
   const [receipt, setReceipt] = useState<ModerationRemovalReceipt | null>(null);
+  const [previewReportId, setPreviewReportId] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -121,7 +124,6 @@ export function ModerationPage() {
     <>
       <main className="admin-moderation-page">
         <header className="admin-directory-heading">
-          <span className="admin-eyebrow">Trust and safety</span>
           <h1>Moderation</h1>
           <p>
             Review community reports with context, record a clear decision, and preserve the history
@@ -266,7 +268,7 @@ export function ModerationPage() {
                   >
                     <span className="moderation-row__primary">
                       <strong>{record.authorName || "Unknown author"}</strong>
-                      <small>{excerpt(record.content)}</small>
+                      <small>{excerpt(readablePostText(record.content))}</small>
                     </span>
                     <span className="moderation-row__meta">
                       <small>{record.reportCount} reports</small>
@@ -316,14 +318,29 @@ export function ModerationPage() {
         subtitle={selected ? `Record ${selected.value.id}` : undefined}
         onClose={() => setSelected(null)}
         actions={
-          selectedReport?.status === "pending" ? (
+          selected?.kind === "report" ? (
             <>
-              <button className="admin-secondary-button" onClick={() => setOutcome("dismissed")}>
-                Dismiss
-              </button>
-              <button className="admin-primary-button" onClick={() => setOutcome("resolved")}>
-                Resolve
-              </button>
+              {["post", "team-post", "hub-post"].includes(selected.value.contentType) ? (
+                <button
+                  className="admin-secondary-button"
+                  onClick={() => setPreviewReportId(selected.value.id)}
+                >
+                  View post
+                </button>
+              ) : null}
+              {selectedReport?.status === "pending" ? (
+                <>
+                  <button
+                    className="admin-secondary-button"
+                    onClick={() => setOutcome("dismissed")}
+                  >
+                    Dismiss
+                  </button>
+                  <button className="admin-primary-button" onClick={() => setOutcome("resolved")}>
+                    Resolve
+                  </button>
+                </>
+              ) : null}
             </>
           ) : selected?.kind === "post" || selected?.kind === "comment" ? (
             <button
@@ -354,7 +371,16 @@ export function ModerationPage() {
             />
             <section className="report-context">
               <span className="admin-eyebrow">Reported content</span>
-              <p>{excerpt(selected.value.entity?.content, 500)}</p>
+              <p>{excerpt(readablePostText(selected.value.entity?.content), 500)}</p>
+              {["post", "team-post", "hub-post"].includes(selected.value.contentType) ? (
+                <button
+                  type="button"
+                  className="admin-secondary-button report-context__view"
+                  onClick={() => setPreviewReportId(selected.value.id)}
+                >
+                  View full post
+                </button>
+              ) : null}
             </section>
             <section className="report-audit">
               <span className="admin-eyebrow">Audit history</span>
@@ -394,7 +420,7 @@ export function ModerationPage() {
             />
             <section className="report-context">
               <span className="admin-eyebrow">Content snapshot</span>
-              <p>{selected.value.content}</p>
+              <p>{readablePostText(selected.value.content)}</p>
             </section>
             <p className="moderation-safety-note">
               Removal is permanent. The confirmation requires an operational reason and returns a
@@ -455,6 +481,9 @@ export function ModerationPage() {
           );
         }}
       />
+      {previewReportId ? (
+        <ReportPostPreview reportId={previewReportId} onClose={() => setPreviewReportId(null)} />
+      ) : null}
     </>
   );
 }

@@ -25,6 +25,15 @@
   max-height: min(92dvh, 56rem);
   overflow-y: auto;
 }
+.admin-dialog > .admin-challenge-dialog {
+  width: min(100%, 48rem);
+  max-height: min(92dvh, 56rem);
+  overflow-y: auto;
+}
+.admin-challenge-dialog label > select + input,
+.admin-challenge-dialog label > input + select {
+  margin-top: 0.45rem;
+}
 .admin-competition-form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

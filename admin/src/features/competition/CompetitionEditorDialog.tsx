@@ -12,7 +12,7 @@ type EditorRecord = AdminTournamentRecord | AdminAchievementRecord | null;
 
 interface Props {
   open: boolean;
-  view: CompetitionView;
+  view: Exclude<CompetitionView, "challenges">;
   record: EditorRecord;
   busy: boolean;
   error?: unknown;

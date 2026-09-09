@@ -314,7 +314,7 @@
   min-height: 62px;
   padding: 0.65rem 0;
   border-bottom: 1px solid var(--ao-border-subtle);
-  grid-template-columns: 38px minmax(0, 1fr) auto;
+  grid-template-columns: 38px minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 0.7rem;
 }
@@ -324,6 +324,13 @@
   gap: 0.2rem;
 }
 .finance-signup-list strong {
+  overflow: hidden;
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.finance-signup-profile-link {
+  max-width: 100%;
   overflow: hidden;
   font-size: 0.72rem;
   text-overflow: ellipsis;

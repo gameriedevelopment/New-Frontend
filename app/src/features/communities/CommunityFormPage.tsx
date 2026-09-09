@@ -4,7 +4,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
-import { Button, SafeImage, SearchSelect, SkeletonText, StatePanel } from "../../components/ui";
+import {
+  Button,
+  ImageCropperDialog,
+  SafeImage,
+  SearchSelect,
+  SkeletonText,
+  StatePanel,
+} from "../../components/ui";
 import { getApiErrorMessage } from "../../lib/errors";
 import { useGames } from "../games/hooks";
 import type { Game } from "../games/types";
@@ -137,6 +144,13 @@ function MediaField({
 }) {
   const preview = usePreview(file, current);
   const input = useRef<HTMLInputElement>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
+  const pickFile = (chosen?: File) => {
+    if (!chosen) return;
+    if (!chosen.type.startsWith("image/")) return;
+    if (chosen.size > 5 * 1024 * 1024) return;
+    setCropFile(chosen);
+  };
   return (
     <div className={`community-media-field community-media-field--${shape}`}>
       <div>
@@ -166,7 +180,10 @@ function MediaField({
         ref={input}
         type="file"
         accept="image/png,image/jpeg,image/webp"
-        onChange={(event) => acceptFile(event.target.files?.[0])}
+        onChange={(event) => {
+          pickFile(event.target.files?.[0]);
+          event.target.value = "";
+        }}
       />
       {file ? (
         <button
@@ -180,6 +197,19 @@ function MediaField({
           <Trash2 size={13} />
           Undo selection
         </button>
+      ) : null}
+      {cropFile ? (
+        <ImageCropperDialog
+          file={cropFile}
+          aspect={shape === "logo" ? 1 : 16 / 6}
+          shape={shape === "logo" ? "round" : "rect"}
+          title={`Adjust ${label.toLowerCase()}`}
+          onCancel={() => setCropFile(null)}
+          onCropped={(cropped) => {
+            setCropFile(null);
+            acceptFile(cropped);
+          }}
+        />
       ) : null}
     </div>
   );

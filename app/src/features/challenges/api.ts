@@ -77,3 +77,20 @@ export async function respondReschedule(
 export async function deleteChallenge(id: string, type: ChallengeType): Promise<void> {
   await api.delete(`/challenges/${id}/${type}`);
 }
+
+export interface ReportScorePayload {
+  challengeId: string;
+  contentAuthorId: string;
+  type: "spam" | "harassment" | "inappropriate" | "other";
+  reason: string;
+}
+
+export async function reportChallengeScore(payload: ReportScorePayload): Promise<void> {
+  await api.post("/reports", {
+    contentId: payload.challengeId,
+    contentType: "match",
+    contentAuthorId: payload.contentAuthorId,
+    type: payload.type,
+    reason: payload.reason,
+  });
+}

@@ -3,7 +3,7 @@ import { useEffect, useId, useState, type FormEvent } from "react";
 interface Props {
   open: boolean;
   name: string;
-  kind: "tournament" | "achievement";
+  kind: "tournament" | "challenge" | "achievement";
   busy: boolean;
   error?: string;
   onClose: () => void;
@@ -41,8 +41,8 @@ export function CompetitionDeleteDialog({
         <header>
           <h2 id={titleId}>Remove {kind}</h2>
           <p>
-            <strong>{name}</strong> can only be removed when it has no active competition
-            relationships. The permanent action and reason are audited.
+            <strong>{name}</strong> will be permanently removed. Related challenge results are
+            safely reversed when required, and the action and reason are audited.
           </p>
         </header>
         <label>

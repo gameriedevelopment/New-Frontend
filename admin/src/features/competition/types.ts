@@ -1,6 +1,6 @@
 import type { DirectoryQuery } from "../../lib/contracts";
 
-export type CompetitionView = "tournaments" | "achievements";
+export type CompetitionView = "tournaments" | "challenges" | "achievements";
 export type TournamentStatus = "upcoming" | "ongoing" | "completed";
 export type AchievementCategory = "competitor" | "social" | "team" | "challenges" | "tournaments";
 
@@ -12,6 +12,75 @@ export interface AdminTournamentQuery extends DirectoryQuery {
 export interface AdminAchievementQuery extends DirectoryQuery {
   category?: AchievementCategory;
   game?: string;
+}
+
+export type AdminChallengeStatus =
+  | "pending"
+  | "accepted"
+  | "reschedule_pending"
+  | "rejected"
+  | "cancelled"
+  | "completed"
+  | "expired";
+
+export interface AdminChallengeQuery extends DirectoryQuery {
+  status?: AdminChallengeStatus;
+}
+
+export interface AdminChallengeRecord {
+  id: string;
+  type: "user" | "team";
+  challengerId?: string | null;
+  challengerName?: string | null;
+  challengedId?: string | null;
+  challengedName?: string | null;
+  challengerTeamId?: string | null;
+  challengerTeamName?: string | null;
+  challengedTeamId?: string | null;
+  challengedTeamName?: string | null;
+  eventId?: string | null;
+  game: string;
+  scheduledDate: string;
+  format: string;
+  teamSize?: number | null;
+  stakes?: string | null;
+  tokenAmount?: number | null;
+  message?: string | null;
+  status: AdminChallengeStatus;
+  reportCount: number;
+  lastReportedAt?: string | null;
+  result?: {
+    winnerId: string;
+    score: string;
+    p1Score?: number;
+    p2Score?: number;
+    notes?: string;
+  } | null;
+  initiatedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateAdminChallengeInput {
+  player1Id: string;
+  player2Id: string;
+  gameId: string;
+  scheduledDate: string;
+  format: string;
+  message?: string;
+}
+
+export interface UpdateAdminChallengeInput {
+  game?: string;
+  scheduledDate?: string;
+  format?: string;
+  message?: string;
+  status?: AdminChallengeStatus;
+  p1Score?: number;
+  p2Score?: number;
+  winnerId?: string;
+  resultNotes?: string;
+  reason: string;
 }
 
 export interface AdminTournamentRecord {

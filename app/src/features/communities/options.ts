@@ -51,6 +51,18 @@ function formatOffset(offsetMinutes: number): string {
 
 let timezoneCache: TimezoneOption[] | undefined;
 
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+
+const HIERARCHY_ROLES = new Set(["owner", "admin", "manager", "captain", "co-owner"]);
+
+export function formatMemberRole(role?: string | null, title?: string | null): string {
+  const normalizedRole = (role || "").toLowerCase().trim();
+  if (normalizedRole && HIERARCHY_ROLES.has(normalizedRole)) return capitalize(normalizedRole);
+  if (title && title.trim()) return capitalize(title.trim());
+  if (normalizedRole) return capitalize(normalizedRole);
+  return "Member";
+}
+
 export function getTimezoneOptions(): TimezoneOption[] {
   if (timezoneCache) return timezoneCache;
   const intl = Intl as typeof Intl & { supportedValuesOf?: (key: "timeZone") => string[] };

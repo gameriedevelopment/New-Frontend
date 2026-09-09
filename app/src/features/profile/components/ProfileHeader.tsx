@@ -1,7 +1,7 @@
 import { MapPin, MessageCircle, Settings, Share2, Swords, UserMinus, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Button, SafeImage } from "../../../components/ui";
+import { Button, ImageViewer, SafeImage } from "../../../components/ui";
 import { useAuthStore } from "../../auth/authStore";
 import { useCreateConversation } from "../../messages/hooks";
 import { useTogglePlayerFollow } from "../hooks";
@@ -19,6 +19,7 @@ export function ProfileHeader({ own, profile }: { own: boolean; profile: PlayerP
     Boolean(profile.isFollowedByCurrentUser),
   );
   const [network, setNetwork] = useState<"followers" | "following" | null>(null);
+  const [viewing, setViewing] = useState<"avatar" | "cover" | null>(null);
   const location = profile.personalInfo?.location || profile.region;
   const followers = Number(profile.followersCount ?? profile.followers?.length ?? 0);
   const following = profile.following?.length ?? 0;
@@ -39,7 +40,12 @@ export function ProfileHeader({ own, profile }: { own: boolean; profile: PlayerP
   return (
     <>
       <section className="profile-hero">
-        <div className="profile-hero__cover">
+        <button
+          type="button"
+          className="profile-hero__cover profile-hero__cover--view"
+          onClick={() => setViewing("cover")}
+          aria-label="View cover image"
+        >
           <SafeImage
             src={profile.backgroundImage}
             fallback="/profile-cover-fallback.jpg"
@@ -47,14 +53,20 @@ export function ProfileHeader({ own, profile }: { own: boolean; profile: PlayerP
             loading="eager"
             fetchPriority="high"
           />
-        </div>
+        </button>
         <div className="profile-hero__identity">
-          <SafeImage
-            className="profile-hero__avatar"
-            src={profile.profileImage}
-            alt={`${profile.username}'s profile`}
-            loading="eager"
-          />
+          <button
+            type="button"
+            className="profile-hero__avatar profile-hero__avatar--view"
+            onClick={() => setViewing("avatar")}
+            aria-label={`View ${profile.username}'s profile image`}
+          >
+            <SafeImage
+              src={profile.profileImage}
+              alt={`${profile.username}'s profile`}
+              loading="eager"
+            />
+          </button>
           <div className="profile-hero__name">
             <div className="profile-hero__eyebrow">
               <span>
@@ -190,6 +202,15 @@ export function ProfileHeader({ own, profile }: { own: boolean; profile: PlayerP
       ) : null}
       {network ? (
         <NetworkDialog kind={network} profileId={profile.id} onClose={() => setNetwork(null)} />
+      ) : null}
+      {viewing ? (
+        <ImageViewer
+          src={viewing === "avatar" ? profile.profileImage : profile.backgroundImage}
+          alt={viewing === "avatar" ? `${profile.username}'s profile image` : "Cover image"}
+          fallback={viewing === "avatar" ? undefined : "/profile-cover-fallback.jpg"}
+          shape={viewing === "avatar" ? "round" : "rect"}
+          onClose={() => setViewing(null)}
+        />
       ) : null}
     </>
   );

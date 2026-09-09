@@ -7,6 +7,7 @@ import type {
   ModerationReport,
   ModerationRemovalReceipt,
   ReportAuditEntry,
+  ReportContext,
   ReportQuery,
   ReportStatus,
   ReportsPage,
@@ -45,6 +46,11 @@ export async function getReportAudit(reportId: string) {
   const { data } = await api.get<ApiEnvelope<ReportAuditEntry[]>>(
     `/admin/reports/${reportId}/audit`,
   );
+  return data.data;
+}
+
+export async function getReportContext(reportId: string) {
+  const { data } = await api.get<ApiEnvelope<ReportContext>>(`/admin/reports/${reportId}/context`);
   return data.data;
 }
 

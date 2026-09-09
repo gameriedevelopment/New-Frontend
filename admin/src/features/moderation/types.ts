@@ -60,6 +60,42 @@ export interface ModerationRemovalReceipt {
   message: string;
 }
 
+export interface ReportedPostComment {
+  id: string;
+  content: string;
+  authorId: string;
+  authorName: string;
+  authorImage: string;
+  createdAt: string;
+  likeCount: number;
+}
+
+export interface ReportContext {
+  report: {
+    id: string;
+    contentId: string;
+    contentType: string;
+    type: ReportKind;
+    reason: string;
+    status: ReportStatus;
+    createdAt: string;
+    reporter: { id: string; username: string | null; profileImage: string | null };
+    author: { id: string; username: string | null; profileImage: string | null };
+  };
+  post: {
+    id: string;
+    content: string;
+    media: string[];
+    authorId: string;
+    authorName: string;
+    authorImage: string;
+    createdAt: string;
+    likeCount: number;
+    commentCount: number;
+    comments: ReportedPostComment[];
+  } | null;
+}
+
 export interface ReportsPage {
   data: ModerationReport[];
   total: number;

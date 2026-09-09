@@ -1,4 +1,5 @@
 import type { DirectoryQuery } from "../../lib/contracts";
+import type { ProfileCompletion } from "../users/types";
 
 export interface FinanceSummary {
   purchases: { currency: string; fiatAmount: string; glkAmount: string; count: number }[];
@@ -68,4 +69,5 @@ export interface ReferralSignupRecord {
   status: "pending" | "qualified" | "rewarded" | "rejected";
   rewardPoints: number;
   createdAt: string;
+  profileCompletion?: ProfileCompletion;
 }
