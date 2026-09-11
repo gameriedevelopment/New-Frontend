@@ -196,6 +196,7 @@ function CommunityPosts({ kind, id }: { kind: "team" | "hub"; id: string }) {
 export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
   const { communitySlug } = useParams();
   const [params, setParams] = useSearchParams();
+  const [viewing, setViewing] = useState<"logo" | "cover" | null>(null);
   const query = useCommunityDetail(kind, communitySlug);
   const hubMember = Boolean(
     query.data?.viewerRelationship?.isMember || query.data?.viewerRelationship?.isOwner,
@@ -233,7 +234,6 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
       </main>
     );
   const item = query.data;
-  const [viewing, setViewing] = useState<"logo" | "cover" | null>(null);
   const hub = item as HubSummary;
   const team = item as TeamSummary;
   const slug = communitySlug || item.slug || item.id;
