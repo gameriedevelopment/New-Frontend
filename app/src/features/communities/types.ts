@@ -68,6 +68,7 @@ export interface TeamSummary {
   achievements?: CompetitionItem[];
   tournaments?: CompetitionItem[];
   milestones?: CompetitionItem[];
+  hubs?: HubSummary[];
   viewerRelationship?: ViewerRelationship;
 }
 export interface HubSummary {
@@ -142,6 +143,7 @@ export interface HubTeamRequestSummary {
   direction?: "request" | "invite";
   createdAt?: string;
   team?: TeamSummary;
+  hub?: HubSummary;
   requestedBy?: CommunityUser;
 }
 export interface HubPendingInvites {

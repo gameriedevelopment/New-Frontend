@@ -1,15 +1,15 @@
 import {
   ArrowLeft,
   Building2,
+  ChevronRight,
   Gamepad2,
   Globe2,
   LockKeyhole,
   MapPin,
   Shield,
   Trophy,
-  Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   Button,
@@ -54,6 +54,79 @@ const hubTabs: Array<{ value: HubTab; label: string }> = [
   { value: "posts", label: "Posts" },
 ];
 const amount = (direct?: number, relation?: unknown[]) => direct ?? relation?.length ?? 0;
+const PREVIEW_LIMIT = 4;
+const teamHref = (entry: TeamSummary) =>
+  `/teams/${encodeURIComponent(entry.slug || entry.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"))}`;
+
+function ShowcaseHeader({
+  title,
+  hint,
+  count,
+  onViewAll,
+  viewAllLabel,
+}: {
+  title: string;
+  hint?: string;
+  count?: number;
+  onViewAll?: () => void;
+  viewAllLabel?: string;
+}) {
+  return (
+    <header>
+      <div>
+        <h2>{title}</h2>
+        {hint ? <p>{hint}</p> : null}
+      </div>
+      {onViewAll ? (
+        <button type="button" className="community-showcase__viewall" onClick={onViewAll}>
+          {viewAllLabel ?? "View all"}
+          {typeof count === "number" && count > 0 ? <span>{count}</span> : null}
+          <ChevronRight size={14} />
+        </button>
+      ) : typeof count === "number" ? (
+        <span>{count}</span>
+      ) : null}
+    </header>
+  );
+}
+
+function CollapsibleText({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = text.length > 320;
+  const shown = expanded || !isLong ? text : `${text.slice(0, 320).trimEnd()}…`;
+  return (
+    <>
+      <p>{shown}</p>
+      {isLong ? (
+        <button
+          type="button"
+          className="community-showcase__seemore"
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {expanded ? "See less" : "See more"}
+        </button>
+      ) : null}
+    </>
+  );
+}
+
+function AvatarStack({ members, total }: { members: CommunityMember[]; total: number }) {
+  const shown = members.slice(0, 6);
+  const remainder = total - shown.length;
+  if (!shown.length) return null;
+  return (
+    <div className="community-avatar-stack" aria-hidden="true">
+      {shown.map((member, index) => (
+        <span key={member.id || member.user?.id || index} className="community-avatar-stack__item">
+          <SafeImage src={member.user?.profileImage} fallback="/avatar-fallback.svg" alt="" />
+        </span>
+      ))}
+      {remainder > 0 ? (
+        <span className="community-avatar-stack__more">+{remainder.toLocaleString()}</span>
+      ) : null}
+    </div>
+  );
+}
 
 function DetailSkeleton() {
   return (
@@ -193,14 +266,63 @@ function CommunityPosts({ kind, id }: { kind: "team" | "hub"; id: string }) {
   );
 }
 
+function RecentPostsPreview({
+  kind,
+  id,
+  onViewAll,
+}: {
+  kind: "team" | "hub";
+  id: string;
+  onViewAll: () => void;
+}) {
+  const POST_PREVIEW = 2;
+  const query = useCommunityPosts(kind, id, true);
+  const recent = useMemo(
+    () =>
+      [...(query.data ?? [])]
+        .sort((a, b) => Number(Boolean(b.isAnnouncement)) - Number(Boolean(a.isAnnouncement)))
+        .slice(0, POST_PREVIEW),
+    [query.data],
+  );
+  if (query.isLoading) {
+    return (
+      <section className="community-section">
+        <ShowcaseHeader title="Recent activity" />
+        <SkeletonText lines={4} />
+      </section>
+    );
+  }
+  return (
+    <section className="community-section">
+      <ShowcaseHeader
+        title="Recent activity"
+        hint="The latest updates from this community."
+        count={query.data?.length}
+        onViewAll={(query.data?.length ?? 0) > POST_PREVIEW ? onViewAll : undefined}
+        viewAllLabel="View all posts"
+      />
+      {recent.length ? (
+        <div className="community-post-list community-post-list--preview">
+          {recent.map((post) => (
+            <FeedPostCard key={post.id} post={post} />
+          ))}
+        </div>
+      ) : (
+        <StatePanel
+          title="No posts yet"
+          description="Updates from this community will appear here."
+        />
+      )}
+    </section>
+  );
+}
+
 export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
   const { communitySlug } = useParams();
   const [params, setParams] = useSearchParams();
   const [viewing, setViewing] = useState<"logo" | "cover" | null>(null);
   const query = useCommunityDetail(kind, communitySlug);
-  const hubMember = Boolean(
-    query.data?.viewerRelationship?.isMember || query.data?.viewerRelationship?.isOwner,
-  );
+  const hubRestricted = Boolean((query.data as HubSummary | undefined)?.restricted);
   const tabs =
     kind === "team"
       ? [
@@ -210,7 +332,7 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
             : []),
         ]
       : [
-          ...(hubMember ? hubTabs : hubTabs.filter((tab) => tab.value === "overview")),
+          ...(hubRestricted ? hubTabs.filter((tab) => tab.value === "overview") : hubTabs),
           ...(query.data?.viewerRelationship?.canManage
             ? [{ value: "manage" as HubTab, label: "Manage" }]
             : []),
@@ -240,6 +362,13 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
   const relationship = item.viewerRelationship;
   const memberCount = amount(item.membersCount, item.members);
   const followerCount = amount(item.followersCount, item.followers);
+  const teamCount = amount(hub.teamsCount, hub.teams);
+  const gameCount = item.games?.length ?? 0;
+  const goToTab = (value: string) => {
+    const next = new URLSearchParams(params);
+    value === "overview" ? next.delete("tab") : next.set("tab", value);
+    setParams(next, { replace: true });
+  };
   const requestedMembershipAction = params.get("membershipAction");
   const membershipAction =
     kind === "hub" &&
@@ -367,6 +496,18 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
                   </span>
                 ))
               )}
+              {kind === "team" && team.hubs?.length
+                ? team.hubs.map((hub) => (
+                    <Link
+                      key={hub.id}
+                      className="community-identity__hub"
+                      to={`/hubs/${hub.slug ?? hub.id}`}
+                    >
+                      <Building2 size={13} />
+                      Member of: {hub.name}
+                    </Link>
+                  ))
+                : null}
             </div>
           </div>
           <CommunityActions kind={kind} item={item} slug={slug} />
@@ -421,64 +562,201 @@ export function CommunityDetailPage({ kind }: { kind: "team" | "hub" }) {
       </nav>
       <div className="community-tab-content">
         {active === "overview" ? (
-          <div className="community-overview-grid">
-            <section className="community-section community-section--about">
-              <header>
-                <h2>{kind === "team" ? "About the team" : "About this hub"}</h2>
-              </header>
-              <p>
-                {item.description ||
-                  "More details will appear as this community completes its profile."}
-              </p>
-              {item.games?.length ? (
-                <div className="community-tags">
+          <div className="community-showcase">
+            <div className="community-overview-grid">
+              <section className="community-section community-section--about">
+                <header>
+                  <h2>{kind === "team" ? "About the team" : "About this hub"}</h2>
+                </header>
+                <CollapsibleText
+                  text={
+                    item.description ||
+                    "More details will appear as this community completes its profile."
+                  }
+                />
+              </section>
+              <aside className="community-section">
+                <header>
+                  <h2>{kind === "team" ? "Competitive record" : "Hub at a glance"}</h2>
+                </header>
+                <dl className="community-detail-stats">
+                  {kind === "team" ? (
+                    <>
+                      <div>
+                        <dt>Matches</dt>
+                        <dd>{Number(team.stats?.matchesPlayed || 0).toLocaleString()}</dd>
+                      </div>
+                      <div>
+                        <dt>Wins</dt>
+                        <dd>{Number(team.stats?.wins || 0).toLocaleString()}</dd>
+                      </div>
+                      <div>
+                        <dt>Ranking</dt>
+                        <dd>{team.stats?.ranking ? `#${team.stats.ranking}` : "Unranked"}</dd>
+                      </div>
+                      <div>
+                        <dt>Followers</dt>
+                        <dd>{followerCount.toLocaleString()}</dd>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <dt>Members</dt>
+                        <dd>{memberCount.toLocaleString()}</dd>
+                      </div>
+                      <div>
+                        <dt>Teams</dt>
+                        <dd>{teamCount.toLocaleString()}</dd>
+                      </div>
+                      <div>
+                        <dt>Followers</dt>
+                        <dd>{followerCount.toLocaleString()}</dd>
+                      </div>
+                      {gameCount ? (
+                        <div>
+                          <dt>Games</dt>
+                          <dd>{gameCount.toLocaleString()}</dd>
+                        </div>
+                      ) : null}
+                      <div>
+                        <dt>Region</dt>
+                        <dd>{hub.region || hub.country || "Global"}</dd>
+                      </div>
+                      <div>
+                        <dt>Access</dt>
+                        <dd>{hub.joinPolicy || "Request"}</dd>
+                      </div>
+                    </>
+                  )}
+                </dl>
+              </aside>
+            </div>
+
+            {item.games?.length ? (
+              <section className="community-section">
+                <ShowcaseHeader
+                  title="Games"
+                  hint={
+                    kind === "team"
+                      ? "Titles this team competes in."
+                      : "Titles played across this hub."
+                  }
+                  count={item.games.length}
+                />
+                <div className="community-game-grid">
                   {item.games.map((game) => (
-                    <span key={game.id || game.name}>
-                      <Gamepad2 size={13} />
-                      {game.name}
-                    </span>
+                    <div className="community-game-card" key={game.id || game.name}>
+                      <Gamepad2 size={16} />
+                      <div>
+                        <strong>{game.name}</strong>
+                        {game.platforms?.length ? (
+                          <small>{game.platforms.join(" · ")}</small>
+                        ) : null}
+                      </div>
+                    </div>
                   ))}
                 </div>
-              ) : null}
-            </section>
-            <aside className="community-section">
-              <header>
-                <h2>{kind === "team" ? "Competitive record" : "Community access"}</h2>
-              </header>
-              <dl className="community-detail-stats">
-                {kind === "team" ? (
-                  <>
-                    <div>
-                      <dt>Matches</dt>
-                      <dd>{Number(team.stats?.matchesPlayed || 0).toLocaleString()}</dd>
-                    </div>
-                    <div>
-                      <dt>Wins</dt>
-                      <dd>{Number(team.stats?.wins || 0).toLocaleString()}</dd>
-                    </div>
-                    <div>
-                      <dt>Ranking</dt>
-                      <dd>{team.stats?.ranking ? `#${team.stats.ranking}` : "Unranked"}</dd>
-                    </div>
-                  </>
+              </section>
+            ) : null}
+
+            {kind === "hub" ? (
+              <section className="community-section">
+                <ShowcaseHeader
+                  title="Teams"
+                  hint="Teams that make up this hub."
+                  count={teamCount}
+                  onViewAll={teamCount > PREVIEW_LIMIT ? () => goToTab("teams") : undefined}
+                  viewAllLabel="View all teams"
+                />
+                {hub.teams?.length ? (
+                  <div className="community-team-list">
+                    {hub.teams.slice(0, PREVIEW_LIMIT).map((entry) => (
+                      <Link to={teamHref(entry)} key={entry.id}>
+                        <SafeImage src={entry.logo} fallback="/avatar-fallback.svg" alt="" />
+                        <div>
+                          <strong>{entry.name}</strong>
+                          <span>
+                            {entry.games?.[0]?.name ||
+                              entry.level ||
+                              entry.region ||
+                              "Gamerie team"}
+                          </span>
+                        </div>
+                        <ChevronRight size={15} />
+                      </Link>
+                    ))}
+                  </div>
                 ) : (
-                  <>
-                    <div>
-                      <dt>Join policy</dt>
-                      <dd>{hub.joinPolicy || "Request"}</dd>
-                    </div>
-                    <div>
-                      <dt>Visibility</dt>
-                      <dd>{hub.visibility || "Public"}</dd>
-                    </div>
-                    <div>
-                      <dt>Region</dt>
-                      <dd>{hub.region || hub.country || "Global"}</dd>
-                    </div>
-                  </>
+                  <StatePanel
+                    title="No teams yet"
+                    description="Teams connected to this hub will appear here."
+                  />
                 )}
-              </dl>
-            </aside>
+              </section>
+            ) : null}
+
+            <section className="community-section">
+              <ShowcaseHeader
+                title={kind === "team" ? "Roster" : "Members"}
+                hint={
+                  kind === "team"
+                    ? "The people representing this team."
+                    : "The community behind this hub."
+                }
+                count={memberCount}
+                onViewAll={
+                  memberCount > PREVIEW_LIMIT
+                    ? () => goToTab(kind === "team" ? "roster" : "members")
+                    : undefined
+                }
+                viewAllLabel={kind === "team" ? "View full roster" : "View all members"}
+              />
+              {item.members?.length ? (
+                <>
+                  <AvatarStack members={item.members} total={memberCount} />
+                  <Members members={item.members.slice(0, PREVIEW_LIMIT)} />
+                </>
+              ) : (
+                <StatePanel
+                  title="No members to show yet"
+                  description="People will appear here as this community grows."
+                />
+              )}
+            </section>
+
+            {kind === "team" &&
+            (team.tournaments?.length || team.achievements?.length || team.milestones?.length) ? (
+              <section className="community-section">
+                <ShowcaseHeader
+                  title="Competitive highlights"
+                  hint="Recent tournaments and achievements."
+                  onViewAll={() => goToTab("competition")}
+                  viewAllLabel="View competition"
+                />
+                <div className="community-records">
+                  {[
+                    ...(team.tournaments ?? []),
+                    ...(team.achievements ?? []),
+                    ...(team.milestones ?? []),
+                  ]
+                    .slice(0, 3)
+                    .map((entry, index) => (
+                      <article key={entry.id || index}>
+                        <Trophy size={15} />
+                        <div>
+                          <strong>{entry.title || entry.name || "Competitive milestone"}</strong>
+                          <p>
+                            {entry.description || entry.status || "Recorded on the team profile."}
+                          </p>
+                        </div>
+                      </article>
+                    ))}
+                </div>
+              </section>
+            ) : null}
+
+            <RecentPostsPreview kind={kind} id={item.id} onViewAll={() => goToTab("posts")} />
           </div>
         ) : null}
         {kind === "team" && active === "roster" ? (

@@ -21,6 +21,7 @@ import {
   getTeam,
   getTeamFollowers,
   getTeamGameRanks,
+  getTeamHubInvites,
   getTeamInvites,
   getTeamPendingInvites,
   getTeamRequests,
@@ -28,6 +29,7 @@ import {
   getTeamWallet,
   getTeamWalletInsights,
   getTeamWalletTransactions,
+  createTeamHubRequest,
   inviteHubMember,
   inviteTeamMember,
   inviteTeamToHub,
@@ -211,8 +213,38 @@ const refreshTeam = (client: ReturnType<typeof useQueryClient>, teamId: string, 
   void client.invalidateQueries({ queryKey: ["team", "detail", slug] });
   void client.invalidateQueries({ queryKey: ["team-operations", teamId] });
   void client.invalidateQueries({ queryKey: ["teams", "directory"] });
+  // Team↔hub affiliation changes are reflected on any open hub profile too.
+  void client.invalidateQueries({ queryKey: ["hub", "detail"] });
   refreshMembershipCaches(client);
 };
+export function useTeamHubInvites(teamId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ["team-operations", teamId, "hub-invites"],
+    queryFn: () => getTeamHubInvites(teamId),
+    enabled,
+    staleTime: 15_000,
+  });
+}
+export function useRespondTeamHubInvite(teamId: string, slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ requestId, accept }: { requestId: string; accept: boolean }) =>
+      respondHubTeamRequest(requestId, accept),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: ["team-operations", teamId, "hub-invites"] });
+      void client.invalidateQueries({ queryKey: ["hubs", "directory"] });
+      refreshTeam(client, teamId, slug);
+    },
+  });
+}
+export function useCreateTeamHubRequest(teamId: string, slug: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ hubId, message }: { hubId: string; message?: string }) =>
+      createTeamHubRequest(teamId, hubId, message),
+    onSuccess: () => refreshTeam(client, teamId, slug),
+  });
+}
 export function useTeamRequests(teamId: string, enabled: boolean) {
   return useQuery({
     queryKey: ["team-operations", teamId, "requests"],
@@ -289,6 +321,9 @@ const refreshHub = (client: ReturnType<typeof useQueryClient>, hubId: string, sl
   void client.invalidateQueries({ queryKey: ["hub", "detail", slug] });
   void client.invalidateQueries({ queryKey: ["hub-operations", hubId] });
   void client.invalidateQueries({ queryKey: ["hubs", "directory"] });
+  // Approving/removing a team affects that team's profile (its hub membership).
+  void client.invalidateQueries({ queryKey: ["team", "detail"] });
+  void client.invalidateQueries({ queryKey: ["teams", "directory"] });
   refreshMembershipCaches(client);
   void client.invalidateQueries({ queryKey: ["notifications"] });
 };

@@ -223,6 +223,13 @@ export async function inviteHubMember(hubId: string, userId: string, message?: s
 export async function inviteTeamToHub(hubId: string, teamId: string, message?: string) {
   await api.post(`/hubs/${hubId}/invite-team`, { teamId, message });
 }
+export async function getTeamHubInvites(teamId: string) {
+  const { data } = await api.get<Envelope<HubTeamRequestSummary[]>>(`/hubs/team-invites/${teamId}`);
+  return Array.isArray(data.data) ? data.data : [];
+}
+export async function createTeamHubRequest(teamId: string, hubId: string, message?: string) {
+  await api.post(`/hubs/team-request`, { teamId, hubId, message });
+}
 export async function respondHubRequest(requestId: string, accept: boolean) {
   await api.patch(`/hubs/request/${requestId}/${accept ? "accept" : "reject"}`);
 }

@@ -3,6 +3,7 @@ import {
   ChevronRight,
   Gamepad2,
   MailPlus,
+  RadioTower,
   Search,
   ShieldCheck,
   Trophy,
@@ -21,10 +22,14 @@ import type { PlayerProfile } from "../../profile/types";
 import {
   useCancelTeamInvite,
   useChangeTeamMember,
+  useCommunityDirectory,
+  useCreateTeamHubRequest,
   useInviteTeamMember,
   useRemoveTeamMember,
+  useRespondTeamHubInvite,
   useRespondTeamRequest,
   useTeamGameRanks,
+  useTeamHubInvites,
   useTeamPendingInvites,
   useTeamRequests,
 } from "../hooks";
@@ -46,7 +51,7 @@ const titles = [
 const isPlayer = (item: SearchEntity): item is PlayerProfile => "username" in item;
 const memberUserId = (member: CommunityMember) =>
   member.user?.id || member.userId || member.id || "";
-type TeamManageView = "access" | "roster" | "competition" | "ownership";
+type TeamManageView = "access" | "roster" | "hubs" | "competition" | "ownership";
 
 function Person({ request }: { request: TeamRequestSummary }) {
   const user = request.user;
@@ -68,6 +73,7 @@ export function TeamOperations({ team, slug }: { team: TeamSummary; slug: string
   const managementViews: Array<{ value: TeamManageView; label: string }> = [
     { value: "access", label: "Access" },
     { value: "roster", label: "Roster" },
+    ...(relationship?.isOwner ? [{ value: "hubs" as const, label: "Hubs" }] : []),
     { value: "competition", label: "Competition" },
     ...(relationship?.isOwner ? [{ value: "ownership" as const, label: "Ownership" }] : []),
   ];
@@ -95,6 +101,27 @@ export function TeamOperations({ team, slug }: { team: TeamSummary; slug: string
   const cancel = useCancelTeamInvite(team.id, slug);
   const changeMember = useChangeTeamMember(team.id, slug);
   const removeMember = useRemoveTeamMember(team.id, slug);
+  const [hubSearch, setHubSearch] = useState("");
+  const debouncedHub = useDebouncedValue(hubSearch.trim(), 260);
+  const hubInvites = useTeamHubInvites(
+    team.id,
+    Boolean(relationship?.isOwner) && activeView === "hubs",
+  );
+  const hubDirectory = useCommunityDirectory(
+    "hubs",
+    { search: debouncedHub || undefined },
+    Boolean(relationship?.isOwner) && activeView === "hubs" && debouncedHub.length > 0,
+  );
+  const respondHubInvite = useRespondTeamHubInvite(team.id, slug);
+  const requestHub = useCreateTeamHubRequest(team.id, slug);
+  const pendingHubInvites = useMemo(
+    () => (hubInvites.data ?? []).filter((entry) => (entry.status ?? "pending") === "pending"),
+    [hubInvites.data],
+  );
+  const hubCandidates = useMemo(
+    () => (hubDirectory.data?.pages.flatMap((page) => page.items) ?? []).slice(0, 6),
+    [hubDirectory.data],
+  );
   const candidates = useMemo(
     () =>
       (search.data?.pages.flatMap((page) => page.data) ?? [])
@@ -414,6 +441,136 @@ export function TeamOperations({ team, slug }: { team: TeamSummary; slug: string
               description="No roster members were returned for this team."
             />
           )}
+        </section>
+      </div>
+      <div
+        className="community-manage-panel"
+        id="team-manage-panel-hubs"
+        role="tabpanel"
+        aria-labelledby="team-manage-tab-hubs"
+        hidden={activeView !== "hubs"}
+      >
+        <section className="community-section">
+          <header>
+            <div>
+              <h2>Hub invitations</h2>
+              <p>Hubs that invited this team to affiliate. Accept to join, or decline.</p>
+            </div>
+            <span>{pendingHubInvites.length} pending</span>
+          </header>
+          {hubInvites.isLoading ? (
+            <SkeletonText lines={4} />
+          ) : hubInvites.isError ? (
+            <StatePanel
+              tone="error"
+              title="Invitations could not load"
+              description={getApiErrorMessage(hubInvites.error, "Try this queue again.")}
+              action={
+                <Button size="small" variant="secondary" onClick={() => hubInvites.refetch()}>
+                  Retry
+                </Button>
+              }
+            />
+          ) : pendingHubInvites.length ? (
+            <div className="team-operation-list">
+              {pendingHubInvites.map((entry) => (
+                <article key={entry.id}>
+                  <span className="team-operations__hub-identity">
+                    <SafeImage src={entry.hub?.logo} fallback="/avatar-fallback.svg" alt="" />
+                    <span>
+                      <strong>{entry.hub?.name ?? "Hub"}</strong>
+                      {entry.hub?.region ? <small>{entry.hub.region}</small> : null}
+                    </span>
+                  </span>
+                  {entry.message ? <p>{entry.message}</p> : null}
+                  <div>
+                    <Button
+                      size="small"
+                      variant="quiet"
+                      disabled={respondHubInvite.isPending}
+                      onClick={() =>
+                        respondHubInvite.mutate({ requestId: entry.id, accept: false })
+                      }
+                    >
+                      <X size={13} />
+                      Decline
+                    </Button>
+                    <Button
+                      size="small"
+                      disabled={respondHubInvite.isPending}
+                      onClick={() => respondHubInvite.mutate({ requestId: entry.id, accept: true })}
+                    >
+                      <Check size={13} />
+                      Accept
+                    </Button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="community-section__empty">No hub invitations need attention.</p>
+          )}
+          {respondHubInvite.isError ? (
+            <p className="community-action-error" role="alert">
+              {getApiErrorMessage(respondHubInvite.error, "This invitation could not be updated.")}
+            </p>
+          ) : null}
+        </section>
+
+        <section className="community-section">
+          <header>
+            <div>
+              <h2>Request to join a hub</h2>
+              <p>Search a hub and ask its owners to affiliate this team.</p>
+            </div>
+            <RadioTower size={17} />
+          </header>
+          <form onSubmit={(event) => event.preventDefault()}>
+            <label>
+              <span className="sr-only">Hub name</span>
+              <Search size={15} />
+              <input
+                value={hubSearch}
+                onChange={(event) => setHubSearch(event.target.value)}
+                placeholder="Search a hub"
+                autoComplete="off"
+              />
+            </label>
+          </form>
+          {debouncedHub ? (
+            <div className="team-invite-results" aria-live="polite">
+              {hubDirectory.isLoading ? (
+                <SkeletonText lines={3} />
+              ) : hubCandidates.length ? (
+                hubCandidates.map((hub) => (
+                  <button
+                    type="button"
+                    key={hub.id}
+                    disabled={requestHub.isPending}
+                    onClick={() => requestHub.mutate({ hubId: hub.id })}
+                  >
+                    <SafeImage src={hub.logo} fallback="/avatar-fallback.svg" alt="" />
+                    <span>
+                      <strong>{hub.name}</strong>
+                      {hub.region ? <small>{hub.region}</small> : null}
+                    </span>
+                    <MailPlus size={14} />
+                  </button>
+                ))
+              ) : (
+                <p>No matching hubs found.</p>
+              )}
+            </div>
+          ) : null}
+          {requestHub.isError ? (
+            <p className="community-action-error" role="alert">
+              {getApiErrorMessage(requestHub.error, "The request could not be sent.")}
+            </p>
+          ) : requestHub.isSuccess ? (
+            <p className="community-action-success" role="status">
+              Request sent to the hub.
+            </p>
+          ) : null}
         </section>
       </div>
       <div
