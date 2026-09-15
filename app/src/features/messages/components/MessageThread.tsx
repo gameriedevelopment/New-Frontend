@@ -82,6 +82,10 @@ export function MessageThread({
     conversation.type === "user" && identity.teammate?.username
       ? `/profile/${encodeURIComponent(identity.teammate.username)}`
       : null;
+  const teamProfilePath =
+    conversation.type !== "user" && conversation.team?.id
+      ? `/teams/${encodeURIComponent(conversation.team.id)}`
+      : null;
   const send = useSendMessage(conversation.id, user);
   const edit = useEditMessage(conversation.id);
   const remove = useDeleteMessage(conversation.id);
@@ -190,15 +194,25 @@ export function MessageThread({
         >
           <ArrowLeft size={18} />
         </button>
-        {teammateProfilePath ? (
+        {teammateProfilePath || teamProfilePath ? (
           <Link
             className="message-thread__avatar"
-            to={teammateProfilePath}
-            aria-label={`View ${identity.name}'s profile`}
-            title={`View ${identity.name}'s profile`}
+            to={teammateProfilePath || teamProfilePath!}
+            aria-label={
+              teammateProfilePath ? `View ${identity.name}'s profile` : `View ${identity.name}`
+            }
+            title={
+              teammateProfilePath ? `View ${identity.name}'s profile` : `View ${identity.name}`
+            }
           >
             {identity.image ? (
-              <SafeImage src={identity.image} alt="" fallback="/user-profile-fallback.jpg" />
+              <SafeImage
+                src={identity.image}
+                alt=""
+                fallback={
+                  teammateProfilePath ? "/user-profile-fallback.jpg" : "/media-fallback.svg"
+                }
+              />
             ) : (
               identity.name.slice(0, 2).toUpperCase()
             )}
@@ -213,7 +227,15 @@ export function MessageThread({
           </span>
         )}
         <div>
-          <h2>{identity.name}</h2>
+          <h2>
+            {teamProfilePath ? (
+              <Link className="message-thread__title-link" to={teamProfilePath}>
+                {identity.name}
+              </Link>
+            ) : (
+              identity.name
+            )}
+          </h2>
           <p>
             {conversation.type === "user"
               ? identity.teammate?.gamerTitle ||

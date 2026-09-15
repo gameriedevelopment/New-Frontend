@@ -1,7 +1,7 @@
 import { useEffect, useId, useState, type FormEvent } from "react";
 import { useAdminGames } from "../games/hooks";
-import { useAdminUsers } from "../users/hooks";
 import { getErrorMessage } from "../../lib/errors";
+import { PlayerCombobox } from "./PlayerCombobox";
 import type {
   AdminChallengeRecord,
   AdminChallengeStatus,
@@ -29,6 +29,8 @@ const statuses: Array<{ value: AdminChallengeStatus; label: string }> = [
   { value: "expired", label: "Expired" },
 ];
 
+const FORMAT_OPTIONS = ["Best of 1", "Best of 3", "Best of 5", "Custom"];
+
 function localDateTime(value?: string) {
   if (!value) return "";
   const date = new Date(value);
@@ -47,8 +49,6 @@ function scores(record: AdminChallengeRecord | null): [string, string] {
 
 export function ChallengeEditorDialog(props: Props) {
   const titleId = useId();
-  const [player1Search, setPlayer1Search] = useState("");
-  const [player2Search, setPlayer2Search] = useState("");
   const [player1Id, setPlayer1Id] = useState("");
   const [player2Id, setPlayer2Id] = useState("");
   const [gameId, setGameId] = useState("");
@@ -62,21 +62,11 @@ export function ChallengeEditorDialog(props: Props) {
   const [winnerId, setWinnerId] = useState("");
   const [resultNotes, setResultNotes] = useState("");
   const [reason, setReason] = useState("");
-  const firstUsers = useAdminUsers(
-    { page: 1, limit: 10, search: player1Search.trim() || undefined, status: "active" },
-    props.open && !props.record,
-  );
-  const secondUsers = useAdminUsers(
-    { page: 1, limit: 10, search: player2Search.trim() || undefined, status: "active" },
-    props.open && !props.record,
-  );
   const games = useAdminGames({ page: 1, limit: 100 }, props.open);
 
   useEffect(() => {
     if (!props.open) return;
     const [firstScore, secondScore] = scores(props.record);
-    setPlayer1Search("");
-    setPlayer2Search("");
     setPlayer1Id("");
     setPlayer2Id("");
     setGameId("");
@@ -128,7 +118,7 @@ export function ChallengeEditorDialog(props: Props) {
         ? {
             p1Score: Number(p1Score),
             p2Score: Number(p2Score),
-            winnerId,
+            ...(winnerId ? { winnerId } : {}),
             resultNotes: resultNotes.trim(),
           }
         : {}),
@@ -157,46 +147,20 @@ export function ChallengeEditorDialog(props: Props) {
         <div className="admin-competition-form">
           {!editing ? (
             <>
-              <label>
-                <span>Find player 1</span>
-                <input
-                  value={player1Search}
-                  onChange={(event) => setPlayer1Search(event.target.value)}
-                  placeholder="Search username"
-                />
-                <select
-                  required
-                  value={player1Id}
-                  onChange={(event) => setPlayer1Id(event.target.value)}
-                >
-                  <option value="">Select player 1</option>
-                  {firstUsers.data?.data.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.username}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                <span>Find player 2</span>
-                <input
-                  value={player2Search}
-                  onChange={(event) => setPlayer2Search(event.target.value)}
-                  placeholder="Search username"
-                />
-                <select
-                  required
-                  value={player2Id}
-                  onChange={(event) => setPlayer2Id(event.target.value)}
-                >
-                  <option value="">Select player 2</option>
-                  {secondUsers.data?.data.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.username}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <PlayerCombobox
+                label="Find player 1"
+                value={player1Id}
+                onChange={(id) => setPlayer1Id(id)}
+                enabled={props.open && !props.record}
+                excludeId={player2Id || undefined}
+              />
+              <PlayerCombobox
+                label="Find player 2"
+                value={player2Id}
+                onChange={(id) => setPlayer2Id(id)}
+                enabled={props.open && !props.record}
+                excludeId={player1Id || undefined}
+              />
               <label>
                 <span>Game</span>
                 <select required value={gameId} onChange={(event) => setGameId(event.target.value)}>
@@ -213,17 +177,17 @@ export function ChallengeEditorDialog(props: Props) {
             <>
               <label>
                 <span>Game</span>
-                <input
-                  required
-                  list="admin-challenge-games"
-                  value={game}
-                  onChange={(event) => setGame(event.target.value)}
-                />
-                <datalist id="admin-challenge-games">
+                <select required value={game} onChange={(event) => setGame(event.target.value)}>
+                  {game && !games.data?.data.some((item) => item.name === game) ? (
+                    <option value={game}>{game}</option>
+                  ) : null}
+                  <option value="">Select game</option>
                   {games.data?.data.map((item) => (
-                    <option key={item.id} value={item.name} />
+                    <option key={item.id} value={item.name}>
+                      {item.name}
+                    </option>
                   ))}
-                </datalist>
+                </select>
               </label>
               <label>
                 <span>Status</span>
@@ -251,13 +215,16 @@ export function ChallengeEditorDialog(props: Props) {
           </label>
           <label>
             <span>Format</span>
-            <input
-              required
-              minLength={2}
-              value={format}
-              onChange={(event) => setFormat(event.target.value)}
-              placeholder="Best of 1"
-            />
+            <select required value={format} onChange={(event) => setFormat(event.target.value)}>
+              {!FORMAT_OPTIONS.includes(format) && format ? (
+                <option value={format}>{format}</option>
+              ) : null}
+              {FORMAT_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="admin-competition-form__wide">
             <span>Message</span>
@@ -316,14 +283,18 @@ export function ChallengeEditorDialog(props: Props) {
           ) : null}
           {editing ? (
             <label className="admin-competition-form__wide">
-              <span>Reason for change</span>
+              <span>Reason for change *</span>
               <textarea
                 required
                 minLength={5}
                 maxLength={500}
                 value={reason}
                 onChange={(event) => setReason(event.target.value)}
+                placeholder="Explain why you're changing this challenge (required, min 5 characters)."
               />
+              <small className="admin-competition-hint">
+                A reason is required before you can save changes.
+              </small>
             </label>
           ) : null}
         </div>

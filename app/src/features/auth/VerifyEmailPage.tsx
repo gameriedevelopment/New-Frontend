@@ -18,8 +18,11 @@ export function VerifyEmailPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileFailed, setTurnstileFailed] = useState(false);
   const timerRef = useRef<number | null>(null);
   const turnstileRequired = Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY);
+  // If verification can't load/errors, don't trap the user on a dead button.
+  const turnstileBlocking = turnstileRequired && !turnstileToken && !turnstileFailed;
 
   useEffect(() => {
     if (user?.emailVerified) navigate("/feed", { replace: true });
@@ -48,7 +51,7 @@ export function VerifyEmailPage() {
       setError("Sign in again before requesting another verification email.");
       return;
     }
-    if (turnstileRequired && !turnstileToken) {
+    if (turnstileBlocking) {
       setError("Complete the verification check before resending the email.");
       return;
     }
@@ -84,8 +87,12 @@ export function VerifyEmailPage() {
     navigate("/login", { replace: true });
   };
 
-  const onTurnstileVerify = useCallback((token: string) => setTurnstileToken(token), []);
+  const onTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setTurnstileFailed(false);
+  }, []);
   const onTurnstileExpire = useCallback(() => setTurnstileToken(null), []);
+  const onTurnstileError = useCallback(() => setTurnstileFailed(true), []);
 
   return (
     <main className="auth-entry">
@@ -140,12 +147,16 @@ export function VerifyEmailPage() {
               </p>
             </div>
           )}
-          <Turnstile onVerify={onTurnstileVerify} onExpire={onTurnstileExpire} />
+          <Turnstile
+            onVerify={onTurnstileVerify}
+            onExpire={onTurnstileExpire}
+            onError={onTurnstileError}
+          />
           <button
             className="auth-secondary-action"
             type="button"
             onClick={resend}
-            disabled={isResending || countdown > 0 || (turnstileRequired && !turnstileToken)}
+            disabled={isResending || countdown > 0 || turnstileBlocking}
           >
             {isResending
               ? "Sending…"

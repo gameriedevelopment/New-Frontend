@@ -46,7 +46,12 @@ export function PasswordRecoveryPage() {
   const [requestEmail, setRequestEmail] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileFailed, setTurnstileFailed] = useState(false);
   const turnstileRequired = Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY);
+  // If the verification widget cannot load or errors (e.g. blocked on the
+  // current host), don't trap the user on a permanently disabled button — let
+  // the request through; the backend still verifies where it is configured.
+  const turnstileBlocking = turnstileRequired && !turnstileToken && !turnstileFailed;
 
   const requestForm = useForm<RequestFields>({
     resolver: zodResolver(requestSchema),
@@ -56,11 +61,15 @@ export function PasswordRecoveryPage() {
     resolver: zodResolver(confirmSchema),
     defaultValues: { password: "", confirmPassword: "" },
   });
-  const onTurnstileVerify = useCallback((token: string) => setTurnstileToken(token), []);
+  const onTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setTurnstileFailed(false);
+  }, []);
   const onTurnstileExpire = useCallback(() => setTurnstileToken(null), []);
+  const onTurnstileError = useCallback(() => setTurnstileFailed(true), []);
 
   const submitRequest = requestForm.handleSubmit(async ({ email }) => {
-    if (turnstileRequired && !turnstileToken) {
+    if (turnstileBlocking) {
       setSubmitError("Complete the verification check to send a reset link.");
       return;
     }
@@ -255,16 +264,18 @@ export function PasswordRecoveryPage() {
                         <small role="alert">{requestForm.formState.errors.email.message}</small>
                       )}
                     </div>
-                    <Turnstile onVerify={onTurnstileVerify} onExpire={onTurnstileExpire} />
+                    <Turnstile
+                      onVerify={onTurnstileVerify}
+                      onExpire={onTurnstileExpire}
+                      onError={onTurnstileError}
+                    />
                   </>
                 )}
 
                 <button
                   className="auth-submit"
                   type="submit"
-                  disabled={
-                    isSubmitting || (!isConfirmMode && turnstileRequired && !turnstileToken)
-                  }
+                  disabled={isSubmitting || (!isConfirmMode && turnstileBlocking)}
                 >
                   {isSubmitting ? (
                     <>

@@ -67,6 +67,10 @@ export async function deleteMessage(messageId: string): Promise<{ success: boole
   return data.data;
 }
 
+export async function deleteConversation(conversationId: string): Promise<void> {
+  await api.delete(`/messaging/conversations/${conversationId}`);
+}
+
 export async function createConversation(
   payload: CreateConversationPayload,
 ): Promise<MessageConversation> {

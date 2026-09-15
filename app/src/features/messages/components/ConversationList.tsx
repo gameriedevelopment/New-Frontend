@@ -11,6 +11,7 @@ export function ConversationList({
   onLoadMore,
   onSearch,
   onSelect,
+  onDeleted,
   search,
   selectedId,
 }: {
@@ -21,6 +22,7 @@ export function ConversationList({
   onLoadMore: () => void;
   onSearch: (value: string) => void;
   onSelect: (id: string) => void;
+  onDeleted?: (id: string) => void;
   search: string;
   selectedId?: string | null;
 }) {
@@ -60,6 +62,7 @@ export function ConversationList({
             conversation={conversation}
             selected={selectedId === conversation.id}
             onSelect={() => onSelect(conversation.id)}
+            onDeleted={onDeleted}
           />
         ))}
         {fetchingMore ? (

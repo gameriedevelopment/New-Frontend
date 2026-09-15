@@ -11,7 +11,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { useMemo, useState, type FormEvent, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useAuthStore } from "../../auth/authStore";
 import { Button, SafeImage, SkeletonText, StatePanel } from "../../../components/ui";
@@ -102,6 +102,8 @@ export function TeamOperations({ team, slug }: { team: TeamSummary; slug: string
   const changeMember = useChangeTeamMember(team.id, slug);
   const removeMember = useRemoveTeamMember(team.id, slug);
   const [hubSearch, setHubSearch] = useState("");
+  const [hubResultsOpen, setHubResultsOpen] = useState(false);
+  const hubSearchRef = useRef<HTMLElement>(null);
   const debouncedHub = useDebouncedValue(hubSearch.trim(), 260);
   const hubInvites = useTeamHubInvites(
     team.id,
@@ -122,6 +124,14 @@ export function TeamOperations({ team, slug }: { team: TeamSummary; slug: string
     () => (hubDirectory.data?.pages.flatMap((page) => page.items) ?? []).slice(0, 6),
     [hubDirectory.data],
   );
+  useEffect(() => {
+    if (!hubResultsOpen) return;
+    const onClickAway = (event: MouseEvent) => {
+      if (!hubSearchRef.current?.contains(event.target as Node)) setHubResultsOpen(false);
+    };
+    document.addEventListener("mousedown", onClickAway);
+    return () => document.removeEventListener("mousedown", onClickAway);
+  }, [hubResultsOpen]);
   const candidates = useMemo(
     () =>
       (search.data?.pages.flatMap((page) => page.data) ?? [])
@@ -517,7 +527,7 @@ export function TeamOperations({ team, slug }: { team: TeamSummary; slug: string
           ) : null}
         </section>
 
-        <section className="community-section">
+        <section className="community-section team-operations__invite" ref={hubSearchRef}>
           <header>
             <div>
               <h2>Request to join a hub</h2>
@@ -531,13 +541,17 @@ export function TeamOperations({ team, slug }: { team: TeamSummary; slug: string
               <Search size={15} />
               <input
                 value={hubSearch}
-                onChange={(event) => setHubSearch(event.target.value)}
+                onChange={(event) => {
+                  setHubSearch(event.target.value);
+                  setHubResultsOpen(true);
+                }}
+                onFocus={() => setHubResultsOpen(true)}
                 placeholder="Search a hub"
                 autoComplete="off"
               />
             </label>
           </form>
-          {debouncedHub ? (
+          {debouncedHub && hubResultsOpen ? (
             <div className="team-invite-results" aria-live="polite">
               {hubDirectory.isLoading ? (
                 <SkeletonText lines={3} />
@@ -547,7 +561,11 @@ export function TeamOperations({ team, slug }: { team: TeamSummary; slug: string
                     type="button"
                     key={hub.id}
                     disabled={requestHub.isPending}
-                    onClick={() => requestHub.mutate({ hubId: hub.id })}
+                    onClick={() => {
+                      requestHub.mutate({ hubId: hub.id });
+                      setHubResultsOpen(false);
+                      setHubSearch("");
+                    }}
                   >
                     <SafeImage src={hub.logo} fallback="/avatar-fallback.svg" alt="" />
                     <span>

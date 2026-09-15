@@ -75,7 +75,10 @@ export function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileFailed, setTurnstileFailed] = useState(false);
   const turnstileRequired = Boolean(import.meta.env.VITE_TURNSTILE_SITE_KEY);
+  // If verification can't load/errors, don't trap the user on a dead button.
+  const turnstileBlocking = turnstileRequired && !turnstileToken && !turnstileFailed;
   const {
     register,
     handleSubmit,
@@ -113,11 +116,15 @@ export function RegisterPage() {
     }
   };
 
-  const onTurnstileVerify = useCallback((token: string) => setTurnstileToken(token), []);
+  const onTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setTurnstileFailed(false);
+  }, []);
   const onTurnstileExpire = useCallback(() => setTurnstileToken(null), []);
+  const onTurnstileError = useCallback(() => setTurnstileFailed(true), []);
 
   const onSubmit = handleSubmit(async (values) => {
-    if (turnstileRequired && !turnstileToken) {
+    if (turnstileBlocking) {
       setSubmitError("Complete the verification check to create your account.");
       return;
     }
@@ -345,7 +352,11 @@ export function RegisterPage() {
                   />
                   {errors.referralCode && <small role="alert">{errors.referralCode.message}</small>}
                 </div>
-                <Turnstile onVerify={onTurnstileVerify} onExpire={onTurnstileExpire} />
+                <Turnstile
+                  onVerify={onTurnstileVerify}
+                  onExpire={onTurnstileExpire}
+                  onError={onTurnstileError}
+                />
               </>
             )}
 
@@ -368,7 +379,7 @@ export function RegisterPage() {
                 <button
                   className="auth-submit"
                   type="submit"
-                  disabled={isSubmitting || (turnstileRequired && !turnstileToken)}
+                  disabled={isSubmitting || turnstileBlocking}
                 >
                   {isSubmitting ? (
                     <>

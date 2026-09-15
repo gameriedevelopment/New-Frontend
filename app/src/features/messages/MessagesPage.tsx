@@ -152,6 +152,9 @@ export function MessagesPage() {
             onSearch={setSearch}
             selectedId={selectedId}
             onSelect={select}
+            onDeleted={(id) => {
+              if (id === selectedId) setParams({ tab: type }, { replace: true });
+            }}
             hasMore={Boolean(conversationsQuery.hasNextPage) && !debouncedSearch}
             fetchingMore={conversationsQuery.isFetchingNextPage}
             onLoadMore={() => conversationsQuery.fetchNextPage()}

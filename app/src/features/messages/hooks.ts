@@ -11,6 +11,7 @@ import type { AuthUser } from "../auth/types";
 import {
   connectMessagingSocket,
   createConversation,
+  deleteConversation,
   deleteMessage,
   editMessage,
   getConversationUnread,
@@ -42,6 +43,29 @@ export function useConversations(type: "user" | "team") {
     initialPageParam: 1,
     getNextPageParam: (page) => (page.page < page.totalPages ? page.page + 1 : undefined),
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useDeleteConversation() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (conversationId: string) => deleteConversation(conversationId),
+    onSuccess: (_data, conversationId) => {
+      for (const type of ["user", "team"] as const) {
+        client.setQueryData<InfiniteData<ConversationsPage>>(["conversations", type], (current) => {
+          if (!current) return current;
+          return {
+            ...current,
+            pages: current.pages.map((page) => ({
+              ...page,
+              data: page.data.filter((conversation) => conversation.id !== conversationId),
+            })),
+          };
+        });
+      }
+      void client.invalidateQueries({ queryKey: ["conversations"] });
+      void client.invalidateQueries({ queryKey: ["total-unread-counts"] });
+    },
   });
 }
 
